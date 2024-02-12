@@ -112,6 +112,7 @@ module.exports.addUser = (req, res) => {
                           zipcode: req.body.address.zipcode,
                         },
                         phone: req.body.phone,
+                        userType: req.body.userType,
                       });
                       user
                         .save()
@@ -179,6 +180,7 @@ module.exports.editUser = (req, res) => {
         zipcode: req.body.zipcode,
       },
       phone: req.body.phone,
+      userType: req.body.userType,
     });
   }
 };

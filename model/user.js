@@ -38,6 +38,10 @@ const userSchema = new schema({
     type: String,
     required: true,
   },
+  userType: {
+    type: Number, //1=Admin, 2=user
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("user", userSchema);
