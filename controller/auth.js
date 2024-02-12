@@ -25,7 +25,7 @@ module.exports.login = (req, res) => {
           dataObject.status = "success";
           dataObject.message = "User loggedin successfully.";
           dataObject.data = {
-            ...user,
+            user: user,
             jwtToken: jwt.sign({ user: username }, "secret_key"),
           };
         } else {
