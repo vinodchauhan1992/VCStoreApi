@@ -7,11 +7,11 @@ module.exports.login = (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  if (!username || username === "") {
+  if (username === null || username === undefined || username === "") {
     dataObject.status = "error";
     dataObject.message = "Please provide username.";
     res.json(dataObject);
-  } else if (!password || password === "") {
+  } else if (password === null || password === undefined || password === "") {
     dataObject.status = "error";
     dataObject.message = "Please provide password.";
     res.json(dataObject);
@@ -37,6 +37,7 @@ module.exports.login = (req, res) => {
       .catch((err) => {
         dataObject.status = "error";
         dataObject.message = `There is an error occurred. ${err}`;
+        dataObject.data = {};
         res.json(dataObject);
       });
   }
