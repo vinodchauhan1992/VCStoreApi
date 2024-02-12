@@ -7,11 +7,11 @@ module.exports.login = (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  if (username === null || username === undefined || username === "") {
+  if (!username || username === "") {
     dataObject.status = "error";
     dataObject.message = "Please provide username.";
     res.json(dataObject);
-  } else if (password === null || password === undefined || password === "") {
+  } else if (!password || password === "") {
     dataObject.status = "error";
     dataObject.message = "Please provide password.";
     res.json(dataObject);
