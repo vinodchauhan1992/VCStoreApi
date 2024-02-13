@@ -72,6 +72,8 @@ module.exports.addProductCategory = (req, res) => {
       code: req?.body?.title?.toLowerCase(),
       description: req.body.description,
       image: req.body.image,
+      dateAdded: new Date(),
+      dateModified: new Date(),
     });
 
     category

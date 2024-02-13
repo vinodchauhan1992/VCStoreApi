@@ -112,6 +112,10 @@ module.exports.addProduct = (req, res) => {
         rate: 0.0,
         count: 0,
       },
+      dateAdded: new Date(),
+      dateModified: new Date(),
+      isActive: req.body.isActive,
+      status: req.body.status,
     });
 
     product
@@ -153,6 +157,9 @@ module.exports.editProduct = (req, res) => {
         rate: req.body.rate,
         count: req.body.count,
       },
+      dateModified: new Date(),
+      isActive: req.body.isActive,
+      status: req.body.status,
     });
   }
 };

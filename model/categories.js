@@ -19,6 +19,14 @@ const categoriesSchema = new schema({
     required: true,
   },
   image: String,
+  dateAdded: {
+    type: Date,
+    required: true,
+  },
+  dateModified: {
+    type: Date,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("categories", categoriesSchema);

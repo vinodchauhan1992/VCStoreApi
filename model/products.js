@@ -32,6 +32,22 @@ const productsSchema = new schema({
     rate: Number,
     count: Number,
   },
+  dateAdded: {
+    type: Date,
+    required: true,
+  },
+  dateModified: {
+    type: Date,
+    required: true,
+  },
+  isActive: {
+    type: Boolean,
+    required: true,
+  },
+  status: {
+    type: Number, //1 = In Stock, 2 = Out Of Stock, 3 = Soon In Stock
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("products", productsSchema);
