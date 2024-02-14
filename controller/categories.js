@@ -95,3 +95,31 @@ module.exports.addProductCategory = (req, res) => {
       });
   }
 };
+
+module.exports.deleteProductCategory = (req, res) => {
+  if (req.params.id == null) {
+    dataObject.status = "error";
+    dataObject.message = "Product id must be provided to delete a product.";
+    res.json(dataObject);
+  } else {
+    Products.findOne({
+      id: req.params.id,
+    })
+      .select(["-_id"])
+      .then((product) => {
+        if (product && Object.keys(product).length > 0) {
+          dataObject.message = `Product with product id ${id} is deleted successfully.`;
+          dataObject.data = product;
+        } else {
+          dataObject.message = `Product with product id ${id} is not deleted.`;
+          dataObject.data = {};
+        }
+        res.json(dataObject);
+      })
+      .catch((err) => {
+        dataObject.status = "error";
+        dataObject.message = `There is an error occurred. ${err}`;
+        res.json(dataObject);
+      });
+  }
+};
