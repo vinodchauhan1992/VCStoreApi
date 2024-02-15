@@ -1,7 +1,7 @@
 const Categories = require("../model/categories");
 const CommonUtility = require("../utilities/commonUtility");
 
-var dataObject = { status: "success", message: "", data: [] };
+let dataObject = { status: "success", message: "", data: [] };
 
 module.exports.getAllProductCategories = (req, res) => {
   const limit = Number(req.query.limit) || 0;
@@ -13,11 +13,14 @@ module.exports.getAllProductCategories = (req, res) => {
     .sort({ id: sort })
     .then((categories) => {
       if (categories && categories.length > 0) {
+        dataObject.status = "success";
         dataObject.message = "Categories fetched successfully.";
         dataObject.data = categories;
       } else {
+        dataObject.status = "success";
         dataObject.message =
           "Categories fetched successfully. But categories doesn't have any data.";
+        dataObject.data = [];
       }
       res.json(dataObject);
     })
@@ -43,9 +46,11 @@ module.exports.getProductCategory = (req, res) => {
       .then((category) => {
         console.log("category", category);
         if (category && Object.keys(category).length > 0) {
+          dataObject.status = "success";
           dataObject.message = `Category with categoryID ${categoryID} fetched successfully.`;
           dataObject.data = category;
         } else {
+          dataObject.status = "error";
           dataObject.message = `There is no category exists with categoryID ${categoryID}.`;
           dataObject.data = {};
         }
@@ -54,6 +59,7 @@ module.exports.getProductCategory = (req, res) => {
       .catch((err) => {
         dataObject.status = "error";
         dataObject.message = `There is an error occurred. ${err}`;
+        dataObject.data = {};
         res.json(dataObject);
       });
   }
@@ -64,6 +70,7 @@ module.exports.addProductCategory = (req, res) => {
   if (typeof req.body == undefined) {
     dataObject.status = "error";
     dataObject.message = "Please send all required data to add a product.";
+    dataObject.data = {};
     res.json(dataObject);
   } else {
     const category = new Categories({
@@ -80,9 +87,11 @@ module.exports.addProductCategory = (req, res) => {
       .save()
       .then((respondedCategory) => {
         if (respondedCategory && Object.keys(respondedCategory).length > 0) {
+          dataObject.status = "success";
           dataObject.message = `New category is added successfully.`;
           dataObject.data = respondedCategory;
         } else {
+          dataObject.status = "error";
           dataObject.message = `Category is not added due to unknown error.`;
           dataObject.data = {};
         }
@@ -91,27 +100,31 @@ module.exports.addProductCategory = (req, res) => {
       .catch((err) => {
         dataObject.status = "error";
         dataObject.message = `There is an error occurred. ${err}`;
+        dataObject.data = {};
         res.json(dataObject);
       });
   }
 };
 
 module.exports.deleteProductCategory = (req, res) => {
-  if (req.params.id == null) {
+  if (req.params.categoryID == null) {
     dataObject.status = "error";
     dataObject.message = "Category id must be provided to delete a category.";
+    dataObject.data = {};
     res.json(dataObject);
   } else {
-    Categories.findOne({
-      id: req.params.id,
+    Categories.deleteOne({
+      id: req.params.categoryID,
     })
       .select(["-_id"])
-      .then((category) => {
-        if (category && Object.keys(category).length > 0) {
-          dataObject.message = `Category with category id ${id} is deleted successfully.`;
-          dataObject.data = category;
+      .then((result) => {
+        if (result && result.deletedCount === 1) {
+          dataObject.status = "success";
+          dataObject.message = `Category with category id ${req.params.categoryID} is deleted successfully.`;
+          dataObject.data = {};
         } else {
-          dataObject.message = `Category with category id ${id} is not deleted.`;
+          dataObject.status = "error";
+          dataObject.message = `Category with category id ${req.params.categoryID} is not deleted.`;
           dataObject.data = {};
         }
         res.json(dataObject);
@@ -119,6 +132,7 @@ module.exports.deleteProductCategory = (req, res) => {
       .catch((err) => {
         dataObject.status = "error";
         dataObject.message = `There is an error occurred. ${err}`;
+        dataObject.data = {};
         res.json(dataObject);
       });
   }
