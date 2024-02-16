@@ -39,11 +39,11 @@ const userSchema = new schema({
     required: true,
   },
   userRoleID: {
-    type: string, 
+    type: String, 
     required: true,
   },
   userRole: {
-    type: string, 
+    type: String, 
     required: true,
   },
 });
