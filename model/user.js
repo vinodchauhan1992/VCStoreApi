@@ -38,8 +38,12 @@ const userSchema = new schema({
     type: String,
     required: true,
   },
-  userType: {
-    type: Number, //1=Admin, 2=user
+  userRoleID: {
+    type: string, 
+    required: true,
+  },
+  userRole: {
+    type: string, 
     required: true,
   },
 });

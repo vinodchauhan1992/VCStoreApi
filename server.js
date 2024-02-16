@@ -21,6 +21,7 @@ const cartRoute = require("./routes/cart");
 const userRoute = require("./routes/user");
 const authRoute = require("./routes/auth");
 const categoriesRoute = require("./routes/categories");
+const userRolesRoute = require("./routes/userRoles");
 
 //middleware
 app.use(cors());
@@ -41,6 +42,7 @@ app.use("/carts", cartRoute);
 app.use("/users", userRoute);
 app.use("/auth", authRoute);
 app.use("/categories", categoriesRoute);
+app.use("/userRoles", userRolesRoute);
 
 //mongoose
 mongoose.set("useFindAndModify", false);
