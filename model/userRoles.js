@@ -12,7 +12,7 @@ const userRolesSchema = new schema({
   },
   description: {
     type: String,
-    required: false,
+    required: true,
   },
   dateAdded: {
     type: Date,
