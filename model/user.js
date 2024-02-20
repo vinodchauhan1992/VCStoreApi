@@ -46,6 +46,14 @@ const userSchema = new schema({
     type: String, 
     required: true,
   },
+  userStatusID: {
+    type: String, 
+    required: true,
+  },
+  userStatus: {
+    type: String, 
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("user", userSchema);

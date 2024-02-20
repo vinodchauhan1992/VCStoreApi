@@ -114,6 +114,8 @@ module.exports.addUser = (req, res) => {
                         phone: req.body.phone,
                         userRole: req.body.userRole,
                         userRoleID: req.body.userRoleID,
+                        userStatusID: req.body.userStatusID,
+                        userStatus: req.body.userStatus,
                       });
                       user
                         .save()
@@ -183,6 +185,8 @@ module.exports.editUser = (req, res) => {
       phone: req.body.phone,
       userRole: req.body.userRole,
       userRoleID: req.body.userRoleID,
+      userStatusID: req.body.userStatusID,
+      userStatus: req.body.userStatus,
     });
   }
 };

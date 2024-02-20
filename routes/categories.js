@@ -9,5 +9,9 @@ router.delete(
   "/deleteProductCategory/:categoryID",
   categories.deleteProductCategory
 );
+router.put(
+  "/updateProductCategory/:categoryID",
+  categories.updateProductCategory
+);
 
 module.exports = router;

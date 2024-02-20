@@ -66,7 +66,6 @@ module.exports.getProductCategory = (req, res) => {
 };
 
 module.exports.addProductCategory = (req, res) => {
-  console.log("req_addProductCategory_body", req.body);
   if (typeof req.body == undefined) {
     dataObject.status = "error";
     dataObject.message = "Please send all required data to add a product.";
@@ -134,6 +133,77 @@ module.exports.deleteProductCategory = (req, res) => {
         dataObject.message = `There is an error occurred. ${err}`;
         dataObject.data = {};
         res.json(dataObject);
+      });
+  }
+};
+
+module.exports.updateProductCategory = (req, res) => {
+  if (typeof req.body == undefined || req.params.categoryID == null) {
+    dataObject.status = "error";
+    dataObject.message = "Please send all required data to update a category.";
+    dataObject.data = {};
+    res.json(dataObject);
+  } else {
+    const categoryID = req.params.categoryID;
+
+    Categories.findOne({
+      id: categoryID,
+    })
+      .select(["-_id"])
+      .then((currentCategory) => {
+        if (currentCategory && Object.keys(currentCategory).length > 0) {
+          const newCategory = {
+            id: req.body.id,
+            title: req.body.title,
+            code: req?.body?.title?.toLowerCase(),
+            description: req.body.description,
+            image: req.body.image,
+            dateAdded: req.body.dateAdded,
+            dateModified: new Date(),
+          };
+
+          const updatedCategorySet = {
+            $set: newCategory,
+          };
+
+          Categories.updateOne({ id: req.body.id }, updatedCategorySet)
+            .then((respondedCategory) => {
+              if (
+                respondedCategory &&
+                Object.keys(respondedCategory).length > 0
+              ) {
+                dataObject.status = "success";
+                dataObject.message = `Category is updated successfully.`;
+                dataObject.data = newCategory;
+              } else {
+                dataObject.status = "error";
+                dataObject.message = `Category is not updated due to unknown error.`;
+                dataObject.data = {};
+              }
+              res.json(dataObject);
+              return;
+            })
+            .catch((err) => {
+              dataObject.status = "error";
+              dataObject.message = `There is an error occurred. ${err}`;
+              dataObject.data = {};
+              res.json(dataObject);
+              return;
+            });
+        } else {
+          dataObject.status = "error";
+          dataObject.message = `There is no category exists with categoryID ${categoryID}.`;
+          dataObject.data = {};
+          res.json(dataObject);
+          return;
+        }
+      })
+      .catch((err) => {
+        dataObject.status = "error";
+        dataObject.message = `There is an error occurred. ${err}`;
+        dataObject.data = {};
+        res.json(dataObject);
+        return;
       });
   }
 };

@@ -1,25 +1,25 @@
-const UserRoles = require("../model/userRoles");
+const UserStatuses = require("../model/userStatuses");
 const CommonUtility = require("../utilities/commonUtility");
 
 let dataObject = { status: "success", message: "", data: [] };
 
-module.exports.getAllUserRoles = (req, res) => {
+module.exports.getAllUserStatuses = (req, res) => {
   const limit = Number(req.query.limit) || 0;
   const sort = req.query.sort == "desc" ? -1 : 1;
 
-  UserRoles.find()
+  UserStatuses.find()
     .select(["-_id"])
     .limit(limit)
     .sort({ id: sort })
-    .then((userRolesData) => {
-      if (userRolesData && userRolesData.length > 0) {
+    .then((userStatusesData) => {
+      if (userStatusesData && userStatusesData.length > 0) {
         dataObject.status = "success";
-        dataObject.message = "User roles fetched successfully.";
-        dataObject.data = userRolesData;
+        dataObject.message = "User statuses fetched successfully.";
+        dataObject.data = userStatusesData;
       } else {
         dataObject.status = "success";
         dataObject.message =
-          "User roles fetched successfully. But user roles doesn't have any data.";
+          "User statuses fetched successfully. But user statuses doesn't have any data.";
         dataObject.data = [];
       }
       res.json(dataObject);
@@ -31,26 +31,26 @@ module.exports.getAllUserRoles = (req, res) => {
     });
 };
 
-module.exports.getUserRoleByID = (req, res) => {
-  if (!req?.params?.userRoleID || req.params.userRoleID === "") {
+module.exports.getUserStatusByID = (req, res) => {
+  if (!req?.params?.userStatusID || req.params.userStatusID === "") {
     dataObject.status = "error";
-    dataObject.message = "User role id should be provided";
+    dataObject.message = "User status id should be provided";
     res.json(dataObject);
   } else {
-    const userRoleID = req.params.userRoleID;
+    const userStatusID = req.params.userStatusID;
 
-    UserRoles.findOne({
-      id: userRoleID,
+    UserStatuses.findOne({
+      id: userStatusID,
     })
       .select(["-_id"])
-      .then((userRole) => {
-        if (userRole && Object.keys(userRole).length > 0) {
+      .then((userStatus) => {
+        if (userStatus && Object.keys(userStatus).length > 0) {
           dataObject.status = "success";
-          dataObject.message = `User role with userRoleID ${userRoleID} fetched successfully.`;
+          dataObject.message = `User status with userStatusID ${userStatusID} fetched successfully.`;
           dataObject.data = category;
         } else {
           dataObject.status = "error";
-          dataObject.message = `There is no user role exists with userRoleID ${userRoleID}.`;
+          dataObject.message = `There is no user status exists with userStatusID ${userStatusID}.`;
           dataObject.data = {};
         }
         res.json(dataObject);
@@ -64,31 +64,31 @@ module.exports.getUserRoleByID = (req, res) => {
   }
 };
 
-module.exports.addUserRole = (req, res) => {
+module.exports.addUserStatus = (req, res) => {
   if (typeof req.body == undefined) {
     dataObject.status = "error";
-    dataObject.message = "Please send all required data to add a user role.";
+    dataObject.message = "Please send all required data to add a user status.";
     dataObject.data = {};
     res.json(dataObject);
   } else {
-    const userRole = new UserRoles({
+    const userStatus = new UserStatuses({
       id: CommonUtility.getUniqueID(req.body.role),
-      role: req.body.role,
+      status: req.body.status,
       description: req.body.description,
       dateAdded: new Date(),
       dateModified: new Date(),
     });
 
-    userRole
+    userStatus
       .save()
-      .then((respondedUserRole) => {
-        if (respondedUserRole && Object.keys(respondedUserRole).length > 0) {
+      .then((respondedUserStatus) => {
+        if (respondedUserStatus && Object.keys(respondedUserStatus).length > 0) {
           dataObject.status = "success";
-          dataObject.message = `New user role is added successfully.`;
-          dataObject.data = respondedUserRole;
+          dataObject.message = `New user status is added successfully.`;
+          dataObject.data = respondedUserStatus;
         } else {
           dataObject.status = "error";
-          dataObject.message = `User role is not added due to unknown error.`;
+          dataObject.message = `User status is not added due to unknown error.`;
           dataObject.data = {};
         }
         res.json(dataObject);
@@ -102,26 +102,26 @@ module.exports.addUserRole = (req, res) => {
   }
 };
 
-module.exports.deleteUserRole = (req, res) => {
-  if (req.params.userRoleID == null) {
+module.exports.deleteUserStatus = (req, res) => {
+  if (req.params.userStatusID == null) {
     dataObject.status = "error";
-    dataObject.message = "User role id must be provided to delete a user role.";
+    dataObject.message = "User status id must be provided to delete a user status.";
     dataObject.data = {};
     res.json(dataObject);
   } else {
-    const userRoleID = req.params.userRoleID;
-    UserRoles.deleteOne({
-      id: userRoleID,
+    const userStatusID = req.params.userStatusID;
+    UserStatuses.deleteOne({
+      id: userStatusID,
     })
       .select(["-_id"])
       .then((result) => {
         if (result && result.deletedCount === 1) {
           dataObject.status = "success";
-          dataObject.message = `User role with user role id ${userRoleID} is deleted successfully.`;
+          dataObject.message = `User status with user status id ${userStatusID} is deleted successfully.`;
           dataObject.data = {};
         } else {
           dataObject.status = "error";
-          dataObject.message = `User role with user role id ${userRoleID} is not deleted.`;
+          dataObject.message = `User status with user status id ${userStatusID} is not deleted.`;
           dataObject.data = {};
         }
         res.json(dataObject);
