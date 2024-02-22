@@ -40,7 +40,7 @@ app.set("views", "views");
 app.disable("view cache");
 
 // use v1
-app.use("/v1", homeRouteV1);
+app.use("/", homeRouteV1);
 app.use("/v1/products", productsRouteV1);
 app.use("/v1/carts", cartRouteV1);
 app.use("/v1/users", userRouteV1);
