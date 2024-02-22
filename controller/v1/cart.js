@@ -1,4 +1,4 @@
-const Cart = require('../model/cart');
+const Cart = require('../../model/cart');
 
 module.exports.getAllCarts = (req, res) => {
 	const limit = Number(req.query.limit) || 0;

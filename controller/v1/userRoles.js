@@ -1,5 +1,5 @@
-const UserRoles = require("../model/userRoles");
-const CommonUtility = require("../utilities/commonUtility");
+const UserRoles = require("../../model/userRoles");
+const CommonUtility = require("../../utilities/commonUtility");
 
 let dataObject = { status: "success", message: "", data: [] };
 
@@ -47,7 +47,7 @@ module.exports.getUserRoleByID = (req, res) => {
         if (userRole && Object.keys(userRole).length > 0) {
           dataObject.status = "success";
           dataObject.message = `User role with userRoleID ${userRoleID} fetched successfully.`;
-          dataObject.data = category;
+          dataObject.data = userRole;
         } else {
           dataObject.status = "error";
           dataObject.message = `There is no user role exists with userRoleID ${userRoleID}.`;

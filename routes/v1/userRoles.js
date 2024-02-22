@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const userRoles = require("../controller/userRoles");
+const userRoles = require("../../controller/v1/userRoles");
 
 router.get("/allUserRoles", userRoles.getAllUserRoles);
 router.get("/userRoleByID/:userRoleID", userRoles.getUserRoleByID);

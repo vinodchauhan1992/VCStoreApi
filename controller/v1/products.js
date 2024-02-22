@@ -1,5 +1,5 @@
-const Products = require("../model/products");
-const CommonUtility = require("../utilities/commonUtility");
+const Products = require("../../model/products");
+const CommonUtility = require("../../utilities/commonUtility");
 
 var dataObject = { status: "success", message: "", data: [] };
 

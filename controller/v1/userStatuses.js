@@ -1,5 +1,5 @@
-const UserStatuses = require("../model/userStatuses");
-const CommonUtility = require("../utilities/commonUtility");
+const UserStatuses = require("../../model/userStatuses");
+const CommonUtility = require("../../utilities/commonUtility");
 
 let dataObject = { status: "success", message: "", data: [] };
 

@@ -1,5 +1,6 @@
-const Categories = require("../model/categories");
-const CommonUtility = require("../utilities/commonUtility");
+const Categories = require("../../model/categories");
+const CommonUtility = require("../../utilities/commonUtility");
+var http = require("http");
 
 let dataObject = { status: "success", message: "", data: [] };
 
@@ -68,7 +69,7 @@ module.exports.getProductCategory = (req, res) => {
 module.exports.addProductCategory = (req, res) => {
   if (typeof req.body == undefined) {
     dataObject.status = "error";
-    dataObject.message = "Please send all required data to add a product.";
+    dataObject.message = "Please send all required data to add a category.";
     dataObject.data = {};
     res.json(dataObject);
   } else {
@@ -89,12 +90,13 @@ module.exports.addProductCategory = (req, res) => {
           dataObject.status = "success";
           dataObject.message = `New category is added successfully.`;
           dataObject.data = respondedCategory;
+          res.json(dataObject);
         } else {
           dataObject.status = "error";
           dataObject.message = `Category is not added due to unknown error.`;
           dataObject.data = {};
+          res.json(dataObject);
         }
-        res.json(dataObject);
       })
       .catch((err) => {
         dataObject.status = "error";

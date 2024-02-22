@@ -14,16 +14,17 @@ const app = express();
 //port
 const port = process.env.PORT || 6400;
 
-//routes
-const productsRoute = require("./routes/products");
-const homeRoute = require("./routes/home");
-const cartRoute = require("./routes/cart");
-const userRoute = require("./routes/user");
-const authRoute = require("./routes/auth");
-const categoriesRoute = require("./routes/categories");
-const userRolesRoute = require("./routes/userRoles");
-const userStatusesRoute = require("./routes/userStatuses");
-
+//routes v1
+const productsRouteV1 = require("./routes/v1/products");
+const homeRouteV1 = require("./routes/v1/home");
+const cartRouteV1 = require("./routes/v1/cart");
+const userRouteV1 = require("./routes/v1/user");
+const authRouteV1 = require("./routes/v1/auth");
+const categoriesRouteV1 = require("./routes/v1/categories");
+const userRolesRouteV1 = require("./routes/v1/userRoles");
+const userStatusesRouteV1 = require("./routes/v1/userStatuses");
+const fileUploaderRouteV1 = require("./routes/v1/fileUploader");
+const fileFoldersRouteV1 = require("./routes/v1/fileFolders");
 
 //middleware
 app.use(cors());
@@ -38,14 +39,17 @@ app.set("views", "views");
 
 app.disable("view cache");
 
-app.use("/", homeRoute);
-app.use("/products", productsRoute);
-app.use("/carts", cartRoute);
-app.use("/users", userRoute);
-app.use("/auth", authRoute);
-app.use("/categories", categoriesRoute);
-app.use("/userRoles", userRolesRoute);
-app.use("/userStatuses", userStatusesRoute);
+// use v1
+app.use("/v1", homeRouteV1);
+app.use("/v1/products", productsRouteV1);
+app.use("/v1/carts", cartRouteV1);
+app.use("/v1/users", userRouteV1);
+app.use("/v1/auth", authRouteV1);
+app.use("/v1/categories", categoriesRouteV1);
+app.use("/v1/userRoles", userRolesRouteV1);
+app.use("/v1/userStatuses", userStatusesRouteV1);
+app.use("/v1/fileUploader", fileUploaderRouteV1);
+app.use("/v1/fileFolders", fileFoldersRouteV1);
 
 //mongoose
 mongoose.set("useFindAndModify", false);

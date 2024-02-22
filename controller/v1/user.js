@@ -1,5 +1,5 @@
-const User = require("../model/user");
-const CommonUtility = require("../utilities/commonUtility");
+const User = require("../../model/user");
+const CommonUtility = require("../../utilities/commonUtility");
 
 var dataObject = { status: "success", message: "", data: [] };
 
