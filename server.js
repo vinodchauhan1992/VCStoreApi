@@ -26,6 +26,9 @@ const userStatusesRouteV1 = require("./routes/v1/userStatuses");
 const fileUploaderRouteV1 = require("./routes/v1/fileUploader");
 const fileFoldersRouteV1 = require("./routes/v1/fileFolders");
 
+//routes v2
+const categoriesRouteV2 = require("./routes/v2/categories");
+
 //middleware
 app.use(cors());
 
@@ -50,6 +53,10 @@ app.use("/v1/userRoles", userRolesRouteV1);
 app.use("/v1/userStatuses", userStatusesRouteV1);
 app.use("/v1/fileUploader", fileUploaderRouteV1);
 app.use("/v1/fileFolders", fileFoldersRouteV1);
+
+// use v1
+app.use("/", homeRouteV1);
+app.use("/v2/categories", categoriesRouteV2);
 
 //mongoose
 mongoose.set("useFindAndModify", false);

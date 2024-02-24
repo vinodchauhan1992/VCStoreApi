@@ -1,3 +1,5 @@
+var Jimp = require("jimp");
+
 module.exports.getTimestamp = () => {
   const timestamp = new Date().getTime();
   return timestamp;
@@ -46,4 +48,26 @@ module.exports.isValidWithSpecialCharactersNotAllowed = (text) => {
   } else {
     return false;
   }
+};
+
+module.exports.getFileSizeInKBFromBytes = (fileSizeInBytes) => {
+  let fileSize = fileSizeInBytes;
+  let unit = "bytes";
+  if (fileSizeInBytes >= 1024 && fileSizeInBytes) {
+    fileSize = fileSizeInBytes / 1024;
+    unit = "kb";
+  }
+  if (fileSize >= 1024) {
+    fileSize = fileSize / 1024;
+    unit = "mb";
+  }
+  return { fileSize: fileSize, unit: unit };
+};
+
+module.exports.isValidAllowedFileSize = (fileSizeInBytes) => {
+  const { fileSize, unit } = this.getFileSizeInKBFromBytes(fileSizeInBytes);
+  if (fileSize <= 0 || (fileSize > 2 && unit === "mb")) {
+    return false;
+  }
+  return true;
 };

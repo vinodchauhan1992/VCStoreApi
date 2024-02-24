@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
+const fileUploaderSchema = require("./fileUploader");
 
 const categoriesSchema = new schema({
   id: {
@@ -18,7 +19,7 @@ const categoriesSchema = new schema({
     type: String,
     required: true,
   },
-  image: String,
+  imageData: fileUploaderSchema.schema,
   dateAdded: {
     type: Date,
     required: true,
