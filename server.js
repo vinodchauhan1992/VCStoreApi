@@ -28,6 +28,15 @@ const fileFoldersRouteV1 = require("./routes/v1/fileFolders");
 
 //routes v2
 const categoriesRouteV2 = require("./routes/v2/categories");
+const productsRouteV2 = require("./routes/v2/products");
+const homeRouteV2 = require("./routes/v2/home");
+const cartRouteV2 = require("./routes/v2/cart");
+const userRouteV2 = require("./routes/v2/user");
+const authRouteV2 = require("./routes/v2/auth");
+const userRolesRouteV2 = require("./routes/v2/userRoles");
+const userStatusesRouteV2 = require("./routes/v2/userStatuses");
+const fileUploaderRouteV2 = require("./routes/v2/fileUploader");
+const fileFoldersRouteV2 = require("./routes/v2/fileFolders");
 
 //middleware
 app.use(cors());
@@ -57,6 +66,14 @@ app.use("/v1/fileFolders", fileFoldersRouteV1);
 // use v1
 app.use("/", homeRouteV1);
 app.use("/v2/categories", categoriesRouteV2);
+app.use("/v2/products", productsRouteV2);
+app.use("/v2/carts", cartRouteV2);
+app.use("/v2/users", userRouteV2);
+app.use("/v2/auth", authRouteV2);
+app.use("/v2/userRoles", userRolesRouteV2);
+app.use("/v2/userStatuses", userStatusesRouteV2);
+app.use("/v2/fileUploader", fileUploaderRouteV2);
+app.use("/v2/fileFolders", fileFoldersRouteV2);
 
 //mongoose
 mongoose.set("useFindAndModify", false);
