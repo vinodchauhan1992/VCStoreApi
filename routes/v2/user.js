@@ -1,12 +1,19 @@
-const express = require('express')
-const router = express.Router()
-const user = require('../../controller/v2/user')
+const express = require("express");
+const router = express.Router();
+const user = require("../../controller/v2/user");
+const multer = require("multer");
 
-router.get('/getAllUsers',user.getAllUser)
-router.get('/getUserByID/:id',user.getUser)
-router.post('/addUser',user.addUser)
-router.put('/:id',user.editUser)
-router.patch('/:id',user.editUser)
-router.delete('/:id',user.deleteUser)
+/// Setting up multer as a middleware to grab photo uploads
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage }).single("file");
 
-module.exports = router
+router.get("/allUsers", user.getAllUser);
+router.get("/userByID/:userID", user.getUserByID);
+router.post("/addNewUser", upload, user.addNewUser);
+router.put("/updateUser/:userID", upload, user.updateUser);
+router.delete("/deleteUser/:userID", user.deleteUser);
+router.patch("/changeUserPassword/:userID", user.changeUserPassword);
+router.patch("/updateUserRole/:userID", user.updateUserRole);
+router.patch("/updateUserStatus/:userID", user.updateUserStatus);
+
+module.exports = router;

@@ -150,81 +150,102 @@ module.exports.deleteProductCategory = async (req, res) => {
             .select(["-_id"])
             .then(async (result) => {
               if (result && result.deletedCount === 1) {
-                const deleteFileResp =
-                  await CategoryUtility.deleteUploadedCategoryImageToFS({
-                    fileUrl: category?.imageData?.imageUrl,
+                if (
+                  category?.imageData?.imageUrl &&
+                  category.imageData.imageUrl !== ""
+                ) {
+                  const deleteFileResp =
+                    await CategoryUtility.deleteUploadedCategoryImageToFS({
+                      fileUrl: category?.imageData?.imageUrl,
+                    });
+                  let msg = `Category with category id ${categoryID} is deleted successfully with category image.`;
+                  if (!deleteFileResp.isSucceeded) {
+                    msg = `Category with category id ${categoryID} is deleted successfully but category image is not deleted. FileDeletionError: ${deleteFileResp?.message}`;
+                  }
+                  res.json({
+                    status: "success",
+                    message: msg,
+                    data: {},
                   });
-                let msg = `Category with category id ${categoryID} is deleted successfully with category image.`;
-                if (!deleteFileResp.isSucceeded) {
-                  msg = `Category with category id ${categoryID} is deleted successfully but category image is not deleted. FileDeletionError: ${deleteFileResp?.message}`;
+                } else {
+                  res.json({
+                    status: "success",
+                    message: `Category with category id ${categoryID} is deleted successfully.`,
+                    data: {},
+                  });
                 }
-                dataObject.status = "success";
-                dataObject.message = msg;
-                dataObject.data = {};
-                res.json(dataObject);
               } else {
-                dataObject.status = "error";
-                dataObject.message = `Category with category id ${categoryID} is not deleted.`;
-                dataObject.data = {};
-                res.json(dataObject);
+                res.json({
+                  status: "error",
+                  message: `Category with category id ${categoryID} is not deleted.`,
+                  data: {},
+                });
               }
             })
             .catch((err) => {
-              dataObject.status = "error";
-              dataObject.message = `There is an error occurred. ${err}`;
-              dataObject.data = {};
-              res.json(dataObject);
+              res.json({
+                status: "error",
+                message: `There is an error occurred. ${err.message}`,
+                data: {},
+              });
             });
         } else {
-          dataObject.status = "error";
-          dataObject.message = `There is no category exists with categoryID ${categoryID}.`;
-          dataObject.data = {};
-          res.json(dataObject);
+          res.json({
+            status: "error",
+            message: `There is no category exists with categoryID ${categoryID}.`,
+            data: {},
+          });
         }
       })
       .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        dataObject.data = {};
-        res.json(dataObject);
+        res.json({
+          status: "error",
+          message: `There is an error occurred. ${err.message}`,
+          data: {},
+        });
       });
   }
 };
 
 module.exports.updateProductCategory = async (req, res) => {
   if (typeof req.body == undefined) {
-    dataObject.status = "error";
-    dataObject.message = "Send all required data to update a category.";
-    dataObject.data = {};
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Send all required data to update a category.",
+      data: {},
+    });
     return;
   }
   if (!req?.params?.categoryID || req.params.categoryID === "") {
-    dataObject.status = "error";
-    dataObject.message = "Send category id in url.";
-    dataObject.data = {};
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Send category id in url.",
+      data: {},
+    });
     return;
   }
   if (!req?.body?.id || req.body.id === "") {
-    dataObject.status = "error";
-    dataObject.message = "Send id in body.";
-    dataObject.data = {};
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Send id in body.",
+      data: {},
+    });
     return;
   }
   if (!req?.body?.title || req.body.title === "") {
-    dataObject.status = "error";
-    dataObject.message = "Send title in body.";
-    dataObject.data = {};
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Send title in body.",
+      data: {},
+    });
     return;
   }
   if (!req?.body?.description || req.body.description === "") {
-    dataObject.status = "error";
-    dataObject.message = "Send description in body.";
-    dataObject.data = {};
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Send description in body.",
+      data: {},
+    });
     return;
   }
 
@@ -262,7 +283,6 @@ module.exports.updateProductCategory = async (req, res) => {
             finalImageData?.fileFolderPath &&
             finalImageData.fileFolderPath !== ""
           ) {
-            console.log("update_existing");
             // updated existing image
             updatedUploadedResponse =
               await CategoryUtility.updateUploadedCategoryImageToFS({
@@ -275,7 +295,6 @@ module.exports.updateProductCategory = async (req, res) => {
                 fileFolderPath: finalImageData.fileFolderPath,
               });
           } else {
-            console.log("add_new");
             // add new image
             updatedUploadedResponse =
               await CategoryUtility.uploadCategoryImageToFS({

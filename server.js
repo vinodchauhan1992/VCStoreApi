@@ -63,8 +63,8 @@ app.use("/v1/userStatuses", userStatusesRouteV1);
 app.use("/v1/fileUploader", fileUploaderRouteV1);
 app.use("/v1/fileFolders", fileFoldersRouteV1);
 
-// use v1
-app.use("/", homeRouteV1);
+// use v2
+app.use("/", homeRouteV2);
 app.use("/v2/categories", categoriesRouteV2);
 app.use("/v2/products", productsRouteV2);
 app.use("/v2/carts", cartRouteV2);
