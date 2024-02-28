@@ -56,6 +56,10 @@ const userSchema = new schema({
     required: true,
   },
   imageData: fileUploaderSchema.schema,
+  dateOfBirth: {
+    type: Date,
+    required: true,
+  },
   dateAdded: {
     type: Date,
     required: true,

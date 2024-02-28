@@ -101,6 +101,7 @@ module.exports.addNewUser = async (req, res) => {
     userRole: req.body.userRole,
     userStatusID: req.body.userStatusID,
     userStatus: req.body.userStatus,
+    dateOfBirth: req.body.dateOfBirth,
     imageData: uploadedFileData,
     dateAdded: new Date(),
     dateModified: new Date(),

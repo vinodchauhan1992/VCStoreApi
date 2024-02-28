@@ -66,6 +66,13 @@ module.exports.checkAddUserBodyInfoValidation = (req) => {
       message: "User status is required.",
     };
   }
+  if (!req?.body?.dateOfBirth || req.body.dateOfBirth.toString() === "") {
+    return {
+      isSucceeded: false,
+      message: "Date of birth is required.",
+    };
+  }
+
   return {
     isSucceeded: true,
     message: "",
@@ -439,6 +446,7 @@ module.exports.updateExistingUser = async ({
     userRole: req.body.userRole,
     userStatusID: req.body.userStatusID,
     userStatus: req.body.userStatus,
+    dateOfBirth: req.body.dateOfBirth,
     imageData: updatedUploadedFileData
       ? updatedUploadedFileData
       : finalImageData,
