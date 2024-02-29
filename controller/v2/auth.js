@@ -1,20 +1,22 @@
 const User = require("../../model/user");
 const jwt = require("jsonwebtoken");
 
-var dataObject = { status: "success", message: "", data: {} };
-
 module.exports.login = (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
   if (!username || username === "") {
-    dataObject.status = "error";
-    dataObject.message = "Please provide username.";
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Username is required to login.",
+      data: {},
+    });
   } else if (!password || password === "") {
-    dataObject.status = "error";
-    dataObject.message = "Please provide password.";
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Password is required to login.",
+      data: {},
+    });
   } else {
     User.findOne({
       username: username,
@@ -22,23 +24,28 @@ module.exports.login = (req, res) => {
     })
       .then((user) => {
         if (user && Object.keys(user).length > 0) {
-          dataObject.status = "success";
-          dataObject.message = "User loggedin successfully.";
-          dataObject.data = {
-            user: user,
-            jwtToken: jwt.sign({ user: username }, "secret_key"),
-          };
+          res.json({
+            status: "success",
+            message: "User loggedin successfully.",
+            data: {
+              user: user,
+              jwtToken: jwt.sign({ user: username }, "secret_key"),
+            },
+          });
         } else {
-          dataObject.message = `There is no user exists with username ${username}.`;
-          dataObject.data = {};
+          res.json({
+            status: "error",
+            message: `There is no user exists with username ${username}.`,
+            data: {},
+          });
         }
-        res.json(dataObject);
       })
       .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        dataObject.data = {};
-        res.json(dataObject);
+        res.json({
+          status: "error",
+          message: `There is an error occurred. ${err}`,
+          data: {},
+        });
       });
   }
 };
