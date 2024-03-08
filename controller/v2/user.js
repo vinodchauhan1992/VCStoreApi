@@ -25,7 +25,7 @@ module.exports.getAllUser = (req, res) => {
       res.json(dataObject);
     })
     .catch((err) => {
-      dataObject.message = `There is an error occurred. ${err}`;
+      dataObject.message = `There is an error occurred. ${err.message}`;
       dataObject.status = "error";
       res.json(dataObject);
     });
@@ -132,7 +132,7 @@ module.exports.deleteUser = async (req, res) => {
   if (req.params.userID == null) {
     res.json({
       status: "error",
-      message: "Category id must be provided to delete a category.",
+      message: "User id must be provided to delete a user.",
       data: {},
     });
   } else {

@@ -37,6 +37,8 @@ const userRolesRouteV2 = require("./routes/v2/userRoles");
 const userStatusesRouteV2 = require("./routes/v2/userStatuses");
 const fileUploaderRouteV2 = require("./routes/v2/fileUploader");
 const fileFoldersRouteV2 = require("./routes/v2/fileFolders");
+const adminMenuRouteV2 = require("./routes/v2/adminMenu");
+const adminMenuStatusesRouteV2 = require("./routes/v2/adminMenuStatuses");
 
 //middleware
 app.use(cors());
@@ -74,6 +76,8 @@ app.use("/v2/userRoles", userRolesRouteV2);
 app.use("/v2/userStatuses", userStatusesRouteV2);
 app.use("/v2/fileUploader", fileUploaderRouteV2);
 app.use("/v2/fileFolders", fileFoldersRouteV2);
+app.use("/v2/adminMenu", adminMenuRouteV2);
+app.use("/v2/adminMenuStatuses", adminMenuStatusesRouteV2);
 
 //mongoose
 mongoose.set("useFindAndModify", false);
