@@ -3,39 +3,24 @@ const AdminSubmenuUtility = require("../../utilities/adminSubmenuUtility");
 const CommonUtility = require("../../utilities/commonUtility");
 const AdminMenuStatusesUtility = require("../../utilities/adminMenuStatusesUtility");
 
-module.exports.getAllAdminSubmenus = (req, res) => {
-  const limit = Number(req.query.limit) || 0;
-  const sort = req.query.sort == "desc" ? -1 : 1;
-
-  AdminSubmenu.find()
-    .select(["-_id"])
-    .limit(limit)
-    .sort({
-      id: sort,
-    })
-    .then((adminSubmenus) => {
-      if (adminSubmenus && adminSubmenus.length > 0) {
-        res.json({
-          status: "success",
-          message: "Admin submenus fetched successfully.",
-          data: adminSubmenus,
-        });
-      } else {
-        res.json({
-          status: "error",
-          message:
-            "Admin submenus fetched successfully. But admin submenu doesn't have any data.",
-          data: {},
-        });
-      }
-    })
-    .catch((err) => {
-      res.json({
-        status: "error",
-        message: `There is an error occurred. ${err.message}`,
-        data: {},
+module.exports.getAllAdminSubmenus = async (req, res) => {
+  try {
+    const { status, message, data } =
+      await AdminSubmenuUtility.getAllAdminSubmenusUtil({
+        req,
       });
+    res.json({
+      status: status,
+      message: message,
+      data: data,
     });
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occurred. ${error.message}`,
+      data: [],
+    });
+  }
 };
 
 module.exports.getAdminSubmenuByID = async (req, res) => {
@@ -61,7 +46,9 @@ module.exports.getAdminSubmenuByID = async (req, res) => {
 
 module.exports.addNewAdminSubmenu = async (req, res) => {
   const checkAdminSubmenuValidationToAddNewSubmenuData =
-    await AdminSubmenuUtility.checkAdminSubmenuValidationToAddNewSubmenuData(req);
+    await AdminSubmenuUtility.checkAdminSubmenuValidationToAddNewSubmenuData(
+      req
+    );
   if (checkAdminSubmenuValidationToAddNewSubmenuData.status === "error") {
     res.json(checkAdminSubmenuValidationToAddNewSubmenuData);
     return;
@@ -233,9 +220,10 @@ module.exports.updateAdminSubmenuStatus = async (req, res) => {
     AdminSubmenu.updateOne({ id: adminSubmenuID }, updatedAdminSubmenuStatusSet)
       .then(async (respondedAdminMenu) => {
         if (respondedAdminMenu && Object.keys(respondedAdminMenu).length > 0) {
-          const { data } = await AdminSubmenuUtility.getAdminSubmenuDataByIdInDbUtil({
-            adminSubmenuID: adminSubmenuID,
-          });
+          const { data } =
+            await AdminSubmenuUtility.getAdminSubmenuDataByIdInDbUtil({
+              adminSubmenuID: adminSubmenuID,
+            });
           res.json({
             status: "success",
             message: `Admin submenu status is updated successfully.`,
@@ -311,9 +299,10 @@ module.exports.updateAdminSubmenuDeleteableFlag = async (req, res) => {
     )
       .then(async (respondedAdminMenu) => {
         if (respondedAdminMenu && Object.keys(respondedAdminMenu).length > 0) {
-          const { data } = await AdminSubmenuUtility.getAdminSubmenuDataByIdInDbUtil({
-            adminSubmenuID: adminSubmenuID,
-          });
+          const { data } =
+            await AdminSubmenuUtility.getAdminSubmenuDataByIdInDbUtil({
+              adminSubmenuID: adminSubmenuID,
+            });
           res.json({
             status: "success",
             message: `Admin submenu deletable flag is updated successfully.`,

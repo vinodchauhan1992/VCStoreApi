@@ -383,3 +383,38 @@ module.exports.updateAdminSubmenuUtil = async ({ req, res }) => {
       });
     });
 };
+
+module.exports.getAllAdminSubmenusUtil = async ({ req }) => {
+  const limit = Number(req.query.limit) || 0;
+  const sort = req.query.sort == "desc" ? -1 : 1;
+
+  return await AdminSubmenu.find()
+    .select(["-_id"])
+    .limit(limit)
+    .sort({
+      id: sort,
+    })
+    .then((adminSubmenus) => {
+      if (adminSubmenus && adminSubmenus.length > 0) {
+        return {
+          status: "success",
+          message: "Admin submenus fetched successfully.",
+          data: adminSubmenus,
+        };
+      } else {
+        return {
+          status: "error",
+          message:
+            "Admin submenus fetched successfully. But admin submenu doesn't have any data.",
+          data: [],
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred. ${err.message}`,
+        data: [],
+      };
+    });
+};

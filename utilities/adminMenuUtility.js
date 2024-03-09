@@ -338,3 +338,38 @@ module.exports.updateAdminMenuUtil = async ({ req, res }) => {
       });
     });
 };
+
+module.exports.getAllAdminMenusUtil = async ({ req }) => {
+  const limit = Number(req.query.limit) || 0;
+  const sort = req.query.sort == "desc" ? -1 : 1;
+
+  return await AdminMenu.find()
+    .select(["-_id"])
+    .limit(limit)
+    .sort({
+      id: sort,
+    })
+    .then((adminMenus) => {
+      if (adminMenus && adminMenus.length > 0) {
+        return {
+          status: "success",
+          message: "Admin menus fetched successfully.",
+          data: adminMenus,
+        };
+      } else {
+        return {
+          status: "error",
+          message:
+            "Admin menus fetched successfully. But admin menu doesn't have any data.",
+          data: [],
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred. ${err.message}`,
+        data: [],
+      };
+    });
+};

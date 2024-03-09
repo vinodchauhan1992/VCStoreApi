@@ -24,7 +24,7 @@ module.exports.getAllAdminMenuStatuses = (req, res) => {
           status: "error",
           message:
             "Admin menu statuses fetched successfully. But admin menu doesn't have any data.",
-          data: {},
+          data: [],
         });
       }
     })
@@ -32,7 +32,7 @@ module.exports.getAllAdminMenuStatuses = (req, res) => {
       res.json({
         status: "error",
         message: `There is an error occurred. ${err.message}`,
-        data: {},
+        data: [],
       });
     });
 };
