@@ -18,9 +18,12 @@ module.exports.getAllUser = (req, res) => {
       if (users && users.length > 0) {
         dataObject.message = "Users fetched successfully.";
         dataObject.data = users;
+        dataObject.status = "success";
       } else {
         dataObject.message =
           "Users fetched successfully. But users doesn't have any data.";
+        dataObject.data = [];
+        dataObject.status = "success";
       }
       res.json(dataObject);
     })
@@ -81,6 +84,11 @@ module.exports.addNewUser = async (req, res) => {
     uploadedFileData = uploadResponse?.fileData;
   }
 
+  const userType = "Employee";
+  if (req.body.userRoleID === "customer1708886695004") {
+    userType = "Customer";
+  }
+
   const user = new User({
     id: userID,
     email: email,
@@ -103,6 +111,7 @@ module.exports.addNewUser = async (req, res) => {
     userStatus: req.body.userStatus,
     dateOfBirth: req.body.dateOfBirth,
     imageData: uploadedFileData,
+    userType: userType,
     dateAdded: new Date(),
     dateModified: new Date(),
   });
@@ -202,10 +211,16 @@ module.exports.updateUserRole = async (req, res) => {
 
   const userID = req.params.userID;
 
+  const userType = "Employee";
+  if (req.body.userRoleID === "customer1708886695004") {
+    userType = "Customer";
+  }
+
   const updatedUserRoleUser = {
     id: userID,
     userRoleID: req.body.userRoleID,
     userRole: req.body.userRole,
+    userType: userType,
     dateModified: new Date(),
   };
 

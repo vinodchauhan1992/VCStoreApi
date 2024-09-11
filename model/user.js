@@ -40,19 +40,23 @@ const userSchema = new schema({
     required: true,
   },
   userRoleID: {
-    type: String, 
+    type: String,
     required: true,
   },
   userRole: {
-    type: String, 
+    type: String,
     required: true,
   },
   userStatusID: {
-    type: String, 
+    type: String,
     required: true,
   },
   userStatus: {
-    type: String, 
+    type: String,
+    required: true,
+  },
+  userType: {
+    type: String,
     required: true,
   },
   imageData: fileUploaderSchema.schema,
