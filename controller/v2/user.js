@@ -84,7 +84,7 @@ module.exports.addNewUser = async (req, res) => {
     uploadedFileData = uploadResponse?.fileData;
   }
 
-  const userType = "Employee";
+  let userType = "Employee";
   if (req.body.userRoleID === "customer1708886695004") {
     userType = "Customer";
   }
@@ -211,7 +211,7 @@ module.exports.updateUserRole = async (req, res) => {
 
   const userID = req.params.userID;
 
-  const userType = "Employee";
+  let userType = "Employee";
   if (req.body.userRoleID === "customer1708886695004") {
     userType = "Customer";
   }
