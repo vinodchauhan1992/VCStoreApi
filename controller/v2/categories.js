@@ -32,7 +32,7 @@ module.exports.getAllProductCategories = (req, res) => {
     });
 };
 
-module.exports.getProductCategory = (req, res) => {
+module.exports.getProductCategory = async (req, res) => {
   if (!req?.params?.categoryID || req.params.categoryID === "") {
     dataObject.status = "error";
     dataObject.message = "Category id should be provided";
@@ -40,33 +40,15 @@ module.exports.getProductCategory = (req, res) => {
   } else {
     const categoryID = req.params.categoryID;
 
-    Categories.findOne({
-      id: categoryID,
-    })
-      .select(["-_id"])
-      .then((category) => {
-        console.log("category", category);
-        if (category && Object.keys(category).length > 0) {
-          dataObject.status = "success";
-          dataObject.message = `Category with categoryID ${categoryID} fetched successfully.`;
-          dataObject.data = category;
-        } else {
-          dataObject.status = "error";
-          dataObject.message = `There is no category exists with categoryID ${categoryID}.`;
-          dataObject.data = {};
-        }
-        res.json(dataObject);
-      })
-      .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        dataObject.data = {};
-        res.json(dataObject);
-      });
+    const foundCategoryResponse = await CategoryUtility.getCategoryById({
+      categoryID,
+    });
+    res.json(foundCategoryResponse);
   }
 };
 
 module.exports.addProductCategory = async (req, res) => {
+  console.log('addProductCategory_req', req?.body)
   if (!req?.body?.title || req.body.title === "") {
     dataObject.status = "error";
     dataObject.message = "Category title is required.";

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
+const fileUploaderSchema = require("./fileUploader");
 
 const productsSchema = new schema({
   id: {
@@ -10,42 +11,41 @@ const productsSchema = new schema({
     type: String,
     required: true,
   },
-  price: {
-    type: Number,
-    required: true,
-  },
   description: String,
-  image: String,
-  categoryTitle: {
-    type: String,
-    required: true,
+  categoryDetails: {
+    categoryTitle: String,
+    categoryCode: String,
+    categoryID: String,
   },
-  categoryCode: {
-    type: String,
-    required: true,
-  },
-  categoryID: {
-    type: String,
+  isActive: {
+    type: Boolean,
     required: true,
   },
   rating: {
     rate: Number,
     count: Number,
   },
+  priceDetails: {
+    purchasePrice: Number,
+    sellingPrice: Number,
+    profitMargin: Number,
+    maxDiscountPercentage: Number,
+    maxDiscountValue: Number,
+    profitAfterMaxDiscount: Number,
+    isProfit: Boolean,
+  },
+  stockDetails: {
+    stockId: String,
+    quantityRecieved: Number,
+    quantityAvailable: Number,
+  },
+  imageData: fileUploaderSchema.schema,
   dateAdded: {
     type: Date,
     required: true,
   },
   dateModified: {
     type: Date,
-    required: true,
-  },
-  isActive: {
-    type: Boolean,
-    required: true,
-  },
-  status: {
-    type: Number, //1 = In Stock, 2 = Out Of Stock, 3 = Soon In Stock
     required: true,
   },
 });

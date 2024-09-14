@@ -101,3 +101,32 @@ module.exports.updateExistingCategory = async ({
       });
     });
 };
+
+module.exports.getCategoryById = async ({ categoryID }) => {
+  return await Categories.findOne({
+    id: categoryID,
+  })
+    .select(["-_id"])
+    .then((category) => {
+      if (category && Object.keys(category).length > 0) {
+        return {
+          status: "success",
+          message: `Category with categoryID ${categoryID} fetched successfully.`,
+          data: category,
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There is no category exists with categoryID ${categoryID}.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred. ${err}`,
+        data: {},
+      };
+    });
+};
