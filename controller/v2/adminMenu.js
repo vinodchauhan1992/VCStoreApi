@@ -52,17 +52,20 @@ module.exports.addNewAdminMenu = async (req, res) => {
     return;
   }
 
-  const menuId = CommonUtility.getUniqueID(req.body.menuTitle);
+  const menuId = CommonUtility.getUniqueID();
   const menuTitle = req.body.menuTitle;
   const description = req.body.description;
   const adminMenuStatusID = req.body.adminMenuStatusID;
   const adminMenuStatus = req.body.adminMenuStatus;
   const isDeleteable = req.body.isDeleteable;
   const isAdminDeleteable = req.body.isAdminDeleteable;
-
+  const menuPath = req.body.menuPath;
+  const priority = req.body.priority;
   const newAdminMenuSchema = new AdminMenu({
     id: menuId,
     menuTitle: menuTitle,
+    menuPath: menuPath,
+    priority: priority,
     description: description,
     adminMenuStatusID: adminMenuStatusID,
     adminMenuStatus: adminMenuStatus,
@@ -317,6 +320,38 @@ module.exports.updateAdminMenuDeleteableFlag = async (req, res) => {
       status: "error",
       message: message,
       data: {},
+    });
+  }
+};
+
+module.exports.getAdminMenusHighestPriority = async (req, res) => {
+  try {
+    const { status, message, data } =
+      await AdminMenuUtility.getAllAdminMenusUtil({
+        req,
+      });
+
+    const maxPriorityObject = data.reduce(function (prev, current) {
+      return prev && prev.y > current.y ? prev : current;
+    });
+
+    res.json({
+      status: status,
+      message:
+        status === "success"
+          ? "Highest priority value is fetched successfully."
+          : "There is an error in fetching highest priority value. So default value is 0.",
+      data: {
+        maxPriorityValue: maxPriorityObject?.priority ?? 0,
+      },
+    });
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occurred. ${error.message}`,
+      data: {
+        maxPriorityValue: 0,
+      },
     });
   }
 };

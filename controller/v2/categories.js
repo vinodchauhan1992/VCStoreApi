@@ -62,7 +62,7 @@ module.exports.addProductCategory = async (req, res) => {
     return;
   }
 
-  const categoryID = CommonUtility.getUniqueID(req.body.title);
+  const categoryID = CommonUtility.getUniqueID();
   const categoryTitle = req.body.title;
 
   let uploadResponse = null;

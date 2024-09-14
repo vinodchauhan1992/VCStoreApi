@@ -100,7 +100,7 @@ module.exports.addProduct = (req, res) => {
     res.json(dataObject);
   } else {
     const product = new Products({
-      id: CommonUtility.getUniqueID(req.body.title),
+      id: CommonUtility.getUniqueID(),
       title: req.body.title,
       price: req.body.price,
       description: req.body.description,

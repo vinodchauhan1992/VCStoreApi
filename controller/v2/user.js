@@ -63,7 +63,7 @@ module.exports.addNewUser = async (req, res) => {
     return;
   }
 
-  const userID = CommonUtility.getUniqueID(req.body.username);
+  const userID = CommonUtility.getUniqueID();
   const username = req.body.username;
   const email = req.body.email;
   const phone = req.body.phone;

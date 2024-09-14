@@ -74,7 +74,7 @@ module.exports.addProductCategory = (req, res) => {
     res.json(dataObject);
   } else {
     const category = new Categories({
-      id: CommonUtility.getUniqueID(req.body.title),
+      id: CommonUtility.getUniqueID(),
       title: req.body.title,
       code: req?.body?.title?.toLowerCase(),
       description: req.body.description,

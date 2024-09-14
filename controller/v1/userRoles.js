@@ -72,7 +72,7 @@ module.exports.addUserRole = (req, res) => {
     res.json(dataObject);
   } else {
     const userRole = new UserRoles({
-      id: CommonUtility.getUniqueID(req.body.role),
+      id: CommonUtility.getUniqueID(),
       role: req.body.role,
       description: req.body.description,
       dateAdded: new Date(),

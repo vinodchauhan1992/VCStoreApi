@@ -93,7 +93,7 @@ module.exports.addFileFolder = (req, res) => {
           res.json(dataObject);
         } else {
           const fileFolder = new FileFolders({
-            id: CommonUtility.getUniqueID(req.body.folderName),
+            id: CommonUtility.getUniqueID(),
             folderName: req.body.folderName,
             description: req.body.description,
             dateAdded: new Date(),

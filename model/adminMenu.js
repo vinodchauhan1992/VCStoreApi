@@ -10,6 +10,14 @@ const adminMenuSchema = new schema({
     type: String,
     required: true,
   },
+  menuPath: {
+    type: String,
+    required: true,
+  },
+  priority: {
+    type: Number,
+    required: true,
+  },
   adminMenuStatusID: {
     type: String,
     required: true,

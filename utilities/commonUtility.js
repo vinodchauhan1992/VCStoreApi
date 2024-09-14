@@ -1,4 +1,5 @@
 var Jimp = require("jimp");
+const { v4: uuidv4 } = require("uuid");
 
 module.exports.getTimestamp = () => {
   const timestamp = new Date().getTime();
@@ -14,20 +15,16 @@ module.exports.getLowercaseText = (text) => {
   return text?.toLowerCase();
 };
 
-module.exports.getUniqueID = (text) => {
-  const trimmedText = this.getTrimmedText(text);
-  const uniqueID = `${this.getLowercaseText(
-    trimmedText
-  )}${this.getTimestamp()}`;
-  return `${uniqueID}`;
+module.exports.getUniqueID = () => {
+  return `${uuidv4()}`;
 };
 
 module.exports.getFileDetails = (file) => {
   const fileNameArray = file?.originalname?.split(".");
-  let actualFileName = this.getUniqueID("image");
+  let actualFileName = this.getUniqueID();
   let extension = "";
   if (fileNameArray && fileNameArray.length > 0) {
-    actualFileName = this.getUniqueID(`${fileNameArray[0]}`);
+    actualFileName = this.getUniqueID();
     if (fileNameArray.length > 1) {
       extension = fileNameArray[fileNameArray.length - 1];
     }

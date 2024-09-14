@@ -176,7 +176,7 @@ module.exports.addProduct = async (req, res) => {
     return;
   }
 
-  const productID = CommonUtility.getUniqueID(req.body.title);
+  const productID = CommonUtility.getUniqueID();
   const productTitle = req.body.title;
   const purchasePrice = req.body.purchasePrice;
   const sellingPrice = req.body.sellingPrice;
@@ -230,9 +230,7 @@ module.exports.addProduct = async (req, res) => {
       isProfit: isProfit,
     },
     stockDetails: {
-      stockId: CommonUtility.getUniqueID(
-        `${req.body.quantityRecieved}_${req.body.quantityAvailable}`
-      ),
+      stockId: CommonUtility.getUniqueID(),
       quantityRecieved: req.body.quantityRecieved,
       quantityAvailable: req.body.quantityAvailable,
     },

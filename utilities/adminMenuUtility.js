@@ -8,6 +8,22 @@ module.exports.checkAddAdminMenuBodyInfoValidation = async (req) => {
       message: "Menu title is required.",
     };
   }
+  if (!req?.body?.menuPath || req.body.menuPath === "") {
+    return {
+      isSucceeded: false,
+      message: "Menu path is required.",
+    };
+  }
+  if (
+    req?.body?.priority === null ||
+    req.body.priority === undefined ||
+    req.body.menuPath === ""
+  ) {
+    return {
+      isSucceeded: false,
+      message: "Priority is required.",
+    };
+  }
   if (!req?.body?.adminMenuStatusID || req.body.adminMenuStatusID === "") {
     return {
       isSucceeded: false,
@@ -154,6 +170,44 @@ module.exports.getAdminMenuDataByMenuTitleInDbUtil = async ({ menuTitle }) => {
     });
 };
 
+module.exports.getAdminMenuDataByPriorityInDbUtil = async ({ priority }) => {
+  return await AdminMenu.findOne({
+    priority: priority,
+  })
+    .select(["-_id"])
+    .then((respondedAdminMenuObject) => {
+      if (
+        respondedAdminMenuObject &&
+        Object.keys(respondedAdminMenuObject).length > 0
+      ) {
+        return {
+          isAdminMenuExists: true,
+          isSucceeded: true,
+          isCatchError: false,
+          message: `Admin menu with priority '${priority}' is already exists. Please use a different priority.`,
+          data: respondedAdminMenuObject,
+        };
+      } else {
+        return {
+          isAdminMenuExists: false,
+          isSucceeded: false,
+          isCatchError: false,
+          message: `Admin menu with priority '${priority}' doesn't exists.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        isAdminMenuExists: true,
+        isSucceeded: false,
+        isCatchError: true,
+        message: `There is an error occurred in fetching admin menu by priority. ${err.message}`,
+        data: {},
+      };
+    });
+};
+
 module.exports.checkAdminMenuValidationToAddNewMenuData = async (req) => {
   const checkAddAdminMenuBodyInfoValidation =
     await this.checkAddAdminMenuBodyInfoValidation(req);
@@ -173,6 +227,18 @@ module.exports.checkAdminMenuValidationToAddNewMenuData = async (req) => {
     return {
       status: "error",
       message: getAdminMenuDataByMenuTitleInDbUtil.message,
+      data: {},
+    };
+  }
+
+  const getAdminMenuDataByPriorityInDbUtil =
+    await this.getAdminMenuDataByPriorityInDbUtil({
+      priority: req.body.priority,
+    });
+  if (getAdminMenuDataByPriorityInDbUtil.isAdminMenuExists) {
+    return {
+      status: "error",
+      message: getAdminMenuDataByPriorityInDbUtil.message,
       data: {},
     };
   }
@@ -295,9 +361,13 @@ module.exports.updateAdminMenuUtil = async ({ req, res }) => {
   const adminMenuStatus = req.body.adminMenuStatus;
   const isDeleteable = req.body.isDeleteable;
   const isAdminDeleteable = req.body.isAdminDeleteable;
+  const menuPath = req.body.menuPath;
+  const priority = req.body.priority;
   const newAdminMenu = {
     id: menuID,
     menuTitle: menuTitle,
+    menuPath: menuPath,
+    priority: priority,
     description: description,
     adminMenuStatusID: adminMenuStatusID,
     adminMenuStatus: adminMenuStatus,
@@ -351,6 +421,9 @@ module.exports.getAllAdminMenusUtil = async ({ req }) => {
     })
     .then((adminMenus) => {
       if (adminMenus && adminMenus.length > 0) {
+        adminMenus.sort((a, b) => {
+          return a.priority - b.priority;
+        });
         return {
           status: "success",
           message: "Admin menus fetched successfully.",

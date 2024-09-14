@@ -54,7 +54,7 @@ module.exports.addNewAdminSubmenu = async (req, res) => {
     return;
   }
 
-  const adminSubmenuID = CommonUtility.getUniqueID(req.body.submenuTitle);
+  const adminSubmenuID = CommonUtility.getUniqueID();
   const submenuTitle = req.body.submenuTitle;
   const description = req.body.description;
   const statusID = req.body.statusID;
@@ -63,10 +63,12 @@ module.exports.addNewAdminSubmenu = async (req, res) => {
   const adminMenuTitle = req.body.adminMenuTitle;
   const isDeleteable = req.body.isDeleteable;
   const isAdminDeleteable = req.body.isAdminDeleteable;
+  const priority = req.body.priority;
 
   const newAdminSubmenuSchema = new AdminSubmenu({
     id: adminSubmenuID,
     submenuTitle: submenuTitle,
+    priority: priority,
     description: description,
     adminMenuID: adminMenuID,
     adminMenuTitle: adminMenuTitle,
@@ -328,6 +330,58 @@ module.exports.updateAdminSubmenuDeleteableFlag = async (req, res) => {
       status: "error",
       message: message,
       data: {},
+    });
+  }
+};
+
+module.exports.getAdminSubmenuByMenuID = async (req, res) => {
+  if (!req?.params?.menuID || req.params.menuID === "") {
+    res.json({
+      status: "error",
+      message: "Menu id is required to get all submenu within passed menu id.",
+      data: [],
+    });
+  } else {
+    const menuID = req.params.menuID;
+    const { isSucceeded, message, data } =
+      await AdminSubmenuUtility.getAdminSubmenuDataByMenuIdInDbUtil({
+        menuID: menuID,
+      });
+    res.json({
+      status: isSucceeded ? "success" : "error",
+      message: message,
+      data: data,
+    });
+  }
+};
+
+module.exports.getAdminSubmenusHighestPriority = async (req, res) => {
+  try {
+    const { status, data } = await AdminSubmenuUtility.getAllAdminSubmenusUtil({
+      req,
+    });
+
+    const maxPriorityObject = data.reduce(function (prev, current) {
+      return prev && prev.y > current.y ? prev : current;
+    });
+
+    res.json({
+      status: status,
+      message:
+        status === "success"
+          ? "Highest priority value is fetched successfully."
+          : "There is an error in fetching highest priority value. So default value is 0.",
+      data: {
+        maxPriorityValue: maxPriorityObject?.priority ?? 0,
+      },
+    });
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occurred. ${error.message}`,
+      data: {
+        maxPriorityValue: 0,
+      },
     });
   }
 };

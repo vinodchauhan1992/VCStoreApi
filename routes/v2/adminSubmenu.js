@@ -15,5 +15,11 @@ router.patch(
   "/updateAdminSubmenuDeleteableFlag/:adminSubmenuID",
   adminSubmenu.updateAdminSubmenuDeleteableFlag
 );
+router.get("/submenuByMenuID/:menuID", adminSubmenu.getAdminSubmenuByMenuID);
+router.get(
+  "/adminSubmenusHighestPriority",
+  adminSubmenu.getAdminSubmenusHighestPriority
+);
+
 
 module.exports = router;

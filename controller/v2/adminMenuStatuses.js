@@ -72,7 +72,7 @@ module.exports.addNewAdminMenuStatuses = async (req, res) => {
     return;
   }
 
-  const menuStatusId = CommonUtility.getUniqueID(req.body.menuStatusTitle);
+  const menuStatusId = CommonUtility.getUniqueID();
   const menuStatusTitle = req.body.menuStatusTitle;
   const menuStatusDescription = req.body.menuStatusDescription;
 

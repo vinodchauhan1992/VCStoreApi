@@ -72,7 +72,7 @@ module.exports.addUserStatus = (req, res) => {
     res.json(dataObject);
   } else {
     const userStatus = new UserStatuses({
-      id: CommonUtility.getUniqueID(req.body.status),
+      id: CommonUtility.getUniqueID(),
       status: req.body.status,
       description: req.body.description,
       dateAdded: new Date(),

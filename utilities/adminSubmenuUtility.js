@@ -15,6 +15,12 @@ module.exports.checkAddAdminSubmenuBodyInfoValidation = async (req) => {
       message: "Admin menu id is required.",
     };
   }
+  if (!req?.body?.priority || req.body.priority === "") {
+    return {
+      isSucceeded: false,
+      message: "Priority is required.",
+    };
+  }
   if (!req?.body?.adminMenuTitle || req.body.adminMenuTitle === "") {
     return {
       isSucceeded: false,
@@ -191,6 +197,44 @@ module.exports.getAdminMenuDataBySubmenuTitleInDbUtil = async ({
     });
 };
 
+module.exports.getAdminSubmenuDataByPriorityInDbUtil = async ({ priority }) => {
+  return await AdminSubmenu.findOne({
+    priority: priority,
+  })
+    .select(["-_id"])
+    .then((respondedAdminSubmenuObject) => {
+      if (
+        respondedAdminSubmenuObject &&
+        Object.keys(respondedAdminSubmenuObject).length > 0
+      ) {
+        return {
+          isAdminSubmenuExists: true,
+          isSucceeded: true,
+          isCatchError: false,
+          message: `Admin submenu with priority '${priority}' is already exists. Please use a different priority.`,
+          data: respondedAdminSubmenuObject,
+        };
+      } else {
+        return {
+          isAdminSubmenuExists: false,
+          isSucceeded: false,
+          isCatchError: false,
+          message: `Admin submenu with priority '${priority}' doesn't exists.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        isAdminSubmenuExists: true,
+        isSucceeded: false,
+        isCatchError: true,
+        message: `There is an error occurred in fetching admin submenu by priority. ${err.message}`,
+        data: {},
+      };
+    });
+};
+
 module.exports.checkAdminSubmenuValidationToAddNewSubmenuData = async (req) => {
   const checkAddAdminSubmenuBodyInfoValidation =
     await this.checkAddAdminSubmenuBodyInfoValidation(req);
@@ -210,6 +254,18 @@ module.exports.checkAdminSubmenuValidationToAddNewSubmenuData = async (req) => {
     return {
       status: "error",
       message: getAdminMenuDataBySubmenuTitleInDbUtil.message,
+      data: {},
+    };
+  }
+
+  const getAdminSubmenuDataByPriorityInDbUtil =
+    await this.getAdminSubmenuDataByPriorityInDbUtil({
+      priority: req.body.priority,
+    });
+  if (getAdminSubmenuDataByPriorityInDbUtil.isAdminSubmenuExists) {
+    return {
+      status: "error",
+      message: getAdminSubmenuDataByPriorityInDbUtil.message,
       data: {},
     };
   }
@@ -334,10 +390,12 @@ module.exports.updateAdminSubmenuUtil = async ({ req, res }) => {
   const adminMenuTitle = req.body.adminMenuTitle;
   const isDeleteable = req.body.isDeleteable;
   const isAdminDeleteable = req.body.isAdminDeleteable;
+  const priority = req.body.priority;
 
   const newAdminSubmenu = {
     id: adminSubmenuID,
     submenuTitle: submenuTitle,
+    priority: priority,
     description: description,
     statusID: statusID,
     status: status,
@@ -396,6 +454,9 @@ module.exports.getAllAdminSubmenusUtil = async ({ req }) => {
     })
     .then((adminSubmenus) => {
       if (adminSubmenus && adminSubmenus.length > 0) {
+        adminSubmenus.sort((a, b) => {
+          return a.priority - b.priority;
+        });
         return {
           status: "success",
           message: "Admin submenus fetched successfully.",
@@ -414,6 +475,41 @@ module.exports.getAllAdminSubmenusUtil = async ({ req }) => {
       return {
         status: "error",
         message: `There is an error occurred. ${err.message}`,
+        data: [],
+      };
+    });
+};
+
+module.exports.getAdminSubmenuDataByMenuIdInDbUtil = async ({ menuID }) => {
+  return await AdminSubmenu.find({
+    adminMenuID: menuID,
+  })
+    .select(["-_id"])
+    .then((respondedAdminSubmenuData) => {
+      if (
+        respondedAdminSubmenuData &&
+        Object.keys(respondedAdminSubmenuData).length > 0
+      ) {
+        return {
+          isSucceeded: true,
+          isCatchError: false,
+          message: `Submenus found successfully with menuID '${menuID}'.`,
+          data: respondedAdminSubmenuData ?? [],
+        };
+      } else {
+        return {
+          isSucceeded: false,
+          isCatchError: false,
+          message: `Submenus not found with menuID '${menuID}'`,
+          data: [],
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        isSucceeded: false,
+        isCatchError: true,
+        message: `There is an error occurred in fetching submenus by menuID. ${err.message}`,
         data: [],
       };
     });
