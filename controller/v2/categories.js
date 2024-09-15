@@ -240,6 +240,7 @@ module.exports.updateProductCategory = async (req, res) => {
       finalImageData = localImgData;
     }
   }
+  
   Categories.findOne({
     id: categoryID,
   })

@@ -41,6 +41,7 @@ const adminMenuRouteV2 = require("./routes/v2/adminMenu");
 const adminMenuStatusesRouteV2 = require("./routes/v2/adminMenuStatuses");
 const adminSubmenuRouteV2 = require("./routes/v2/adminSubmenu");
 const adminCombinedMenuRouteV2 = require("./routes/v2/adminCombinedMenu");
+const brandsRouteV2 = require("./routes/v2/brands");
 
 //middleware
 app.use(cors());
@@ -82,6 +83,7 @@ app.use("/v2/adminMenu", adminMenuRouteV2);
 app.use("/v2/adminMenuStatuses", adminMenuStatusesRouteV2);
 app.use("/v2/adminSubmenu", adminSubmenuRouteV2);
 app.use("/v2/adminCombinedMenu", adminCombinedMenuRouteV2);
+app.use("/v2/brands", brandsRouteV2);
 
 //mongoose
 mongoose.set("useFindAndModify", false);

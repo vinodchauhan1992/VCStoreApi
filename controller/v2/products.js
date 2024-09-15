@@ -146,21 +146,9 @@ module.exports.addProduct = async (req, res) => {
     res.json(dataObject);
     return;
   }
-  if (
-    req?.body?.quantityRecieved === null ||
-    req?.body?.quantityRecieved === undefined
-  ) {
+  if (!req?.body?.brand || req.body.brand === "") {
     dataObject.status = "error";
-    dataObject.message = "Quantity recieved is required.";
-    res.json(dataObject);
-    return;
-  }
-  if (
-    req?.body?.quantityAvailable === null ||
-    req?.body?.quantityAvailable === undefined
-  ) {
-    dataObject.status = "error";
-    dataObject.message = "Quantity available is required.";
+    dataObject.message = "Product brand is required.";
     res.json(dataObject);
     return;
   }
@@ -215,6 +203,7 @@ module.exports.addProduct = async (req, res) => {
       categoryCode: foundCategoryResponse.data.code,
       categoryID: req.body.categoryID,
     },
+    brand: req.body.brand,
     isActive: req.body.isActive,
     rating: {
       rate: 0.0,
@@ -228,11 +217,6 @@ module.exports.addProduct = async (req, res) => {
       maxDiscountValue: maxDiscountValue,
       profitAfterMaxDiscount: profitAfterMaxDiscount,
       isProfit: isProfit,
-    },
-    stockDetails: {
-      stockId: CommonUtility.getUniqueID(),
-      quantityRecieved: req.body.quantityRecieved,
-      quantityAvailable: req.body.quantityAvailable,
     },
     imageData: uploadedFileData,
     dateAdded: new Date(),
@@ -274,6 +258,7 @@ module.exports.editProduct = (req, res) => {
       categoryTitle: req.body.categoryTitle,
       categoryCode: req.body.categoryCode,
       categoryID: req.body.categoryID,
+      brand: req.body.brand,
       rating: {
         rate: req.body.rate,
         count: req.body.count,

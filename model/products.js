@@ -25,6 +25,10 @@ const productsSchema = new schema({
     rate: Number,
     count: Number,
   },
+  brand: {
+    type: String,
+    required: true,
+  },
   priceDetails: {
     purchasePrice: Number,
     sellingPrice: Number,
@@ -33,11 +37,6 @@ const productsSchema = new schema({
     maxDiscountValue: Number,
     profitAfterMaxDiscount: Number,
     isProfit: Boolean,
-  },
-  stockDetails: {
-    stockId: String,
-    quantityRecieved: Number,
-    quantityAvailable: Number,
   },
   imageData: fileUploaderSchema.schema,
   dateAdded: {
