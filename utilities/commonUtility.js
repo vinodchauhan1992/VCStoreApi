@@ -1,5 +1,7 @@
 var Jimp = require("jimp");
 const { v4: uuidv4 } = require("uuid");
+const BrandsUtility = require("./brandsUtility");
+const ProductUtility = require("./productUtility");
 
 module.exports.getTimestamp = () => {
   const timestamp = new Date().getTime();
@@ -67,4 +69,22 @@ module.exports.isValidAllowedFileSize = (fileSizeInBytes) => {
     return false;
   }
   return true;
+};
+
+module.exports.getProductDetailsByProductId = async ({ productId }) => {
+  const foundObject = await ProductUtility.getProductDataByProductId({
+    productId,
+  });
+  return foundObject;
+};
+
+module.exports.getBrandDetailsByBrandId = async ({ brandId }) => {
+  const foundBrandObject = await BrandsUtility.getProductBrandDataByBrandId({
+    brandID: brandId,
+  });
+  console.log("foundBrandObject", foundBrandObject);
+  if (foundBrandObject.status === "success") {
+    return foundBrandObject;
+  }
+  return {};
 };

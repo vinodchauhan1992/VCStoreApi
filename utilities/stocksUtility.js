@@ -1,56 +1,32 @@
 const Stocks = require("../model/stocks");
-const ProductUtility = require("./productUtility");
-const BrandsUtility = require("./brandsUtility");
-
-module.exports.getProductDetailsByProductId = async ({ productId }) => {
-  const foundObject = await ProductUtility.getProductDataByProductId({
-    productId,
-  });
-  return foundObject;
-};
-
-module.exports.getBrandDetailsByBrandId = async ({ brandId }) => {
-  const foundBrandObject = await BrandsUtility.getProductBrandDataByBrandId({
-    brandID: brandId,
-  });
-  return foundBrandObject;
-};
+const CommonUtility = require("./commonUtility");
 
 module.exports.getAllProductStocksWithDetails = async ({
   allProductStocks,
 }) => {
   return Promise.all(
     allProductStocks?.map(async (productStockData) => {
-      const foundProductObject = await this.getProductDetailsByProductId({
-        productId: productStockData.productId,
-      });
-      const foundBrandObject = await this.getBrandDetailsByBrandId({
-        brandId: productStockData.brandId,
-      });
+      const foundProductObject =
+        await CommonUtility.getProductDetailsByProductId({
+          productId: productStockData.productId,
+        });
       console.log("foundProductObject.data", foundProductObject.data);
-      console.log("foundBrandObject.data", foundBrandObject.data);
       return {
         stockDetails: productStockData,
         productDetails: foundProductObject?.data ? foundProductObject.data : {},
-        brandDetails: foundBrandObject?.data ? foundBrandObject.data : {},
       };
     })
   );
 };
 
 module.exports.getSingleProductStockWithDetails = async ({ productStock }) => {
-  const foundProductObject = await this.getProductDetailsByProductId({
+  const foundProductObject = await CommonUtility.getProductDetailsByProductId({
     productId: productStock.productId,
   });
-  const foundBrandObject = await this.getBrandDetailsByBrandId({
-    brandId: productStock.brandId,
-  });
   console.log("foundProductObject.data", foundProductObject.data);
-  console.log("foundBrandObject.data", foundBrandObject.data);
   return {
     stockDetails: productStock,
     productDetails: foundProductObject?.data ? foundProductObject.data : {},
-    brandDetails: foundBrandObject?.data ? foundBrandObject.data : {},
   };
 };
 
@@ -128,12 +104,15 @@ module.exports.getProductStockDataByProductIdUtil = async ({ productID }) => {
     productId: productID,
   })
     .select(["-_id"])
-    .then((productStock) => {
+    .then(async (productStock) => {
       if (productStock && Object.keys(productStock).length > 0) {
+        const returnedData = await this.getSingleProductStockWithDetails({
+          productStock,
+        });
         return {
           status: "success",
           message: `Product stock with productID ${productID} fetched successfully.`,
-          data: productStock,
+          data: returnedData,
         };
       } else {
         return {
@@ -157,12 +136,15 @@ module.exports.getProductStockDataByBrandIdUtil = async ({ brandID }) => {
     brandId: brandID,
   })
     .select(["-_id"])
-    .then((productStock) => {
+    .then(async (productStock) => {
       if (productStock && Object.keys(productStock).length > 0) {
+        const returnedData = await this.getSingleProductStockWithDetails({
+          productStock,
+        });
         return {
           status: "success",
           message: `Product stock with brandId ${brandID} fetched successfully.`,
-          data: productStock,
+          data: returnedData,
         };
       } else {
         return {

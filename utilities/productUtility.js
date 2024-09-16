@@ -4,6 +4,43 @@ const {
   updateUploadedFileInFirebaseStorage,
   deleteUploadedFileInFirebaseStorage,
 } = require("./fileManagerUtility");
+const CommonUtility = require("./commonUtility");
+
+module.exports.getAllProductsWithBrandDetails = async ({ allProducts }) => {
+  return Promise.all(
+    allProducts?.map(async (productData) => {
+      const foundBrandObject = await CommonUtility.getBrandDetailsByBrandId({
+        brandId: productData.brandDetails.brandID,
+      });
+      let newBrandDetails = productData.brandDetails;
+      if (
+        foundBrandObject?.data &&
+        Object.keys(foundBrandObject.data).length > 0
+      ) {
+        newBrandDetails = foundBrandObject.data;
+      }
+      return {
+        productData: productData,
+        brandDetails: newBrandDetails,
+      };
+    })
+  );
+};
+
+module.exports.getSingleProductWithBrandDetails = async ({ productData }) => {
+  const foundBrandObject = await CommonUtility.getBrandDetailsByBrandId({
+    brandId: productData.brandDetails.brandID,
+  });
+  let newBrandDetails = productData.brandDetails;
+  if (foundBrandObject?.data && Object.keys(foundBrandObject.data).length > 0) {
+    newBrandDetails = foundBrandObject.data;
+  }
+  console.log("foundBrandObject.data", foundBrandObject.data);
+  return {
+    productData: productData,
+    brandDetails: newBrandDetails,
+  };
+};
 
 module.exports.uploadProductImageToFS = async ({
   file,
@@ -21,12 +58,15 @@ module.exports.uploadProductImageToFS = async ({
 module.exports.addNewProduct = async ({ productSchema, res }) => {
   return await productSchema
     .save()
-    .then((respondedProduct) => {
+    .then(async (respondedProduct) => {
       if (respondedProduct && Object.keys(respondedProduct).length > 0) {
+        const returnedData = await this.getSingleProductWithBrandDetails({
+          productData: respondedProduct,
+        });
         res.json({
           status: "success",
           message: `New product is added successfully.`,
-          data: respondedProduct,
+          data: returnedData,
         });
       } else {
         res.json({
@@ -53,12 +93,15 @@ module.exports.getAllProductsData = async ({ req }) => {
     .select(["-_id"])
     .limit(limit)
     .sort({ id: sort })
-    .then((respondedProducts) => {
+    .then(async (respondedProducts) => {
       if (respondedProducts && respondedProducts.length > 0) {
+        const fullDetailsProducts = await this.getAllProductsWithBrandDetails({
+          allProducts: respondedProducts,
+        });
         return {
           status: "success",
           message: "Products fetched successfully.",
-          data: respondedProducts,
+          data: fullDetailsProducts,
         };
       } else {
         return {
@@ -83,12 +126,15 @@ module.exports.getProductDataByProductId = async ({ productId }) => {
     id: productId,
   })
     .select(["-_id"])
-    .then((product) => {
+    .then(async (product) => {
       if (product && Object.keys(product).length > 0) {
+        const returnedData = await this.getSingleProductWithBrandDetails({
+          productData: product,
+        });
         return {
           status: "success",
           message: `Product with product id ${productId} fetched successfully.`,
-          data: product,
+          data: returnedData,
         };
       } else {
         return {
