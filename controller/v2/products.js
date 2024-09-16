@@ -5,62 +5,41 @@ const CategoryUtility = require("../../utilities/categoryUtility");
 
 var dataObject = { status: "success", message: "", data: [] };
 
-module.exports.getAllProducts = (req, res) => {
-  const limit = Number(req.query.limit) || 0;
-  const sort = req.query.sort == "desc" ? -1 : 1;
-
-  Products.find()
-    .select(["-_id"])
-    .limit(limit)
-    .sort({ id: sort })
-    .then((respondedProducts) => {
-      if (respondedProducts && respondedProducts.length > 0) {
-        dataObject.status = "success";
-        dataObject.message = "Products fetched successfully.";
-        dataObject.data = respondedProducts;
-      } else {
-        dataObject.status = "success";
-        dataObject.message =
-          "Products fetched successfully. But products doesn't have any data.";
-        dataObject.data = [];
-      }
-      res.json(dataObject);
-    })
-    .catch((err) => {
-      dataObject.message = `There is an error occurred. ${err}`;
-      dataObject.status = "error";
-      dataObject.data = [];
-      res.json(dataObject);
+module.exports.getAllProducts = async (req, res) => {
+  try {
+    const foundDataObject = await ProductUtility.getAllProductsData({ req });
+    res.json(foundDataObject);
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occurred. ${error.message}`,
+      data: [],
     });
+  }
 };
 
-module.exports.getProduct = (req, res) => {
+module.exports.getProduct = async (req, res) => {
   if (!req?.params?.id || req.params.id === "") {
-    dataObject.status = "error";
-    dataObject.message = "Please send product id to get a product by id.";
-    res.json(dataObject);
-  } else {
-    const id = req.params.id;
+    res.json({
+      status: "error",
+      message: "Please send product id to get a product by id.",
+      data: {},
+    });
+    return;
+  }
+  const productId = req.params.id;
 
-    Products.findOne({
-      id,
-    })
-      .select(["-_id"])
-      .then((product) => {
-        if (product && Object.keys(product).length > 0) {
-          dataObject.message = `Product with product id ${id} fetched successfully.`;
-          dataObject.data = product;
-        } else {
-          dataObject.message = `There is no product exists with product id ${id}.`;
-          dataObject.data = {};
-        }
-        res.json(dataObject);
-      })
-      .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        res.json(dataObject);
-      });
+  try {
+    const foundDataObject = await ProductUtility.getProductDataByProductId({
+      productId,
+    });
+    res.json(foundDataObject);
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occurred. ${error.message}`,
+      data: {},
+    });
   }
 };
 
@@ -100,7 +79,6 @@ module.exports.getProductsInCategory = (req, res) => {
 };
 
 module.exports.addProduct = async (req, res) => {
-  console.log("addProduct_req", req?.body);
   if (!req?.body?.title || req.body.title === "") {
     dataObject.status = "error";
     dataObject.message = "Product title is required.";
@@ -146,9 +124,21 @@ module.exports.addProduct = async (req, res) => {
     res.json(dataObject);
     return;
   }
-  if (!req?.body?.brand || req.body.brand === "") {
+  if (!req?.body?.brandID || req.body.brandID === "") {
     dataObject.status = "error";
-    dataObject.message = "Product brand is required.";
+    dataObject.message = "Product brand id is required.";
+    res.json(dataObject);
+    return;
+  }
+  if (!req?.body?.brandTitle || req.body.brandTitle === "") {
+    dataObject.status = "error";
+    dataObject.message = "Product brand title is required.";
+    res.json(dataObject);
+    return;
+  }
+  if (!req?.body?.brandCode || req.body.brandCode === "") {
+    dataObject.status = "error";
+    dataObject.message = "Product brand code is required.";
     res.json(dataObject);
     return;
   }
@@ -177,6 +167,9 @@ module.exports.addProduct = async (req, res) => {
   if (profitAfterMaxDiscount <= 0) {
     isProfit = false;
   }
+  const brandID = req.body.brandID;
+  const brandCode = req.body.brandCode;
+  const brandTitle = req.body.brandTitle;
 
   let uploadResponse = null;
   let uploadedFileStatus = "no file added";
@@ -203,7 +196,11 @@ module.exports.addProduct = async (req, res) => {
       categoryCode: foundCategoryResponse.data.code,
       categoryID: req.body.categoryID,
     },
-    brand: req.body.brand,
+    brandDetails: {
+      brandTitle: brandTitle,
+      brandCode: brandCode,
+      brandID: brandID,
+    },
     isActive: req.body.isActive,
     rating: {
       rate: 0.0,

@@ -44,3 +44,65 @@ module.exports.addNewProduct = async ({ productSchema, res }) => {
       });
     });
 };
+
+module.exports.getAllProductsData = async ({ req }) => {
+  const limit = Number(req.query.limit) || 0;
+  const sort = req.query.sort == "desc" ? -1 : 1;
+
+  return await Products.find()
+    .select(["-_id"])
+    .limit(limit)
+    .sort({ id: sort })
+    .then((respondedProducts) => {
+      if (respondedProducts && respondedProducts.length > 0) {
+        return {
+          status: "success",
+          message: "Products fetched successfully.",
+          data: respondedProducts,
+        };
+      } else {
+        return {
+          status: "success",
+          message:
+            "Products fetched successfully. But products doesn't have any data.",
+          data: [],
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred. ${err}`,
+        data: [],
+      };
+    });
+};
+
+module.exports.getProductDataByProductId = async ({ productId }) => {
+  return await Products.findOne({
+    id: productId,
+  })
+    .select(["-_id"])
+    .then((product) => {
+      if (product && Object.keys(product).length > 0) {
+        return {
+          status: "success",
+          message: `Product with product id ${productId} fetched successfully.`,
+          data: product,
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There is no product exists with product id ${productId}.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred. ${err}`,
+        data: {},
+      };
+    });
+};

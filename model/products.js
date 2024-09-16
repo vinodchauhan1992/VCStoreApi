@@ -17,6 +17,11 @@ const productsSchema = new schema({
     categoryCode: String,
     categoryID: String,
   },
+  brandDetails: {
+    brandTitle: String,
+    brandCode: String,
+    brandID: String,
+  },
   isActive: {
     type: Boolean,
     required: true,
