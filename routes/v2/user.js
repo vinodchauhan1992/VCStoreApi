@@ -12,8 +12,8 @@ router.get("/userByID/:userID", user.getUserByID);
 router.post("/addNewUser", upload, user.addNewUser);
 router.put("/updateUser/:userID", upload, user.updateUser);
 router.delete("/deleteUser/:userID", user.deleteUser);
-router.patch("/changeUserPassword/:userID", user.changeUserPassword);
-router.patch("/updateUserRole/:userID", user.updateUserRole);
-router.patch("/updateUserStatus/:userID", user.updateUserStatus);
+router.put("/changeUserPassword/:userID", user.changeUserPassword);
+router.put("/updateUserRole/:userID", user.updateUserRole);
+router.put("/updateUserStatus/:userID", user.updateUserStatus);
 
 module.exports = router;

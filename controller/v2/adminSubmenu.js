@@ -385,3 +385,129 @@ module.exports.getAdminSubmenusHighestPriority = async (req, res) => {
     });
   }
 };
+
+module.exports.getAllSubmenusRegisteredPriorities = async (req, res) => {
+  try {
+    const allSubmenusObject = await AdminSubmenuUtility.getAllAdminSubmenusUtil(
+      {
+        req,
+      }
+    );
+    if (
+      allSubmenusObject.status === "success" &&
+      allSubmenusObject?.data &&
+      allSubmenusObject.data.length > 0
+    ) {
+      const prioritiesData = AdminSubmenuUtility.getAllSubmenusPrioritiesUtil({
+        allSubmenusObject,
+      });
+
+      res.json({
+        status: allSubmenusObject.status,
+        message: `Submenus priorities found.`,
+        data: prioritiesData,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: `Submenus priorities not found.`,
+        data: [],
+      });
+    }
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occurred. ${error.message}`,
+      data: [],
+    });
+  }
+};
+
+module.exports.getSubmenuByPriority = async (req, res) => {
+  if (req?.params?.priority === undefined || req.params.priority === null) {
+    res.json({
+      status: "error",
+      message: "Submenu priority is required to get submenu by priority.",
+      data: {},
+    });
+    return;
+  }
+
+  try {
+    const priority = req.params.priority;
+    const submenuByPriorityResponse =
+      await AdminSubmenuUtility.getAdminSubmenuDataByPriorityInDbUtil({
+        priority: priority,
+      });
+    res.json({
+      status: submenuByPriorityResponse.isSucceeded ? "success" : "error",
+      message: submenuByPriorityResponse.message,
+      data: submenuByPriorityResponse?.data ?? {},
+    });
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an unknown error occured in getAdminMenuByPriority function. ${error.message}`,
+      data: {},
+    });
+  }
+};
+
+module.exports.updateSubmenuPriority = async (req, res) => {
+  if (!req?.params?.adminSubmenuID || req.params.adminSubmenuID === "") {
+    res.json({
+      status: "error",
+      message: "Submenu id is required in url.",
+      data: {},
+    });
+    return;
+  }
+  if (req?.body?.priority === undefined || req.body.priority === null) {
+    res.json({
+      status: "error",
+      message: "Submenu priority is required in body.",
+      data: {},
+    });
+    return;
+  }
+
+  const adminSubmenuID = req.params.adminSubmenuID;
+  const { isSucceeded } =
+    await AdminSubmenuUtility.getAdminSubmenuDataByIdInDbUtil({
+      adminSubmenuID: adminSubmenuID,
+    });
+  if (!isSucceeded) {
+    res.json({
+      status: "error",
+      message: `Submenu doesn't exists with submenu id ${adminSubmenuID}.`,
+      data: {},
+    });
+    return;
+  }
+
+  const priority = req.body.priority;
+  const submenuByPriorityResponse =
+    await AdminSubmenuUtility.getAdminSubmenuDataByPriorityInDbUtil({
+      priority: priority,
+    });
+  if (submenuByPriorityResponse.isSucceeded) {
+    const allSubmenusObject = await AdminSubmenuUtility.getAllAdminSubmenusUtil(
+      {
+        req,
+      }
+    );
+    const prioritiesData = AdminSubmenuUtility.getAllSubmenusPrioritiesUtil({
+      allSubmenusObject,
+    });
+    res.json({
+      status: "error",
+      message: `A Submenu with priority ${priority} is already exists. Please choose a priority other than ${JSON.stringify(
+        prioritiesData
+      )}`,
+      data: {},
+    });
+    return;
+  }
+
+  AdminSubmenuUtility.updateSubmenuPriorityInDbUtil({ req, res });
+};

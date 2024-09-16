@@ -85,7 +85,7 @@ module.exports.addNewUser = async (req, res) => {
   }
 
   let userType = "Employee";
-  if (req.body.userRoleID === "customer1708886695004") {
+  if (req.body.userRoleID === "a5c6c1be-565b-4a6d-a8bf-64384bfad3d8") {
     userType = "Customer";
   }
 
@@ -212,7 +212,7 @@ module.exports.updateUserRole = async (req, res) => {
   const userID = req.params.userID;
 
   let userType = "Employee";
-  if (req.body.userRoleID === "customer1708886695004") {
+  if (req.body.userRoleID === "a5c6c1be-565b-4a6d-a8bf-64384bfad3d8") {
     userType = "Customer";
   }
 

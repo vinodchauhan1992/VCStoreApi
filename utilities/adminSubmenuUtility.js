@@ -514,3 +514,56 @@ module.exports.getAdminSubmenuDataByMenuIdInDbUtil = async ({ menuID }) => {
       };
     });
 };
+
+module.exports.getAllSubmenusPrioritiesUtil = ({ allSubmenusObject }) => {
+  const submenusArray = allSubmenusObject.data;
+
+  const priorities = [];
+  submenusArray.map((submenuData) => {
+    priorities.push(submenuData.priority);
+  });
+
+  return priorities;
+};
+
+module.exports.updateSubmenuPriorityInDbUtil = async ({ req, res }) => {
+  const adminSubmenuID = req.params.adminSubmenuID;
+  const priority = req.body.priority;
+
+  const updatedSubmenuPriorityData = {
+    id: adminSubmenuID,
+    priority: priority,
+    dateModified: new Date(),
+  };
+
+  const updatedSubmenuPriorityDataSet = {
+    $set: updatedSubmenuPriorityData,
+  };
+
+  AdminSubmenu.updateOne({ id: adminSubmenuID }, updatedSubmenuPriorityDataSet)
+    .then(async (respondedAdminSubmenu) => {
+      if (respondedAdminSubmenu && Object.keys(respondedAdminSubmenu).length > 0) {
+        const { data } = await this.getAdminSubmenuDataByIdInDbUtil({
+          adminSubmenuID: adminSubmenuID,
+        });
+        res.json({
+          status: "success",
+          message: `Submenu priority is updated successfully.`,
+          data: data,
+        });
+      } else {
+        res.json({
+          status: "error",
+          message: `Submenu priority is not updated due to unknown error.`,
+          data: {},
+        });
+      }
+    })
+    .catch((err) => {
+      res.json({
+        status: "error",
+        message: `There is an error occurred. ${err}`,
+        data: {},
+      });
+    });
+};

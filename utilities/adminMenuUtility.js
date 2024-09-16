@@ -446,3 +446,88 @@ module.exports.getAllAdminMenusUtil = async ({ req }) => {
       };
     });
 };
+
+module.exports.getAllMenusPrioritiesUtil = ({ allAdminMenusObject }) => {
+  const menusArray = allAdminMenusObject.data;
+
+  const priorities = [];
+  menusArray.map((menuData) => {
+    priorities.push(menuData.priority);
+  });
+
+  return priorities;
+};
+
+module.exports.getAdminMenuDataByPriorityInDbUtil = async ({ priority }) => {
+  return await AdminMenu.findOne({
+    priority: priority,
+  })
+    .select(["-_id"])
+    .then((respondedAdminMenuData) => {
+      if (
+        respondedAdminMenuData &&
+        Object.keys(respondedAdminMenuData).length > 0
+      ) {
+        return {
+          status: "success",
+          message: `Menu with priority '${priority}' found successfully.`,
+          data: respondedAdminMenuData,
+        };
+      } else {
+        return {
+          status: "error",
+          message: `Menu with priority '${priority}' doesn't exists.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in fetching menu by priority. ${err.message}`,
+        data: {},
+      };
+    });
+};
+
+module.exports.updateMenuPriorityInDbUtil = async ({ req, res }) => {
+  const adminMenuID = req.params.adminMenuID;
+  const priority = req.body.priority;
+
+  const updatedMenuPriorityData = {
+    id: adminMenuID,
+    priority: priority,
+    dateModified: new Date(),
+  };
+
+  const updatedMenuPriorityDataSet = {
+    $set: updatedMenuPriorityData,
+  };
+
+  AdminMenu.updateOne({ id: adminMenuID }, updatedMenuPriorityDataSet)
+    .then(async (respondedAdminMenu) => {
+      if (respondedAdminMenu && Object.keys(respondedAdminMenu).length > 0) {
+        const { data } = await this.getAdminMenuDataByIdInDbUtil({
+          adminMenuID: adminMenuID,
+        });
+        res.json({
+          status: "success",
+          message: `Menu priority is updated successfully.`,
+          data: data,
+        });
+      } else {
+        res.json({
+          status: "error",
+          message: `Menu priority is not updated due to unknown error.`,
+          data: {},
+        });
+      }
+    })
+    .catch((err) => {
+      res.json({
+        status: "error",
+        message: `There is an error occurred. ${err}`,
+        data: {},
+      });
+    });
+};

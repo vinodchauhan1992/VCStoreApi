@@ -7,11 +7,11 @@ router.get("/adminMenuByID/:adminMenuID", adminMenu.getAdminMenuByID);
 router.post("/addNewAdminMenu", adminMenu.addNewAdminMenu);
 router.put("/updateAdminMenu/:adminMenuID", adminMenu.updateAdminMenu);
 router.delete("/deleteAdminMenu/:adminMenuID", adminMenu.deleteAdminMenu);
-router.patch(
+router.put(
   "/updateAdminMenuStatus/:adminMenuID",
   adminMenu.updateAdminMenuStatus
 );
-router.patch(
+router.put(
   "/updateAdminMenuDeleteableFlag/:adminMenuID",
   adminMenu.updateAdminMenuDeleteableFlag
 );
@@ -19,5 +19,11 @@ router.get(
   "/adminMenusHighestPriority",
   adminMenu.getAdminMenusHighestPriority
 );
+router.get(
+  "/allMenusRegisteredPriorities",
+  adminMenu.getAllMenusRegisteredPriorities
+);
+router.get("/adminMenuByPriority/:priority", adminMenu.getAdminMenuByPriority);
+router.put("/updateMenuPriority/:adminMenuID", adminMenu.updateMenuPriority);
 
 module.exports = router;
