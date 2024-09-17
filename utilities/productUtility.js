@@ -79,7 +79,7 @@ module.exports.addNewProduct = async ({ productSchema, res }) => {
     .catch((error) => {
       res.json({
         status: "error",
-        message: `There is an error occurred. ${error.message}`,
+        message: `There is an error occurred in product utility in addNewProduct function. ${error.message}`,
         data: {},
       });
     });

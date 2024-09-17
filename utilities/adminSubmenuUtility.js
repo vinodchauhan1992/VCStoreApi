@@ -129,6 +129,9 @@ module.exports.getAdminSubmenuDataByIdInDbUtil = async ({ adminSubmenuID }) => {
         respondedAdminSubmenuData &&
         Object.keys(respondedAdminSubmenuData).length > 0
       ) {
+        respondedAdminSubmenuData.sort((a, b) => {
+          return a.priority - b.priority;
+        });
         return {
           isAdminSubmenuExists: true,
           isSucceeded: true,
@@ -490,6 +493,9 @@ module.exports.getAdminSubmenuDataByMenuIdInDbUtil = async ({ menuID }) => {
         respondedAdminSubmenuData &&
         Object.keys(respondedAdminSubmenuData).length > 0
       ) {
+        respondedAdminSubmenuData.sort((a, b) => {
+          return a.priority - b.priority;
+        });
         return {
           isSucceeded: true,
           isCatchError: false,
@@ -542,7 +548,10 @@ module.exports.updateSubmenuPriorityInDbUtil = async ({ req, res }) => {
 
   AdminSubmenu.updateOne({ id: adminSubmenuID }, updatedSubmenuPriorityDataSet)
     .then(async (respondedAdminSubmenu) => {
-      if (respondedAdminSubmenu && Object.keys(respondedAdminSubmenu).length > 0) {
+      if (
+        respondedAdminSubmenu &&
+        Object.keys(respondedAdminSubmenu).length > 0
+      ) {
         const { data } = await this.getAdminSubmenuDataByIdInDbUtil({
           adminSubmenuID: adminSubmenuID,
         });

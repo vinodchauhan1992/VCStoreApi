@@ -2,6 +2,7 @@ const Products = require("../../model/products");
 const CommonUtility = require("../../utilities/commonUtility");
 const ProductUtility = require("../../utilities/productUtility");
 const CategoryUtility = require("../../utilities/categoryUtility");
+const BrandsUtility = require("../../utilities/brandsUtility");
 
 var dataObject = { status: "success", message: "", data: [] };
 
@@ -12,7 +13,7 @@ module.exports.getAllProducts = async (req, res) => {
   } catch (error) {
     res.json({
       status: "error",
-      message: `There is an error occurred. ${error.message}`,
+      message: `There is an error occurred in catch block in getAllProducts function. ${error.message}`,
       data: [],
     });
   }
@@ -130,29 +131,35 @@ module.exports.addProduct = async (req, res) => {
     res.json(dataObject);
     return;
   }
-  if (!req?.body?.brandTitle || req.body.brandTitle === "") {
-    dataObject.status = "error";
-    dataObject.message = "Product brand title is required.";
-    res.json(dataObject);
-    return;
-  }
-  if (!req?.body?.brandCode || req.body.brandCode === "") {
-    dataObject.status = "error";
-    dataObject.message = "Product brand code is required.";
-    res.json(dataObject);
-    return;
-  }
 
   const foundCategoryResponse = await CategoryUtility.getCategoryById({
     categoryID: req.body.categoryID,
   });
 
   if (foundCategoryResponse.status === "error") {
-    dataObject.status = "error";
-    dataObject.message = "Category id is not valid.";
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Category id is not valid.",
+      data: {},
+    });
     return;
   }
+
+  const brandID = req.body.brandID;
+  const foundBrandResponse = await BrandsUtility.getProductBrandDataByBrandId({
+    brandID: brandID,
+  });
+
+  if (
+    foundBrandResponse.status === "error" ||
+    !foundBrandResponse?.data?.title ||
+    !foundBrandResponse?.data?.code
+  ) {
+    res.json(foundBrandResponse);
+    return;
+  }
+  const brandCode = foundBrandResponse.data.code;
+  const brandTitle = foundBrandResponse.data.title;
 
   const productID = CommonUtility.getUniqueID();
   const productTitle = req.body.title;
@@ -167,9 +174,6 @@ module.exports.addProduct = async (req, res) => {
   if (profitAfterMaxDiscount <= 0) {
     isProfit = false;
   }
-  const brandID = req.body.brandID;
-  const brandCode = req.body.brandCode;
-  const brandTitle = req.body.brandTitle;
 
   let uploadResponse = null;
   let uploadedFileStatus = "no file added";
@@ -240,7 +244,7 @@ module.exports.addProduct = async (req, res) => {
   }
 };
 
-module.exports.editProduct = (req, res) => {
+module.exports.updateProductBasicDetails = (req, res) => {
   if (typeof req.body == undefined || req.params.id == null) {
     dataObject.status = "error";
     dataObject.message = "something went wrong! check your sent data.";
@@ -292,5 +296,140 @@ module.exports.deleteProduct = (req, res) => {
         dataObject.message = `There is an error occurred. ${err}`;
         res.json(dataObject);
       });
+  }
+};
+
+module.exports.updateCategoryOfProduct = (req, res) => {
+  if (typeof req.body == undefined || req.params.id == null) {
+    dataObject.status = "error";
+    dataObject.message = "something went wrong! check your sent data.";
+    res.json(dataObject);
+  } else {
+    res.json({
+      id: parseInt(req.params.id),
+      title: req.body.title,
+      price: req.body.price,
+      description: req.body.description,
+      image: req.body.image,
+      categoryTitle: req.body.categoryTitle,
+      categoryCode: req.body.categoryCode,
+      categoryID: req.body.categoryID,
+      brand: req.body.brand,
+      rating: {
+        rate: req.body.rate,
+        count: req.body.count,
+      },
+      dateModified: new Date(),
+      isActive: req.body.isActive,
+      status: req.body.status,
+    });
+  }
+};
+
+module.exports.updateBrandOfProduct = (req, res) => {
+  if (typeof req.body == undefined || req.params.id == null) {
+    dataObject.status = "error";
+    dataObject.message = "something went wrong! check your sent data.";
+    res.json(dataObject);
+  } else {
+    res.json({
+      id: parseInt(req.params.id),
+      title: req.body.title,
+      price: req.body.price,
+      description: req.body.description,
+      image: req.body.image,
+      categoryTitle: req.body.categoryTitle,
+      categoryCode: req.body.categoryCode,
+      categoryID: req.body.categoryID,
+      brand: req.body.brand,
+      rating: {
+        rate: req.body.rate,
+        count: req.body.count,
+      },
+      dateModified: new Date(),
+      isActive: req.body.isActive,
+      status: req.body.status,
+    });
+  }
+};
+
+module.exports.updateProductStatus = (req, res) => {
+  if (typeof req.body == undefined || req.params.id == null) {
+    dataObject.status = "error";
+    dataObject.message = "something went wrong! check your sent data.";
+    res.json(dataObject);
+  } else {
+    res.json({
+      id: parseInt(req.params.id),
+      title: req.body.title,
+      price: req.body.price,
+      description: req.body.description,
+      image: req.body.image,
+      categoryTitle: req.body.categoryTitle,
+      categoryCode: req.body.categoryCode,
+      categoryID: req.body.categoryID,
+      brand: req.body.brand,
+      rating: {
+        rate: req.body.rate,
+        count: req.body.count,
+      },
+      dateModified: new Date(),
+      isActive: req.body.isActive,
+      status: req.body.status,
+    });
+  }
+};
+
+module.exports.updateProductPriceDetails = (req, res) => {
+  if (typeof req.body == undefined || req.params.id == null) {
+    dataObject.status = "error";
+    dataObject.message = "something went wrong! check your sent data.";
+    res.json(dataObject);
+  } else {
+    res.json({
+      id: parseInt(req.params.id),
+      title: req.body.title,
+      price: req.body.price,
+      description: req.body.description,
+      image: req.body.image,
+      categoryTitle: req.body.categoryTitle,
+      categoryCode: req.body.categoryCode,
+      categoryID: req.body.categoryID,
+      brand: req.body.brand,
+      rating: {
+        rate: req.body.rate,
+        count: req.body.count,
+      },
+      dateModified: new Date(),
+      isActive: req.body.isActive,
+      status: req.body.status,
+    });
+  }
+};
+
+module.exports.updateProductRating = (req, res) => {
+  if (typeof req.body == undefined || req.params.id == null) {
+    dataObject.status = "error";
+    dataObject.message = "something went wrong! check your sent data.";
+    res.json(dataObject);
+  } else {
+    res.json({
+      id: parseInt(req.params.id),
+      title: req.body.title,
+      price: req.body.price,
+      description: req.body.description,
+      image: req.body.image,
+      categoryTitle: req.body.categoryTitle,
+      categoryCode: req.body.categoryCode,
+      categoryID: req.body.categoryID,
+      brand: req.body.brand,
+      rating: {
+        rate: req.body.rate,
+        count: req.body.count,
+      },
+      dateModified: new Date(),
+      isActive: req.body.isActive,
+      status: req.body.status,
+    });
   }
 };

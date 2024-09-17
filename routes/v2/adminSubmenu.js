@@ -3,7 +3,7 @@ const router = express.Router();
 const adminSubmenu = require("../../controller/v2/adminSubmenu");
 
 router.get("/allAdminSubmenus", adminSubmenu.getAllAdminSubmenus);
-router.get("/adminMenuByID/:adminSubmenuID", adminSubmenu.getAdminSubmenuByID);
+router.get("/submenuByID/:adminSubmenuID", adminSubmenu.getAdminSubmenuByID);
 router.post("/addNewAdminSubmenu", adminSubmenu.addNewAdminSubmenu);
 router.put(
   "/updateAdminSubmenu/:adminSubmenuID",

@@ -30,10 +30,6 @@ const productsSchema = new schema({
     rate: Number,
     count: Number,
   },
-  brand: {
-    type: String,
-    required: true,
-  },
   priceDetails: {
     purchasePrice: Number,
     sellingPrice: Number,

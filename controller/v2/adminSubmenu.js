@@ -341,18 +341,18 @@ module.exports.getAdminSubmenuByMenuID = async (req, res) => {
       message: "Menu id is required to get all submenu within passed menu id.",
       data: [],
     });
-  } else {
-    const menuID = req.params.menuID;
-    const { isSucceeded, message, data } =
-      await AdminSubmenuUtility.getAdminSubmenuDataByMenuIdInDbUtil({
-        menuID: menuID,
-      });
-    res.json({
-      status: isSucceeded ? "success" : "error",
-      message: message,
-      data: data,
-    });
+    return;
   }
+  const menuID = req.params.menuID;
+  const { isSucceeded, message, data } =
+    await AdminSubmenuUtility.getAdminSubmenuDataByMenuIdInDbUtil({
+      menuID: menuID,
+    });
+  res.json({
+    status: isSucceeded ? "success" : "error",
+    message: message,
+    data: data,
+  });
 };
 
 module.exports.getAdminSubmenusHighestPriority = async (req, res) => {

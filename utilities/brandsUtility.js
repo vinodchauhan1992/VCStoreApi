@@ -74,7 +74,7 @@ module.exports.getProductBrandDataByBrandId = async ({ brandID }) => {
     .catch((err) => {
       return {
         status: "error",
-        message: `There is an error occurred. ${err}`,
+        message: `There is an error occurred in brands utitlity function. ${err}`,
         data: {},
       };
     });
@@ -185,9 +185,11 @@ module.exports.deleteProductBrandData = async ({
           foundProductBrandResponse?.data?.brandLogo?.imageUrl &&
           foundProductBrandResponse.data.brandLogo.imageUrl !== ""
         ) {
-          const deleteFileResp = await this.deleteUploadedProductBrandImageToFS({
-            fileUrl: foundProductBrandResponse?.data?.brandLogo?.imageUrl,
-          });
+          const deleteFileResp = await this.deleteUploadedProductBrandImageToFS(
+            {
+              fileUrl: foundProductBrandResponse?.data?.brandLogo?.imageUrl,
+            }
+          );
           let msg = `Product brand with brand id ${brandID} is deleted successfully with product brand image.`;
           if (!deleteFileResp.isSucceeded) {
             msg = `Product brand with brand id ${brandID} is deleted successfully but product brand image is not deleted. FileDeletionError: ${deleteFileResp?.message}`;
