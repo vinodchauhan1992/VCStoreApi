@@ -20,7 +20,7 @@ module.exports.getAllProducts = async (req, res) => {
 };
 
 module.exports.getProduct = async (req, res) => {
-  if (!req?.params?.id || req.params.id === "") {
+  if (!req?.params?.productID || req.params.productID === "") {
     res.json({
       status: "error",
       message: "Please send product id to get a product by id.",
@@ -28,7 +28,7 @@ module.exports.getProduct = async (req, res) => {
     });
     return;
   }
-  const productId = req.params.id;
+  const productId = req.params.productID;
 
   try {
     const foundDataObject = await ProductUtility.getProductDataByProductId({
