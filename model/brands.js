@@ -20,6 +20,10 @@ const brandsSchema = new schema({
     required: true,
   },
   brandLogo: fileUploaderSchema.schema,
+  isActive: {
+    type: Boolean,
+    required: true,
+  },
   dateAdded: {
     type: Date,
     required: true,

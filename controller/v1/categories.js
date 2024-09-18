@@ -45,7 +45,6 @@ module.exports.getProductCategory = (req, res) => {
     })
       .select(["-_id"])
       .then((category) => {
-        console.log("category", category);
         if (category && Object.keys(category).length > 0) {
           dataObject.status = "success";
           dataObject.message = `Category with categoryID ${categoryID} fetched successfully.`;

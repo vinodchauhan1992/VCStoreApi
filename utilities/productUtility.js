@@ -35,7 +35,6 @@ module.exports.getSingleProductWithBrandDetails = async ({ productData }) => {
   if (foundBrandObject?.data && Object.keys(foundBrandObject.data).length > 0) {
     newBrandDetails = foundBrandObject.data;
   }
-  console.log("foundBrandObject.data", foundBrandObject.data);
   return {
     productData: productData,
     brandDetails: newBrandDetails,
@@ -150,5 +149,62 @@ module.exports.getProductDataByProductId = async ({ productId }) => {
         message: `There is an error occurred. ${err}`,
         data: {},
       };
+    });
+};
+
+module.exports.deleteUploadedProductImageToFS = async ({ fileUrl }) => {
+  return await deleteUploadedFileInFirebaseStorage({
+    fileUrl: fileUrl,
+  });
+};
+
+module.exports.deleteProductDataUtil = async ({
+  res,
+  productID,
+  foundProductResponse,
+}) => {
+  Products.deleteOne({
+    id: productID,
+  })
+    .select(["-_id"])
+    .then(async (result) => {
+      if (result && result.deletedCount === 1) {
+        if (
+          foundProductResponse?.data?.productData?.imageData?.imageUrl &&
+          foundProductResponse.data.productData.imageData.imageUrl !== ""
+        ) {
+          const deleteFileResp = await this.deleteUploadedProductImageToFS({
+            fileUrl: foundProductResponse.data.productData.imageData.imageUrl,
+          });
+          let msg = `Product with product id ${productID} is deleted successfully with product image.`;
+          if (!deleteFileResp.isSucceeded) {
+            msg = `Product with product id ${productID} is deleted successfully but product image is not deleted. FileDeletionError: ${deleteFileResp?.message}`;
+          }
+          res.json({
+            status: "success",
+            message: msg,
+            data: {},
+          });
+        } else {
+          res.json({
+            status: "success",
+            message: `Product with product id ${productID} is deleted successfully.`,
+            data: {},
+          });
+        }
+      } else {
+        res.json({
+          status: "error",
+          message: `Product brand with brand id ${productID} is not deleted.`,
+          data: {},
+        });
+      }
+    })
+    .catch((err) => {
+      res.json({
+        status: "error",
+        message: `There is an error occurred. ${err.message}`,
+        data: {},
+      });
     });
 };

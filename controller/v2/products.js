@@ -179,13 +179,14 @@ module.exports.addProduct = async (req, res) => {
   let uploadedFileStatus = "no file added";
   let uploadedFileMessage = "";
   let uploadedFileData = {};
+  console.log("add product_req.file", req.file);
   if (req.file) {
     uploadResponse = await ProductUtility.uploadProductImageToFS({
       file: req.file,
       productID: productID,
       productTitle: productTitle,
     });
-
+    console.log("add product_uploadResponse", uploadResponse);
     uploadedFileStatus = uploadResponse?.isSucceeded ? "success" : "error";
     uploadedFileMessage = uploadResponse?.message;
     uploadedFileData = uploadResponse?.fileData;
@@ -271,31 +272,50 @@ module.exports.updateProductBasicDetails = (req, res) => {
   }
 };
 
-module.exports.deleteProduct = (req, res) => {
-  if (req.params.id == null) {
+module.exports.deleteProduct = async (req, res) => {
+  if (req.params.productID == null) {
     dataObject.status = "error";
     dataObject.message = "Product id must be provided to delete a product.";
-    res.json(dataObject);
-  } else {
-    Products.findOne({
-      id: req.params.id,
-    })
-      .select(["-_id"])
-      .then((product) => {
-        if (product && Object.keys(product).length > 0) {
-          dataObject.message = `Product with product id ${id} is deleted successfully.`;
-          dataObject.data = product;
-        } else {
-          dataObject.message = `Product with product id ${id} is not deleted.`;
-          dataObject.data = {};
-        }
-        res.json(dataObject);
-      })
-      .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Product id is required to delete a product.",
+      data: {},
+    });
+    return;
+  }
+
+  const productID = req.params.productID;
+
+  try {
+    const foundProductResponse = await ProductUtility.getProductDataByProductId(
+      {
+        productId: productID,
+      }
+    );
+    if (
+      foundProductResponse?.status &&
+      foundProductResponse.status === "success" &&
+      foundProductResponse?.data &&
+      Object.keys(foundProductResponse.data).length > 0
+    ) {
+      ProductUtility.deleteProductDataUtil({
+        res,
+        productID,
+        foundProductResponse,
       });
+    } else {
+      res.json({
+        status: "error",
+        message: `There is no product exists with product id ${productID}.`,
+        data: {},
+      });
+    }
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occurred. ${error.message}`,
+      data: {},
+    });
   }
 };
 

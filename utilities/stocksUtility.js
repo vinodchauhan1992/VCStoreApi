@@ -10,7 +10,6 @@ module.exports.getAllProductStocksWithDetails = async ({
         await CommonUtility.getProductDetailsByProductId({
           productId: productStockData.productId,
         });
-      console.log("foundProductObject.data", foundProductObject.data);
       return {
         stockDetails: productStockData,
         productDetails: foundProductObject?.data ? foundProductObject.data : {},
@@ -23,7 +22,6 @@ module.exports.getSingleProductStockWithDetails = async ({ productStock }) => {
   const foundProductObject = await CommonUtility.getProductDetailsByProductId({
     productId: productStock.productId,
   });
-  console.log("foundProductObject.data", foundProductObject.data);
   return {
     stockDetails: productStock,
     productDetails: foundProductObject?.data ? foundProductObject.data : {},

@@ -82,7 +82,6 @@ module.exports.getBrandDetailsByBrandId = async ({ brandId }) => {
   const foundBrandObject = await BrandsUtility.getProductBrandDataByBrandId({
     brandID: brandId,
   });
-  console.log("foundBrandObject", foundBrandObject);
   if (foundBrandObject.status === "success") {
     return foundBrandObject;
   }

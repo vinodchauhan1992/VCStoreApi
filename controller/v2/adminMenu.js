@@ -164,8 +164,6 @@ module.exports.updateAdminMenuStatus = async (req, res) => {
     return;
   }
 
-  console.log("req.body", req.body);
-
   const { isAdminMenuStatusExists, isSucceeded: isSucceeded1 } =
     await AdminMenuStatusesUtility.getAdminMenuStatusDataByIdInDbUtil({
       adminMenuStatusesID: req.body.adminMenuStatusID,

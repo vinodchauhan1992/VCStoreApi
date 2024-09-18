@@ -24,14 +24,22 @@ module.exports.login = (req, res) => {
     })
       .then((user) => {
         if (user && Object.keys(user).length > 0) {
-          res.json({
-            status: "success",
-            message: "User loggedin successfully.",
-            data: {
-              user: user,
-              jwtToken: jwt.sign({ user: username }, "secret_key"),
-            },
-          });
+          if (user?.userStatus && user.userStatus === "Active") {
+            res.json({
+              status: "success",
+              message: "You are successfully loggedin.",
+              data: {
+                user: user,
+                jwtToken: jwt.sign({ user: username }, "secret_key"),
+              },
+            });
+          } else {
+            res.json({
+              status: "error",
+              message: `You can't login with this user as this user is ${user.userStatus}`,
+              data: {},
+            });
+          }
         } else {
           res.json({
             status: "error",

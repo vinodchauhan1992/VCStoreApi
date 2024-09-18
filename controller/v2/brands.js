@@ -34,7 +34,6 @@ module.exports.getProductBrandByBrandId = async (req, res) => {
 };
 
 module.exports.addProductBrand = async (req, res) => {
-  console.log("addProductBrand_req", req?.body);
   if (!req?.body?.title || req.body.title === "") {
     res.json({
       status: "error",
@@ -55,6 +54,7 @@ module.exports.addProductBrand = async (req, res) => {
   const brandID = CommonUtility.getUniqueID();
   const brandTitle = req.body.title;
   const brandDescription = req.body.description;
+  const isActive = req?.body?.isActive ?? false;
 
   let uploadResponse = null;
   let uploadedFileStatus = "no file added";
@@ -78,6 +78,7 @@ module.exports.addProductBrand = async (req, res) => {
     code: brandTitle.toLowerCase(),
     description: brandDescription,
     brandLogo: uploadedFileData,
+    isActive: isActive,
     dateAdded: new Date(),
     dateModified: new Date(),
   });
@@ -193,6 +194,7 @@ module.exports.updateProductBrand = async (req, res) => {
   const brandID = req.body.id;
   const brandTitle = req.body.title;
   const brandDescription = req.body.description;
+  const isActive = req?.body?.isActive ?? false;
   let finalBrandLogoData = null;
   if (req?.body?.brandLogo && req.body.brandLogo !== "") {
     const localBrandLogoData = JSON.parse(JSON.parse(req.body.brandLogo));
@@ -265,6 +267,7 @@ module.exports.updateProductBrand = async (req, res) => {
         brandLogo: updatedUploadedFileData
           ? updatedUploadedFileData
           : finalBrandLogoData,
+        isActive: isActive,
         dateAdded: req.body.dateAdded,
         dateModified: new Date(),
       };

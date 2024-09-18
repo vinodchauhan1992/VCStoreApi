@@ -48,7 +48,6 @@ module.exports.getProductCategory = async (req, res) => {
 };
 
 module.exports.addProductCategory = async (req, res) => {
-  console.log('addProductCategory_req', req?.body)
   if (!req?.body?.title || req.body.title === "") {
     dataObject.status = "error";
     dataObject.message = "Category title is required.";
