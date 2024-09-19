@@ -209,7 +209,7 @@ module.exports.addProduct = async (req, res) => {
     isActive: req.body.isActive,
     rating: {
       rate: 0.0,
-      count: 0,
+      count: 5.0,
     },
     priceDetails: {
       purchasePrice: purchasePrice,

@@ -63,6 +63,7 @@ module.exports.addProductCategory = async (req, res) => {
 
   const categoryID = CommonUtility.getUniqueID();
   const categoryTitle = req.body.title;
+  const isActive = req?.body?.isActive ?? false;
 
   let uploadResponse = null;
   let uploadedFileStatus = "no file added";
@@ -86,6 +87,7 @@ module.exports.addProductCategory = async (req, res) => {
     code: categoryTitle.toLowerCase(),
     description: req.body.description,
     imageData: uploadedFileData,
+    isActive: isActive,
     dateAdded: new Date(),
     dateModified: new Date(),
   });
@@ -232,6 +234,7 @@ module.exports.updateProductCategory = async (req, res) => {
 
   const categoryID = req.body.id;
   const categoryTitle = req.body.title;
+  const isActive = req?.body?.isActive ?? false;
   let finalImageData = null;
   if (req?.body?.imageData && req.body.imageData !== "") {
     const localImgData = JSON.parse(JSON.parse(req.body.imageData));
@@ -239,7 +242,7 @@ module.exports.updateProductCategory = async (req, res) => {
       finalImageData = localImgData;
     }
   }
-  
+
   Categories.findOne({
     id: categoryID,
   })
@@ -299,6 +302,7 @@ module.exports.updateProductCategory = async (req, res) => {
           imageData: updatedUploadedFileData
             ? updatedUploadedFileData
             : finalImageData,
+          isActive: isActive,
           dateAdded: req.body.dateAdded,
           dateModified: new Date(),
         };

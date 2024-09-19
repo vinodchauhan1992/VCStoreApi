@@ -20,6 +20,10 @@ const categoriesSchema = new schema({
     required: true,
   },
   imageData: fileUploaderSchema.schema,
+  isActive: {
+    type: Boolean,
+    required: true,
+  },
   dateAdded: {
     type: Date,
     required: true,
