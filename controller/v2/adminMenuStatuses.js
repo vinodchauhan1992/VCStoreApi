@@ -17,7 +17,7 @@ module.exports.getAllAdminMenuStatuses = (req, res) => {
         res.json({
           status: "success",
           message: "Admin menu statuses fetched successfully.",
-          data: adminMenuStatuses,
+          data: CommonUtility.sortObjectsOfArray(adminMenuStatuses),
         });
       } else {
         res.json({

@@ -1,4 +1,5 @@
 const Categories = require("../model/categories");
+const CommonUtility = require("./commonUtility");
 const {
   uploadFileToFirebaseStorage,
   updateUploadedFileInFirebaseStorage,
@@ -112,7 +113,7 @@ module.exports.getCategoryById = async ({ categoryID }) => {
         return {
           status: "success",
           message: `Category with categoryID ${categoryID} fetched successfully.`,
-          data: category,
+          data: CommonUtility.sortObject(category),
         };
       } else {
         return {

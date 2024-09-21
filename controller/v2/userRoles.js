@@ -13,21 +13,26 @@ module.exports.getAllUserRoles = (req, res) => {
     .sort({ id: sort })
     .then((userRolesData) => {
       if (userRolesData && userRolesData.length > 0) {
-        dataObject.status = "success";
-        dataObject.message = "User roles fetched successfully.";
-        dataObject.data = userRolesData;
+        res.json({
+          status: "success",
+          message: "User roles fetched successfully.",
+          data: CommonUtility.sortObjectsOfArray(userRolesData),
+        });
       } else {
-        dataObject.status = "success";
-        dataObject.message =
-          "User roles fetched successfully. But user roles doesn't have any data.";
-        dataObject.data = [];
+        res.json({
+          status: "success",
+          message:
+            "User roles fetched successfully. But user roles doesn't have any data.",
+          data: [],
+        });
       }
-      res.json(dataObject);
     })
     .catch((err) => {
-      dataObject.message = `There is an error occurred. ${err}`;
-      dataObject.status = "error";
-      res.json(dataObject);
+      res.json({
+        status: "error",
+        message: `There is an error occurred. ${err}`,
+        data: [],
+      });
     });
 };
 
@@ -45,21 +50,25 @@ module.exports.getUserRoleByID = (req, res) => {
       .select(["-_id"])
       .then((userRole) => {
         if (userRole && Object.keys(userRole).length > 0) {
-          dataObject.status = "success";
-          dataObject.message = `User role with userRoleID ${userRoleID} fetched successfully.`;
-          dataObject.data = userRole;
+          res.json({
+            status: "success",
+            message: `User role with userRoleID ${userRoleID} fetched successfully.`,
+            data: CommonUtility.sortObject(userRole),
+          });
         } else {
-          dataObject.status = "error";
-          dataObject.message = `There is no user role exists with userRoleID ${userRoleID}.`;
-          dataObject.data = {};
+          res.json({
+            status: "error",
+            message: `There is no user role exists with userRoleID ${userRoleID}.`,
+            data: {},
+          });
         }
-        res.json(dataObject);
       })
       .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        dataObject.data = {};
-        res.json(dataObject);
+        res.json({
+          status: "error",
+          message: `There is an error occurred. ${err}`,
+          data: {},
+        });
       });
   }
 };

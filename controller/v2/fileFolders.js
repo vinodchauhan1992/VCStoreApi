@@ -13,21 +13,26 @@ module.exports.getAllFileFolders = (req, res) => {
     .sort({ id: sort })
     .then((fileFoldersData) => {
       if (fileFoldersData && fileFoldersData.length > 0) {
-        dataObject.status = "success";
-        dataObject.message = "File folders fetched successfully.";
-        dataObject.data = fileFoldersData;
+        res.json({
+          status: "success",
+          message: "File folders fetched successfully.",
+          data: CommonUtility.sortObjectsOfArray(fileFoldersData),
+        });
       } else {
-        dataObject.status = "success";
-        dataObject.message =
-          "File folders fetched successfully. But file folders doesn't have any data.";
-        dataObject.data = [];
+        res.json({
+          status: "success",
+          message:
+            "File folders fetched successfully. But file folders doesn't have any data.",
+          data: [],
+        });
       }
-      res.json(dataObject);
     })
     .catch((err) => {
-      dataObject.message = `There is an error occurred. ${err}`;
-      dataObject.status = "error";
-      res.json(dataObject);
+      res.json({
+        status: "error",
+        message: `There is an error occurred. ${err}`,
+        data: [],
+      });
     });
 };
 
@@ -45,21 +50,25 @@ module.exports.getFileFolderByID = (req, res) => {
       .select(["-_id"])
       .then((fileFolder) => {
         if (fileFolder && Object.keys(fileFolder).length > 0) {
-          dataObject.status = "success";
-          dataObject.message = `File folder with fileFolderID ${fileFolderID} fetched successfully.`;
-          dataObject.data = fileFolder;
+          res.json({
+            status: "success",
+            message: `File folder with fileFolderID ${fileFolderID} fetched successfully.`,
+            data: CommonUtility.sortObject(fileFolder),
+          });
         } else {
-          dataObject.status = "error";
-          dataObject.message = `There is no file folder exists with fileFolderID ${fileFolderID}.`;
-          dataObject.data = {};
+          res.json({
+            status: "error",
+            message: `There is no file folder exists with fileFolderID ${fileFolderID}.`,
+            data: [],
+          });
         }
-        res.json(dataObject);
       })
       .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        dataObject.data = {};
-        res.json(dataObject);
+        res.json({
+          status: "error",
+          message: `There is an error occurred. ${err}`,
+          data: [],
+        });
       });
   }
 };

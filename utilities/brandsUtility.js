@@ -1,4 +1,5 @@
 const Brands = require("../model/brands");
+const CommonUtility = require("./commonUtility");
 const {
   uploadFileToFirebaseStorage,
   updateUploadedFileInFirebaseStorage,
@@ -31,7 +32,7 @@ module.exports.getAllProductBrands = async ({ req }) => {
         return {
           status: "success",
           message: "Product brands fetched successfully.",
-          data: allProductBrands,
+          data: CommonUtility.sortObjectsOfArray(allProductBrands),
         };
       } else {
         return {
@@ -45,7 +46,7 @@ module.exports.getAllProductBrands = async ({ req }) => {
     .catch((err) => {
       return {
         status: "error",
-        message: `There is an error occurred. ${err}`,
+        message: `There is an error occurred in getAllProductBrands function in brands utility. ${err}`,
         data: [],
       };
     });
@@ -61,7 +62,7 @@ module.exports.getProductBrandDataByBrandId = async ({ brandID }) => {
         return {
           status: "success",
           message: `Product brand with brandID ${brandID} fetched successfully.`,
-          data: productBrand,
+          data: CommonUtility.sortObject(productBrand),
         };
       } else {
         return {

@@ -87,3 +87,33 @@ module.exports.getBrandDetailsByBrandId = async ({ brandId }) => {
   }
   return {};
 };
+
+module.exports.sortObject = (obj) => {
+  const newObj = obj?.toObject?.();
+  let index = 0;
+  return Object.keys(newObj)
+    .sort()
+    .reduce((acc, key) => {
+      if (index === 0) {
+        acc["id"] = newObj["id"];
+        index = index + 1;
+        return acc;
+      }
+      if (key !== "__v") {
+        acc[key] = newObj[key];
+        index = index + 1;
+        return acc;
+      }
+      return acc;
+    }, {});
+};
+
+module.exports.sortObjectsOfArray = (array) => {
+  const newSortedObjectArray = [];
+  array?.map?.((unsortedObject) => {
+    const newObjectData = unsortedObject;
+    let sortedObject = this.sortObject(newObjectData);
+    newSortedObjectArray.push(sortedObject);
+  });
+  return newSortedObjectArray;
+};

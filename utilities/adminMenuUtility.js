@@ -1,5 +1,6 @@
 const AdminMenu = require("../model/adminMenu");
 const AdminMenuStatusesUtility = require("../utilities/adminMenuStatusesUtility");
+const { sortObject, sortObjectsOfArray } = require("./commonUtility");
 
 module.exports.checkAddAdminMenuBodyInfoValidation = async (req) => {
   if (!req?.body?.menuTitle || req.body.menuTitle === "") {
@@ -109,7 +110,7 @@ module.exports.getAdminMenuDataByIdInDbUtil = async ({ adminMenuID }) => {
           isSucceeded: true,
           isCatchError: false,
           message: `Admin menu with adminMenuID '${adminMenuID}' is already exists.`,
-          data: respondedAdminMenuData,
+          data: sortObject(respondedAdminMenuData),
         };
       } else {
         return {
@@ -185,7 +186,7 @@ module.exports.getAdminMenuDataByPriorityInDbUtil = async ({ priority }) => {
           isSucceeded: true,
           isCatchError: false,
           message: `Admin menu with priority '${priority}' is already exists. Please use a different priority.`,
-          data: respondedAdminMenuObject,
+          data: sortObject(respondedAdminMenuObject),
         };
       } else {
         return {
@@ -427,7 +428,7 @@ module.exports.getAllAdminMenusUtil = async ({ req }) => {
         return {
           status: "success",
           message: "Admin menus fetched successfully.",
-          data: adminMenus,
+          data: sortObjectsOfArray(adminMenus),
         };
       } else {
         return {
@@ -456,38 +457,6 @@ module.exports.getAllMenusPrioritiesUtil = ({ allAdminMenusObject }) => {
   });
 
   return priorities;
-};
-
-module.exports.getAdminMenuDataByPriorityInDbUtil = async ({ priority }) => {
-  return await AdminMenu.findOne({
-    priority: priority,
-  })
-    .select(["-_id"])
-    .then((respondedAdminMenuData) => {
-      if (
-        respondedAdminMenuData &&
-        Object.keys(respondedAdminMenuData).length > 0
-      ) {
-        return {
-          status: "success",
-          message: `Menu with priority '${priority}' found successfully.`,
-          data: respondedAdminMenuData,
-        };
-      } else {
-        return {
-          status: "error",
-          message: `Menu with priority '${priority}' doesn't exists.`,
-          data: {},
-        };
-      }
-    })
-    .catch((err) => {
-      return {
-        status: "error",
-        message: `There is an error occurred in fetching menu by priority. ${err.message}`,
-        data: {},
-      };
-    });
 };
 
 module.exports.updateMenuPriorityInDbUtil = async ({ req, res }) => {

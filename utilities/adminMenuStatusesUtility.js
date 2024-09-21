@@ -1,4 +1,5 @@
 const AdminMenuStatuses = require("../model/adminMenuStatuses");
+const { sortObject } = require("./commonUtility");
 
 module.exports.checkAddAdminMenuStatusesBodyInfoValidation = (req) => {
   if (!req?.body?.menuStatusTitle || req.body.menuStatusTitle === "") {
@@ -40,7 +41,7 @@ module.exports.getAdminMenuStatusDataByIdInDbUtil = async ({
           isSucceeded: true,
           isCatchError: false,
           message: `Admin menu status with adminMenuStatusesID '${adminMenuStatusesID}' is already exists.`,
-          data: respondedAdminMenuStatusData,
+          data: sortObject(respondedAdminMenuStatusData),
         };
       } else {
         return {

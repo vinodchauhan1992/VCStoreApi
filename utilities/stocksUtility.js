@@ -39,7 +39,7 @@ module.exports.getAllProductStocksData = async ({ req }) => {
     .then(async (allProductStocks) => {
       if (allProductStocks && allProductStocks.length > 0) {
         const returnedData = await this.getAllProductStocksWithDetails({
-          allProductStocks,
+          allProductStocks: CommonUtility.sortObjectsOfArray(allProductStocks),
         });
 
         return {
@@ -73,7 +73,7 @@ module.exports.getProductStockDataByStockId = async ({ stockID }) => {
     .then(async (productStock) => {
       if (productStock && Object.keys(productStock).length > 0) {
         const returnedData = await this.getSingleProductStockWithDetails({
-          productStock,
+          productStock: CommonUtility.sortObject(productStock),
         });
         return {
           status: "success",
@@ -105,7 +105,7 @@ module.exports.getProductStockDataByProductIdUtil = async ({ productID }) => {
     .then(async (productStock) => {
       if (productStock && Object.keys(productStock).length > 0) {
         const returnedData = await this.getSingleProductStockWithDetails({
-          productStock,
+          productStock: CommonUtility.sortObject(productStock),
         });
         return {
           status: "success",
@@ -137,7 +137,7 @@ module.exports.getProductStockDataByBrandIdUtil = async ({ brandID }) => {
     .then(async (productStock) => {
       if (productStock && Object.keys(productStock).length > 0) {
         const returnedData = await this.getSingleProductStockWithDetails({
-          productStock,
+          productStock: CommonUtility.sortObject(productStock),
         });
         return {
           status: "success",

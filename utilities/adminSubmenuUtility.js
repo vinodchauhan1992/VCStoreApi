@@ -1,6 +1,7 @@
 const AdminSubmenu = require("../model/adminSubmenu");
 const AdminMenuStatusesUtility = require("../utilities/adminMenuStatusesUtility");
 const AdminMenuUtility = require("../utilities/adminMenuUtility");
+const { sortObjectsOfArray, sortObject } = require("./commonUtility");
 
 module.exports.checkAddAdminSubmenuBodyInfoValidation = async (req) => {
   if (!req?.body?.submenuTitle || req.body.submenuTitle === "") {
@@ -129,15 +130,12 @@ module.exports.getAdminSubmenuDataByIdInDbUtil = async ({ adminSubmenuID }) => {
         respondedAdminSubmenuData &&
         Object.keys(respondedAdminSubmenuData).length > 0
       ) {
-        respondedAdminSubmenuData.sort((a, b) => {
-          return a.priority - b.priority;
-        });
         return {
           isAdminSubmenuExists: true,
           isSucceeded: true,
           isCatchError: false,
           message: `Admin submenu with adminSubmenuID '${adminSubmenuID}' is already exists.`,
-          data: respondedAdminSubmenuData,
+          data: sortObject(respondedAdminSubmenuData),
         };
       } else {
         return {
@@ -215,7 +213,7 @@ module.exports.getAdminSubmenuDataByPriorityInDbUtil = async ({ priority }) => {
           isSucceeded: true,
           isCatchError: false,
           message: `Admin submenu with priority '${priority}' is already exists. Please use a different priority.`,
-          data: respondedAdminSubmenuObject,
+          data: sortObject(respondedAdminSubmenuObject),
         };
       } else {
         return {
@@ -455,15 +453,16 @@ module.exports.getAllAdminSubmenusUtil = async ({ req }) => {
     .sort({
       id: sort,
     })
-    .then((adminSubmenus) => {
+    .then(async (adminSubmenus) => {
       if (adminSubmenus && adminSubmenus.length > 0) {
         adminSubmenus.sort((a, b) => {
           return a.priority - b.priority;
         });
+
         return {
           status: "success",
           message: "Admin submenus fetched successfully.",
-          data: adminSubmenus,
+          data: sortObjectsOfArray(adminSubmenus),
         };
       } else {
         return {
@@ -500,7 +499,7 @@ module.exports.getAdminSubmenuDataByMenuIdInDbUtil = async ({ menuID }) => {
           isSucceeded: true,
           isCatchError: false,
           message: `Submenus found successfully with menuID '${menuID}'.`,
-          data: respondedAdminSubmenuData ?? [],
+          data: sortObjectsOfArray(respondedAdminSubmenuData) ?? [],
         };
       } else {
         return {

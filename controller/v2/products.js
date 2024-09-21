@@ -44,38 +44,28 @@ module.exports.getProduct = async (req, res) => {
   }
 };
 
-module.exports.getProductsInCategory = (req, res) => {
+module.exports.getProductsInCategory = async (req, res) => {
   if (!req?.params?.categoryID || req.params.categoryID === "") {
-    dataObject.status = "error";
-    dataObject.message =
-      "Please send category id to get a product by category id.";
-    res.json(dataObject);
-  } else {
-    const categoryID = req.params.categoryID;
-    const limit = Number(req.query.limit) || 0;
-    const sort = req.query.sort == "desc" ? -1 : 1;
+    res.json({
+      status: "error",
+      message: "Please send category id to get a product by category id.",
+      data: [],
+    });
+    return;
+  }
 
-    Products.find({
-      categoryID,
-    })
-      .select(["-_id"])
-      .limit(limit)
-      .sort({ id: sort })
-      .then((products) => {
-        if (products && products.length > 0) {
-          dataObject.message = `Products with category id ${categoryID} fetched successfully.`;
-          dataObject.data = products;
-        } else {
-          dataObject.message = `There are no products exists with category id ${categoryID}.`;
-          dataObject.data = [];
-        }
-        res.json(dataObject);
-      })
-      .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        res.json(dataObject);
+  try {
+    const foundDataObject =
+      await ProductUtility.getProductsDataByCategoryIdUtil({
+        req,
       });
+    res.json(foundDataObject);
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occured. ${error}`,
+      data: [],
+    });
   }
 };
 

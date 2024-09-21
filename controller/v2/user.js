@@ -16,21 +16,26 @@ module.exports.getAllUser = (req, res) => {
     })
     .then((users) => {
       if (users && users.length > 0) {
-        dataObject.message = "Users fetched successfully.";
-        dataObject.data = users;
-        dataObject.status = "success";
+        res.json({
+          status: "success",
+          message: "Users fetched successfully.",
+          data: CommonUtility.sortObjectsOfArray(users),
+        });
       } else {
-        dataObject.message =
-          "Users fetched successfully. But users doesn't have any data.";
-        dataObject.data = [];
-        dataObject.status = "success";
+        res.json({
+          status: "success",
+          message:
+            "Users fetched successfully. But users doesn't have any data.",
+          data: [],
+        });
       }
-      res.json(dataObject);
     })
     .catch((err) => {
-      dataObject.message = `There is an error occurred. ${err.message}`;
-      dataObject.status = "error";
-      res.json(dataObject);
+      res.json({
+        status: "error",
+        message: `There is an error occurred. ${err.message}`,
+        data: [],
+      });
     });
 };
 

@@ -14,21 +14,26 @@ module.exports.getAllProductCategories = (req, res) => {
     .sort({ id: sort })
     .then((categories) => {
       if (categories && categories.length > 0) {
-        dataObject.status = "success";
-        dataObject.message = "Categories fetched successfully.";
-        dataObject.data = categories;
+        res.json({
+          status: "success",
+          message: "Categories fetched successfully.",
+          data: CommonUtility.sortObjectsOfArray(categories),
+        });
       } else {
-        dataObject.status = "success";
-        dataObject.message =
-          "Categories fetched successfully. But categories doesn't have any data.";
-        dataObject.data = [];
+        res.json({
+          status: "success",
+          message:
+            "Categories fetched successfully. But categories doesn't have any data.",
+          data: [],
+        });
       }
-      res.json(dataObject);
     })
     .catch((err) => {
-      dataObject.message = `There is an error occurred. ${err}`;
-      dataObject.status = "error";
-      res.json(dataObject);
+      res.json({
+        status: "error",
+        message: `There is an error occurred. ${err}`,
+        data: [],
+      });
     });
 };
 

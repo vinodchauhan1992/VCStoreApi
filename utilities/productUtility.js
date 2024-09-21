@@ -95,7 +95,7 @@ module.exports.getAllProductsData = async ({ req }) => {
     .then(async (respondedProducts) => {
       if (respondedProducts && respondedProducts.length > 0) {
         const fullDetailsProducts = await this.getAllProductsWithBrandDetails({
-          allProducts: respondedProducts,
+          allProducts: CommonUtility.sortObjectsOfArray(respondedProducts),
         });
         return {
           status: "success",
@@ -128,7 +128,7 @@ module.exports.getProductDataByProductId = async ({ productId }) => {
     .then(async (product) => {
       if (product && Object.keys(product).length > 0) {
         const returnedData = await this.getSingleProductWithBrandDetails({
-          productData: product,
+          productData: CommonUtility.sortObject(product),
         });
         return {
           status: "success",
@@ -206,5 +206,43 @@ module.exports.deleteProductDataUtil = async ({
         message: `There is an error occurred. ${err.message}`,
         data: {},
       });
+    });
+};
+
+module.exports.getProductsDataByCategoryIdUtil = async ({ req }) => {
+  const categoryID = req.params.categoryID;
+  const limit = Number(req.query.limit) || 0;
+  const sort = req.query.sort == "desc" ? -1 : 1;
+
+  return await Products.find({
+    "categoryDetails.categoryID": categoryID,
+  })
+    .select(["-_id"])
+    .limit(limit)
+    .sort({ id: sort })
+    .then(async (products) => {
+      if (products && products.length > 0) {
+        const fullDetailsProducts = await this.getAllProductsWithBrandDetails({
+          allProducts: CommonUtility.sortObjectsOfArray(products),
+        });
+        return {
+          status: "success",
+          message: `Products with category id ${categoryID} fetched successfully.`,
+          data: fullDetailsProducts,
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There are no products exists with category id ${categoryID}.`,
+          data: [],
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred. ${err}`,
+        data: [],
+      };
     });
 };

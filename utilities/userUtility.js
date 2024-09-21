@@ -4,6 +4,7 @@ const {
   deleteUploadedFileInFirebaseStorage,
   updateUploadedFileInFirebaseStorage,
 } = require("./fileManagerUtility");
+const CommonUtility = require("./commonUtility");
 
 module.exports.checkAddUserBodyInfoValidation = (req) => {
   if (!req?.body?.email || req.body.email === "") {
@@ -196,7 +197,7 @@ module.exports.checkUserExistenceByUserIDInDB = async ({ userID }) => {
           isSucceeded: true,
           isCatchError: false,
           message: `User with userID '${userID}' is already exists.`,
-          data: respondedUser,
+          data: CommonUtility.sortObject(respondedUser),
         };
       } else {
         return {

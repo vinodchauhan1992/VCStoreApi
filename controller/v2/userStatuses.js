@@ -13,21 +13,26 @@ module.exports.getAllUserStatuses = (req, res) => {
     .sort({ id: sort })
     .then((userStatusesData) => {
       if (userStatusesData && userStatusesData.length > 0) {
-        dataObject.status = "success";
-        dataObject.message = "User statuses fetched successfully.";
-        dataObject.data = userStatusesData;
+        res.json({
+          status: "success",
+          message: "User statuses fetched successfully.",
+          data: CommonUtility.sortObjectsOfArray(userStatusesData),
+        });
       } else {
-        dataObject.status = "success";
-        dataObject.message =
-          "User statuses fetched successfully. But user statuses doesn't have any data.";
-        dataObject.data = [];
+        res.json({
+          status: "success",
+          message:
+            "User statuses fetched successfully. But user statuses doesn't have any data.",
+          data: [],
+        });
       }
-      res.json(dataObject);
     })
     .catch((err) => {
-      dataObject.message = `There is an error occurred. ${err}`;
-      dataObject.status = "error";
-      res.json(dataObject);
+      res.json({
+        status: "error",
+        message: `There is an error occurred. ${err}`,
+        data: [],
+      });
     });
 };
 
@@ -45,21 +50,25 @@ module.exports.getUserStatusByID = (req, res) => {
       .select(["-_id"])
       .then((userStatus) => {
         if (userStatus && Object.keys(userStatus).length > 0) {
-          dataObject.status = "success";
-          dataObject.message = `User status with userStatusID ${userStatusID} fetched successfully.`;
-          dataObject.data = category;
+          res.json({
+            status: "success",
+            message: `User status with userStatusID ${userStatusID} fetched successfully.`,
+            data: CommonUtility.sortObject(userStatus),
+          });
         } else {
-          dataObject.status = "error";
-          dataObject.message = `There is no user status exists with userStatusID ${userStatusID}.`;
-          dataObject.data = {};
+          res.json({
+            status: "error",
+            message: `There is no user status exists with userStatusID ${userStatusID}.`,
+            data: {},
+          });
         }
-        res.json(dataObject);
       })
       .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        dataObject.data = {};
-        res.json(dataObject);
+        res.json({
+          status: "error",
+          message: `There is an error occurred. ${err}`,
+          data: {},
+        });
       });
   }
 };
@@ -82,7 +91,10 @@ module.exports.addUserStatus = (req, res) => {
     userStatus
       .save()
       .then((respondedUserStatus) => {
-        if (respondedUserStatus && Object.keys(respondedUserStatus).length > 0) {
+        if (
+          respondedUserStatus &&
+          Object.keys(respondedUserStatus).length > 0
+        ) {
           dataObject.status = "success";
           dataObject.message = `New user status is added successfully.`;
           dataObject.data = respondedUserStatus;
@@ -105,7 +117,8 @@ module.exports.addUserStatus = (req, res) => {
 module.exports.deleteUserStatus = (req, res) => {
   if (req.params.userStatusID == null) {
     dataObject.status = "error";
-    dataObject.message = "User status id must be provided to delete a user status.";
+    dataObject.message =
+      "User status id must be provided to delete a user status.";
     dataObject.data = {};
     res.json(dataObject);
   } else {
