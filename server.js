@@ -43,6 +43,7 @@ const adminSubmenuRouteV2 = require("./routes/v2/adminSubmenu");
 const adminCombinedMenuRouteV2 = require("./routes/v2/adminCombinedMenu");
 const brandsRouteV2 = require("./routes/v2/brands");
 const stocksRouteV2 = require("./routes/v2/stocks");
+const countriesV2 = require("./routes/v2/countries");
 
 //middleware
 app.use(cors());
@@ -86,6 +87,7 @@ app.use("/v2/adminSubmenu", adminSubmenuRouteV2);
 app.use("/v2/adminCombinedMenu", adminCombinedMenuRouteV2);
 app.use("/v2/brands", brandsRouteV2);
 app.use("/v2/stocks", stocksRouteV2);
+app.use("/v2/countries", countriesV2);
 
 //mongoose
 mongoose.set("useFindAndModify", false);
