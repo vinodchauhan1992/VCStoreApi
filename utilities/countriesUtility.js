@@ -196,12 +196,12 @@ module.exports.deleteCountryDataUtil = async ({ res, countryID }) => {
 };
 
 module.exports.updateCountryUtil = async ({ req, res }) => {
-  const countryID = req.body.id;
+  const countryID = req.params.countryID;
   const countryTitle = req.body.title;
   const countryCode = req.body.code;
   const isDeleteable = req.body.isDeleteable;
   const isAdminDeleteable = req.body.isAdminDeleteable;
-  const dateAdded = req.body.dateAdded;
+  const dateAdded = req?.body?.dateAdded ? req.body.dateAdded : new Date();
   const dateModified = new Date();
 
   const newCountry = {

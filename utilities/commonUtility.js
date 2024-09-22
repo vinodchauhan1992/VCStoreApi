@@ -89,23 +89,30 @@ module.exports.getBrandDetailsByBrandId = async ({ brandId }) => {
 };
 
 module.exports.sortObject = (obj) => {
-  const newObj = obj?.toObject?.();
-  let index = 0;
-  return Object.keys(newObj)
+  const toObjectData = obj?.toObject?.();
+  let newObj = toObjectData;
+  if (!toObjectData) {
+    newObj = obj;
+  }
+  const newObjectData = Object.keys(newObj)
     .sort()
     .reduce((acc, key) => {
-      if (index === 0) {
-        acc["id"] = newObj["id"];
-        index = index + 1;
-        return acc;
-      }
-      if (key !== "__v") {
-        acc[key] = newObj[key];
-        index = index + 1;
-        return acc;
-      }
+      acc[key] = newObj[key];
       return acc;
     }, {});
+
+  const id = newObjectData?.id;
+
+  delete newObjectData["id"];
+  delete newObjectData["__v"];
+  const updatedObject = {};
+  Object.entries(newObjectData).map(([key, value], index) => {
+    if (index === 0) {
+      updatedObject["id"] = id;
+    }
+    updatedObject[key] = value;
+  });
+  return updatedObject;
 };
 
 module.exports.sortObjectsOfArray = (array) => {
@@ -116,4 +123,24 @@ module.exports.sortObjectsOfArray = (array) => {
     newSortedObjectArray.push(sortedObject);
   });
   return newSortedObjectArray;
+};
+
+module.exports.getStateCodeFromTitle = ({ stateTitle }) => {
+  if (stateTitle && stateTitle !== "") {
+    const splittedTitleArray = stateTitle.split(" ");
+    if (splittedTitleArray.length === 1) {
+      let secondChar = "";
+      if (splittedTitleArray[0].length >= 3) {
+        console.log("splittedTitleArray", splittedTitleArray[0]);
+        secondChar = splittedTitleArray[0].charAt(2);
+      }
+      console.log("secondChar", secondChar);
+      return `${splittedTitleArray[0].charAt(0)}${secondChar}`;
+    } else {
+      return `${splittedTitleArray[0].charAt(0)}${splittedTitleArray[
+        splittedTitleArray.length - 1
+      ].charAt(0)}`;
+    }
+  }
+  return null;
 };

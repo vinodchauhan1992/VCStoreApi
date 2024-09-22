@@ -1,5 +1,3 @@
-const Countries = require("../../model/countries");
-const CommonUtility = require("../../utilities/commonUtility");
 const CountriesUtility = require("../../utilities/countriesUtility");
 
 module.exports.getAllCountries = async (req, res) => {
