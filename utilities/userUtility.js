@@ -73,6 +73,12 @@ module.exports.checkAddUserBodyInfoValidation = (req) => {
       message: "Date of birth is required.",
     };
   }
+  if (!req?.body?.userType || req.body.userType === "") {
+    return {
+      isSucceeded: false,
+      message: "User type is required.",
+    };
+  } 
 
   return {
     isSucceeded: true,

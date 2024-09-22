@@ -1,7 +1,6 @@
 const UserRoles = require("../../model/userRoles");
 const CommonUtility = require("../../utilities/commonUtility");
-
-let dataObject = { status: "success", message: "", data: [] };
+const UserRolesUtility = require("../../utilities/userRolesUtility");
 
 module.exports.getAllUserRoles = (req, res) => {
   const limit = Number(req.query.limit) || 0;
@@ -36,110 +35,197 @@ module.exports.getAllUserRoles = (req, res) => {
     });
 };
 
-module.exports.getUserRoleByID = (req, res) => {
+module.exports.getUserRoleByID = async (req, res) => {
   if (!req?.params?.userRoleID || req.params.userRoleID === "") {
-    dataObject.status = "error";
-    dataObject.message = "User role id should be provided";
-    res.json(dataObject);
-  } else {
-    const userRoleID = req.params.userRoleID;
+    res.json({
+      status: "error",
+      message: "User role id should be provided",
+      data: {},
+    });
+    return;
+  }
 
-    UserRoles.findOne({
-      id: userRoleID,
-    })
-      .select(["-_id"])
-      .then((userRole) => {
-        if (userRole && Object.keys(userRole).length > 0) {
-          res.json({
-            status: "success",
-            message: `User role with userRoleID ${userRoleID} fetched successfully.`,
-            data: CommonUtility.sortObject(userRole),
-          });
-        } else {
-          res.json({
-            status: "error",
-            message: `There is no user role exists with userRoleID ${userRoleID}.`,
-            data: {},
-          });
-        }
-      })
-      .catch((err) => {
-        res.json({
-          status: "error",
-          message: `There is an error occurred. ${err}`,
-          data: {},
-        });
-      });
+  try {
+    const userRoleID = req.params.userRoleID;
+    const foundResponseObj = await UserRolesUtility.getUserRoleByIdUtil({
+      userRoleID,
+    });
+    res.json(foundResponseObj);
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occured in getUserRoleByID function in userRoles controller. ${error.message}`,
+      data: {},
+    });
   }
 };
 
-module.exports.addUserRole = (req, res) => {
-  if (typeof req.body == undefined) {
-    dataObject.status = "error";
-    dataObject.message = "Please send all required data to add a user role.";
-    dataObject.data = {};
-    res.json(dataObject);
-  } else {
-    const userRole = new UserRoles({
-      id: CommonUtility.getUniqueID(),
-      role: req.body.role,
-      description: req.body.description,
-      dateAdded: new Date(),
-      dateModified: new Date(),
+module.exports.addUserRole = async (req, res) => {
+  if (!req.body.role || req.body.role === "") {
+    res.json({
+      status: "error",
+      message: "Role is required.",
+      data: {},
+    });
+    return;
+  }
+  if (!req.body.description || req.body.description === "") {
+    res.json({
+      status: "error",
+      message: "Description is required.",
+      data: {},
+    });
+    return;
+  }
+  if (!req.body.userType || req.body.userType === "") {
+    res.json({
+      status: "error",
+      message: "User type is required.",
+      data: {},
+    });
+    return;
+  }
+
+  try {
+    const userRole = req.params.userRole;
+    const foundResponseObj = await UserRolesUtility.getUserRoleByRoleUtil({
+      userRole,
+    });
+    if (foundResponseObj?.status === "error") {
+      UserRolesUtility.addUserRoleUtil({ req, res });
+    } else {
+      res.json(foundResponseObj);
+    }
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occured in addUserRole function in userRoles controller. ${error.message}`,
+      data: {},
+    });
+  }
+};
+
+module.exports.deleteUserRole = async (req, res) => {
+  if (!req?.params?.userRoleID || req.params.userRoleID === "") {
+    res.json({
+      status: "error",
+      message: "User role id is required in url.",
+      data: {},
+    });
+    return;
+  }
+
+  try {
+    const userRoleID = req.params.userRoleID;
+    const foundResponseObj = await UserRolesUtility.getUserRoleByIdUtil({
+      userRoleID,
     });
 
-    userRole
-      .save()
-      .then((respondedUserRole) => {
-        if (respondedUserRole && Object.keys(respondedUserRole).length > 0) {
-          dataObject.status = "success";
-          dataObject.message = `New user role is added successfully.`;
-          dataObject.data = respondedUserRole;
-        } else {
-          dataObject.status = "error";
-          dataObject.message = `User role is not added due to unknown error.`;
-          dataObject.data = {};
-        }
-        res.json(dataObject);
-      })
-      .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        dataObject.data = {};
-        res.json(dataObject);
-      });
+    if (foundResponseObj?.status === "success") {
+      await UserRolesUtility.deleteUserRoleUtil({ req, res });
+    } else {
+      res.json(foundResponseObj);
+    }
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occured in deleteUserRole function when fetching user role by id in userRoles controller. ${error.message}`,
+      data: {},
+    });
   }
 };
 
-module.exports.deleteUserRole = (req, res) => {
-  if (req.params.userRoleID == null) {
-    dataObject.status = "error";
-    dataObject.message = "User role id must be provided to delete a user role.";
-    dataObject.data = {};
-    res.json(dataObject);
-  } else {
+module.exports.updateUserRole = async (req, res) => {
+  if (!req?.params?.userRoleID || req.params.userRoleID === "") {
+    res.json({
+      status: "error",
+      message: "User role id is required in url",
+      data: {},
+    });
+    return;
+  }
+  if (!req?.body?.id || req.body.id === "") {
+    res.json({
+      status: "error",
+      message: "Id is required in body",
+      data: {},
+    });
+    return;
+  }
+  if (!req?.body?.role || req.body.role === "") {
+    res.json({
+      status: "error",
+      message: "Role is required",
+      data: {},
+    });
+    return;
+  }
+  if (!req?.body?.userType || req.body.userType === "") {
+    res.json({
+      status: "error",
+      message: "User type is required",
+      data: {},
+    });
+    return;
+  }
+  if (!req?.body?.description || req.body.description === "") {
+    res.json({
+      status: "error",
+      message: "Description is required",
+      data: {},
+    });
+    return;
+  }
+  if (!req?.body?.dateAdded || req.body.dateAdded === "") {
+    res.json({
+      status: "error",
+      message: "Date added is required",
+      data: {},
+    });
+    return;
+  }
+
+  try {
     const userRoleID = req.params.userRoleID;
-    UserRoles.deleteOne({
-      id: userRoleID,
-    })
-      .select(["-_id"])
-      .then((result) => {
-        if (result && result.deletedCount === 1) {
-          dataObject.status = "success";
-          dataObject.message = `User role with user role id ${userRoleID} is deleted successfully.`;
-          dataObject.data = {};
-        } else {
-          dataObject.status = "error";
-          dataObject.message = `User role with user role id ${userRoleID} is not deleted.`;
-          dataObject.data = {};
-        }
-        res.json(dataObject);
-      })
-      .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        dataObject.data = {};
-        res.json(dataObject);
-      });
+    const foundResponseObj = await UserRolesUtility.getUserRoleByIdUtil({
+      userRoleID,
+    });
+
+    if (foundResponseObj?.status === "success") {
+      await UserRolesUtility.updateUserRoleUtil({ req, res });
+    } else {
+      res.json(foundResponseObj);
+    }
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occured in updateUserRole function when fetching user role by id in userRoles controller. ${error.message}`,
+      data: {},
+    });
+  }
+};
+
+module.exports.getUserRoleByRole = async (req, res) => {
+  if (!req?.params?.userRole || req.params.userRole === "") {
+    res.json({
+      status: "error",
+      message: "User role is required",
+      data: {},
+    });
+    return;
+  }
+
+  try {
+    const userRole = req.params.userRole;
+    const foundResponseObj = await UserRolesUtility.getUserRoleByRoleUtil({
+      userRole,
+    });
+    res.json(foundResponseObj);
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occured in getUserRoleByRole function in userRoles controller. ${error.message}`,
+      data: {},
+    });
   }
 };

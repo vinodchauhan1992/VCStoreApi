@@ -72,6 +72,7 @@ module.exports.addNewUser = async (req, res) => {
   const username = req.body.username;
   const email = req.body.email;
   const phone = req.body.phone;
+  const userType = req.body.userType;
 
   let uploadResponse = null;
   let uploadedFileStatus = "no file added";
@@ -87,11 +88,6 @@ module.exports.addNewUser = async (req, res) => {
     uploadedFileStatus = uploadResponse?.isSucceeded ? "success" : "error";
     uploadedFileMessage = uploadResponse?.message;
     uploadedFileData = uploadResponse?.fileData;
-  }
-
-  let userType = "Employee";
-  if (req.body.userRoleID === "a5c6c1be-565b-4a6d-a8bf-64384bfad3d8") {
-    userType = "Customer";
   }
 
   const user = new User({
@@ -112,11 +108,11 @@ module.exports.addNewUser = async (req, res) => {
     phone: phone,
     userRoleID: req.body.userRoleID,
     userRole: req.body.userRole,
+    userType: userType,
     userStatusID: req.body.userStatusID,
     userStatus: req.body.userStatus,
     dateOfBirth: req.body.dateOfBirth,
     imageData: uploadedFileData,
-    userType: userType,
     dateAdded: new Date(),
     dateModified: new Date(),
   });
