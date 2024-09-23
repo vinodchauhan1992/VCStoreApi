@@ -38,7 +38,9 @@ module.exports.addNewStateUtil = async ({ req, res }) => {
   const isAdminDeleteable = req.body.isAdminDeleteable;
   const dateAdded = new Date();
   const dateModified = new Date();
-  const stateCode = CommonUtility.getStateCodeFromTitle({ stateTitle });
+  const stateCode = CommonUtility.getStateCityCodeFromTitle({
+    title: stateTitle,
+  });
 
   console.log("stateCode", stateCode);
   const newStateSchema = States({
@@ -177,7 +179,9 @@ module.exports.updateStateUtil = async ({ req, res }) => {
   const isAdminDeleteable = req.body.isAdminDeleteable;
   const dateAdded = req?.body?.dateAdded ? req.body.dateAdded : new Date();
   const dateModified = new Date();
-  const stateCode = CommonUtility.getStateCodeFromTitle({ stateTitle });
+  const stateCode = CommonUtility.getStateCityCodeFromTitle({
+    title: stateTitle,
+  });
 
   const newState = {
     id: stateID,

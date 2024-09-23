@@ -125,16 +125,18 @@ module.exports.sortObjectsOfArray = (array) => {
   return newSortedObjectArray;
 };
 
-module.exports.getStateCodeFromTitle = ({ stateTitle }) => {
-  if (stateTitle && stateTitle !== "") {
-    const splittedTitleArray = stateTitle.split(" ");
+module.exports.getStateCityCodeFromTitle = ({ title }) => {
+  if (title && title !== "") {
+    const splittedTitleArray = title.split(" ");
     if (splittedTitleArray.length === 1) {
       let secondChar = "";
       if (splittedTitleArray[0].length >= 3) {
-        console.log("splittedTitleArray", splittedTitleArray[0]);
         secondChar = splittedTitleArray[0].charAt(2);
+      } else {
+        secondChar = splittedTitleArray[0].charAt(
+          splittedTitleArray[0].length - 1
+        );
       }
-      console.log("secondChar", secondChar);
       return `${splittedTitleArray[0].charAt(0)}${secondChar}`;
     } else {
       return `${splittedTitleArray[0].charAt(0)}${splittedTitleArray[
