@@ -46,6 +46,7 @@ const stocksRouteV2 = require("./routes/v2/stocks");
 const countriesV2 = require("./routes/v2/countries");
 const statesV2 = require("./routes/v2/states");
 const citiesV2 = require("./routes/v2/cities");
+const userDropdownMenuV2 = require("./routes/v2/userDropdownMenu");
 
 //middleware
 app.use(cors());
@@ -92,6 +93,7 @@ app.use("/v2/stocks", stocksRouteV2);
 app.use("/v2/countries", countriesV2);
 app.use("/v2/states", statesV2);
 app.use("/v2/cities", citiesV2);
+app.use("/v2/userDropdownMenu", userDropdownMenuV2);
 
 //mongoose
 mongoose.set("useFindAndModify", false);

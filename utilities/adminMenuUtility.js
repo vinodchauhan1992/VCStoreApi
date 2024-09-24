@@ -18,7 +18,7 @@ module.exports.checkAddAdminMenuBodyInfoValidation = async (req) => {
   if (
     req?.body?.priority === null ||
     req.body.priority === undefined ||
-    req.body.menuPath === ""
+    req.body.priority === ""
   ) {
     return {
       isSucceeded: false,
