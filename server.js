@@ -48,6 +48,28 @@ const statesV2 = require("./routes/v2/states");
 const citiesV2 = require("./routes/v2/cities");
 const userDropdownMenuV2 = require("./routes/v2/userDropdownMenu");
 
+//routes v3
+const categoriesRouteV3 = require("./routes/v3/categories");
+const productsRouteV3 = require("./routes/v3/products");
+const homeRouteV3 = require("./routes/v3/home");
+const cartRouteV3 = require("./routes/v3/cart");
+const userRouteV3 = require("./routes/v3/user");
+const authRouteV3 = require("./routes/v3/auth");
+const userRolesRouteV3 = require("./routes/v3/userRoles");
+const userStatusesRouteV3 = require("./routes/v3/userStatuses");
+const fileUploaderRouteV3 = require("./routes/v3/fileUploader");
+const fileFoldersRouteV3 = require("./routes/v3/fileFolders");
+const adminMenuRouteV3 = require("./routes/v3/adminMenu");
+const adminMenuStatusesRouteV3 = require("./routes/v3/adminMenuStatuses");
+const adminSubmenuRouteV3 = require("./routes/v3/adminSubmenu");
+const adminCombinedMenuRouteV3 = require("./routes/v3/adminCombinedMenu");
+const brandsRouteV3 = require("./routes/v3/brands");
+const stocksRouteV3 = require("./routes/v3/stocks");
+const countriesV3 = require("./routes/v3/countries");
+const statesV3 = require("./routes/v3/states");
+const citiesV3 = require("./routes/v3/cities");
+const userDropdownMenuV3 = require("./routes/v3/userDropdownMenu");
+
 //middleware
 app.use(cors());
 
@@ -94,6 +116,28 @@ app.use("/v2/countries", countriesV2);
 app.use("/v2/states", statesV2);
 app.use("/v2/cities", citiesV2);
 app.use("/v2/userDropdownMenu", userDropdownMenuV2);
+
+// use v3
+app.use("/", homeRouteV3);
+app.use("/v3/categories", categoriesRouteV3);
+app.use("/v3/products", productsRouteV3);
+app.use("/v3/carts", cartRouteV3);
+app.use("/v3/users", userRouteV3);
+app.use("/v3/auth", authRouteV3);
+app.use("/v3/userRoles", userRolesRouteV3);
+app.use("/v3/userStatuses", userStatusesRouteV3);
+app.use("/v3/fileUploader", fileUploaderRouteV3);
+app.use("/v3/fileFolders", fileFoldersRouteV3);
+app.use("/v3/adminMenu", adminMenuRouteV3);
+app.use("/v3/adminMenuStatuses", adminMenuStatusesRouteV3);
+app.use("/v3/adminSubmenu", adminSubmenuRouteV3);
+app.use("/v3/adminCombinedMenu", adminCombinedMenuRouteV3);
+app.use("/v3/brands", brandsRouteV3);
+app.use("/v3/stocks", stocksRouteV3);
+app.use("/v3/countries", countriesV3);
+app.use("/v3/states", statesV3);
+app.use("/v3/cities", citiesV3);
+app.use("/v3/userDropdownMenu", userDropdownMenuV3);
 
 //mongoose
 mongoose.set("useFindAndModify", false);
