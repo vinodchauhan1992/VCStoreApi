@@ -83,8 +83,8 @@ module.exports.addNewCityUtil = async ({ req, res }) => {
 };
 
 module.exports.getAllCitiesUtil = async ({ req }) => {
-  const limit = Number(req.query.limit) || 0;
-  const sort = req.query.sort == "desc" ? -1 : 1;
+  const limit = req?.body?.limit ? Number(req.body.limit) : 0;
+  const sort = req.body.sort == "desc" ? -1 : 1;
   return await Cities.find()
     .select(["-_id"])
     .limit(limit)
@@ -173,13 +173,12 @@ module.exports.deleteCityDataUtil = async ({ res, cityID }) => {
 };
 
 module.exports.updateCityUtil = async ({ req, res }) => {
-  const cityID = req.params.cityID;
+  const cityID = req.body.id;
   const stateID = req.body.stateID;
   const countryID = req.body.countryID;
   const cityTitle = req.body.title;
   const isDeleteable = req.body.isDeleteable;
   const isAdminDeleteable = req.body.isAdminDeleteable;
-  const dateAdded = req?.body?.dateAdded ? req.body.dateAdded : new Date();
   const dateModified = new Date();
   const cityCode = CommonUtility.getStateCityCodeFromTitle({
     title: cityTitle,
@@ -192,7 +191,6 @@ module.exports.updateCityUtil = async ({ req, res }) => {
     countryID: countryID,
     isDeleteable: isDeleteable,
     isAdminDeleteable: isAdminDeleteable,
-    dateAdded: dateAdded,
     dateModified: dateModified,
   };
   const updatedCitySet = {
@@ -227,7 +225,7 @@ module.exports.getCitiesByStateIdUtil = async ({
   allCitiesRespDataObject,
   req,
 }) => {
-  const stateID = req.params.stateID;
+  const stateID = req.body.stateID;
   const dataArray = allCitiesRespDataObject?.data ?? [];
   const newCitiesArray = [];
   dataArray.map((dataObject) => {
@@ -253,7 +251,7 @@ module.exports.getCitiesByCountryIdUtil = async ({
   allCitiesRespDataObject,
   req,
 }) => {
-  const countryID = req.params.countryID;
+  const countryID = req.body.countryID;
   const dataArray = allCitiesRespDataObject?.data ?? [];
   const newCitiesArray = [];
   dataArray.map((dataObject) => {

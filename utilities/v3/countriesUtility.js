@@ -105,8 +105,8 @@ module.exports.addNewCountryUtil = async ({ req, res }) => {
 };
 
 module.exports.getAllCountriesUtil = async ({ req }) => {
-  const limit = Number(req.query.limit) || 0;
-  const sort = req.query.sort == "desc" ? -1 : 1;
+  const limit = req?.body?.limit ? Number(req.body.limit) : 0;
+  const sort = req.body.sort == "desc" ? -1 : 1;
 
   return await Countries.find()
     .select(["-_id"])
@@ -196,12 +196,11 @@ module.exports.deleteCountryDataUtil = async ({ res, countryID }) => {
 };
 
 module.exports.updateCountryUtil = async ({ req, res }) => {
-  const countryID = req.params.countryID;
+  const countryID = req.body.id;
   const countryTitle = req.body.title;
   const countryCode = req.body.code;
   const isDeleteable = req.body.isDeleteable;
   const isAdminDeleteable = req.body.isAdminDeleteable;
-  const dateAdded = req?.body?.dateAdded ? req.body.dateAdded : new Date();
   const dateModified = new Date();
 
   const newCountry = {
@@ -210,7 +209,6 @@ module.exports.updateCountryUtil = async ({ req, res }) => {
     code: countryCode,
     isDeleteable: isDeleteable,
     isAdminDeleteable: isAdminDeleteable,
-    dateAdded: dateAdded,
     dateModified: dateModified,
   };
 

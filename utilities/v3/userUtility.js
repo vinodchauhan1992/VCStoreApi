@@ -5,6 +5,170 @@ const {
   updateUploadedFileInFirebaseStorage,
 } = require("./fileManagerUtility");
 const CommonUtility = require("./commonUtility");
+const CountriesUtility = require("./countriesUtility");
+const StatesUtility = require("./statesUtility");
+const CitiesUtility = require("./citiesUtility");
+const UserRolesUtility = require("./userRolesUtility");
+const UserStatusesUtility = require("./userStatusesUtility");
+
+module.exports.getCountryDetailsByCountryId = async ({ countryID }) => {
+  const foundCountryObject = await CountriesUtility.getCountryByIdUtil({
+    countryID: countryID,
+  });
+  if (foundCountryObject.status === "success") {
+    return foundCountryObject;
+  }
+  return {
+    status: foundCountryObject?.status,
+    message: foundCountryObject?.message,
+    data: {
+      countryID: countryID,
+    },
+  };
+};
+
+module.exports.getStateDetailsByStateId = async ({ stateID }) => {
+  const foundStateObject = await StatesUtility.getStateByIdUtil({
+    stateID: stateID,
+  });
+  if (foundStateObject.status === "success") {
+    return foundStateObject;
+  }
+  return {
+    status: foundStateObject?.status,
+    message: foundStateObject?.message,
+    data: {
+      stateID: stateID,
+    },
+  };
+};
+
+module.exports.getCityDetailsByCityId = async ({ cityID }) => {
+  const foundCityObject = await CitiesUtility.getCityByIdUtil({
+    cityID: cityID,
+  });
+  if (foundCityObject.status === "success") {
+    return foundCityObject;
+  }
+  return {
+    status: foundCityObject?.status,
+    message: foundCityObject?.message,
+    data: {
+      cityID: cityID,
+    },
+  };
+};
+
+module.exports.getUserRoleDetailsByUserRoleId = async ({ userRoleID }) => {
+  const foundUserRoleObject = await UserRolesUtility.getUserRoleByIdUtil({
+    userRoleID: userRoleID,
+  });
+  if (foundUserRoleObject.status === "success") {
+    return foundUserRoleObject;
+  }
+  return {
+    status: foundUserRoleObject?.status,
+    message: foundUserRoleObject?.message,
+    data: {
+      userRoleID: userRoleID,
+    },
+  };
+};
+
+module.exports.getUserStatusDetailsByUserStatusId = async ({
+  userStatusID,
+}) => {
+  const foundUserStatusObject =
+    await UserStatusesUtility.getUserStatusByUserStatusIdUtil({
+      userStatusID: userStatusID,
+    });
+  if (foundUserStatusObject.status === "success") {
+    return foundUserStatusObject;
+  }
+  return {
+    status: foundUserStatusObject?.status,
+    message: foundUserStatusObject?.message,
+    data: {
+      userStatusID: userStatusID,
+    },
+  };
+};
+
+module.exports.getAddressRelatedDetails = async ({ userData }) => {
+  const countryID = userData.address.countryID;
+  const foundCountryObject = await this.getCountryDetailsByCountryId({
+    countryID: countryID,
+  });
+
+  const stateID = userData.address.stateID;
+  const foundStateObject = await this.getStateDetailsByStateId({
+    stateID: stateID,
+  });
+
+  const cityID = userData.address.cityID;
+  const foundCityObject = await this.getCityDetailsByCityId({
+    cityID: cityID,
+  });
+  return {
+    countryDetails: foundCountryObject.data,
+    stateDetails: foundStateObject.data,
+    cityDetails: foundCityObject.data,
+  };
+};
+
+module.exports.getUserRoleAndStatusRelatedDetails = async ({ userData }) => {
+  const userRoleID = userData.userRoleID;
+  const foundUserRoleObject = await this.getUserRoleDetailsByUserRoleId({
+    userRoleID: userRoleID,
+  });
+
+  const userStatusID = userData.userStatusID;
+  const foundUserStatusObject = await this.getUserStatusDetailsByUserStatusId({
+    userStatusID: userStatusID,
+  });
+
+  return {
+    userRoleDetails: foundUserRoleObject.data,
+    userStatusDetails: foundUserStatusObject.data,
+  };
+};
+
+module.exports.getSingleUserWithAllDetails = async ({ userData }) => {
+  const { countryDetails, stateDetails, cityDetails } =
+    await this.getAddressRelatedDetails({ userData });
+  const { userRoleDetails, userStatusDetails } =
+    await this.getUserRoleAndStatusRelatedDetails({ userData });
+  return {
+    id: userData?.id,
+    email: userData?.email,
+    username: userData?.username,
+    password: userData?.password,
+    name: userData?.name,
+    address: {
+      address: userData?.address?.address,
+      countryDetails: countryDetails,
+      cityDetails: cityDetails,
+      stateDetails: stateDetails,
+      zipcode: userData?.address?.zipcode,
+    },
+    phone: userData?.phone,
+    userRoleDetails: userRoleDetails,
+    userStatusDetails: userStatusDetails,
+    imageData: userData?.imageData,
+    dateOfBirth: userData?.dateOfBirth,
+    dateAdded: userData?.dateAdded,
+    dateModified: userData?.dateModified,
+  };
+};
+
+module.exports.getAllUsersWithAllDetails = async ({ allUsers }) => {
+  return Promise.all(
+    allUsers?.map(async (userData) => {
+      const userDetails = await this.getSingleUserWithAllDetails({ userData });
+      return userDetails;
+    })
+  );
+};
 
 module.exports.checkAddUserBodyInfoValidation = (req) => {
   if (!req?.body?.email || req.body.email === "") {
@@ -49,22 +213,10 @@ module.exports.checkAddUserBodyInfoValidation = (req) => {
       message: "User role id is required.",
     };
   }
-  if (!req?.body?.userRole || req.body.userRole === "") {
-    return {
-      isSucceeded: false,
-      message: "User role is required.",
-    };
-  }
   if (!req?.body?.userStatusID || req.body.userStatusID === "") {
     return {
       isSucceeded: false,
       message: "User status id is required.",
-    };
-  }
-  if (!req?.body?.userStatus || req.body.userStatus === "") {
-    return {
-      isSucceeded: false,
-      message: "User status is required.",
     };
   }
   if (!req?.body?.dateOfBirth || req.body.dateOfBirth.toString() === "") {
@@ -73,10 +225,22 @@ module.exports.checkAddUserBodyInfoValidation = (req) => {
       message: "Date of birth is required.",
     };
   }
-  if (!req?.body?.userType || req.body.userType === "") {
+  if (!req?.body?.countryID || req.body.countryID === "") {
     return {
       isSucceeded: false,
-      message: "User type is required.",
+      message: "Country id is required.",
+    };
+  }
+  if (!req?.body?.stateID || req.body.stateID === "") {
+    return {
+      isSucceeded: false,
+      message: "State id is required.",
+    };
+  }
+  if (!req?.body?.cityID || req.body.cityID === "") {
+    return {
+      isSucceeded: false,
+      message: "City id is required.",
     };
   }
 
@@ -196,14 +360,17 @@ module.exports.checkUserExistenceByUserIDInDB = async ({ userID }) => {
     id: userID,
   })
     .select(["-_id"])
-    .then((respondedUser) => {
+    .then(async (respondedUser) => {
       if (respondedUser && Object.keys(respondedUser).length > 0) {
+        const fullDetailsUser = await this.getSingleUserWithAllDetails({
+          userData: CommonUtility.sortObject(respondedUser),
+        });
         return {
           isUserExists: true,
           isSucceeded: true,
           isCatchError: false,
           message: `User with userID '${userID}' is already exists.`,
-          data: CommonUtility.sortObject(respondedUser),
+          data: CommonUtility.sortObject(fullDetailsUser),
         };
       } else {
         return {
@@ -293,12 +460,15 @@ module.exports.deleteUploadedUserImageToFS = async ({ fileUrl }) => {
 module.exports.addNewUserUtil = async ({ userSchema, res }) => {
   return await userSchema
     .save()
-    .then((respondedUser) => {
+    .then(async (respondedUser) => {
       if (respondedUser && Object.keys(respondedUser).length > 0) {
+        const fullDetailsUser = await this.getSingleUserWithAllDetails({
+          userData: CommonUtility.sortObject(respondedUser),
+        });
         res.json({
           status: "success",
           message: `New user is added successfully.`,
-          data: respondedUser,
+          data: CommonUtility.sortObject(fullDetailsUser),
         });
       } else {
         res.json({
@@ -367,12 +537,6 @@ module.exports.checkUpdateUserInfoValidation = async (req) => {
     return {
       isSucceeded: false,
       message: responseCheck.message,
-    };
-  }
-  if (!req?.params?.userID || req.params.userID === "") {
-    return {
-      isSucceeded: false,
-      message: "User id is required in url.",
     };
   }
   if (!req?.body?.id || req.body.id === "") {
@@ -444,15 +608,14 @@ module.exports.updateExistingUser = async ({
     },
     address: {
       address: req.body.address,
-      city: req.body.city,
-      state: req.body.state,
+      countryID: req.body.countryID,
+      cityID: req.body.cityID,
+      stateID: req.body.stateID,
       zipcode: req.body.zipcode,
     },
     phone: phone,
     userRoleID: req.body.userRoleID,
-    userRole: req.body.userRole,
     userStatusID: req.body.userStatusID,
-    userStatus: req.body.userStatus,
     dateOfBirth: req.body.dateOfBirth,
     imageData: updatedUploadedFileData
       ? updatedUploadedFileData
@@ -466,12 +629,15 @@ module.exports.updateExistingUser = async ({
   };
 
   return await User.updateOne({ id: userID }, updatedUserSet)
-    .then((respondedUser) => {
+    .then(async (respondedUser) => {
       if (respondedUser && Object.keys(respondedUser).length > 0) {
+        const fullDetailsUser = await this.getSingleUserWithAllDetails({
+          userData: CommonUtility.sortObject(newUser),
+        });
         res.json({
           status: "success",
           message: `User is updated successfully.`,
-          data: newUser,
+          data: CommonUtility.sortObject(fullDetailsUser),
         });
       } else {
         res.json({

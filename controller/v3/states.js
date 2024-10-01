@@ -14,7 +14,7 @@ module.exports.getAllStates = async (req, res) => {
 };
 
 module.exports.getStateById = async (req, res) => {
-  if (!req?.params?.stateID || req.params.stateID === "") {
+  if (!req?.body?.stateID || req.body.stateID === "") {
     res.json({
       status: "error",
       message: "State id is required in url.",
@@ -23,7 +23,7 @@ module.exports.getStateById = async (req, res) => {
     return;
   }
   try {
-    const stateID = req.params.stateID;
+    const stateID = req.body.stateID;
     const foundDataObj = await StatesUtility.getStateByIdUtil({
       stateID,
     });
@@ -90,18 +90,10 @@ module.exports.addState = async (req, res) => {
 };
 
 module.exports.updateState = async (req, res) => {
-  if (!req?.params?.stateID || req.params.stateID === "") {
-    res.json({
-      status: "error",
-      message: "State id is required in url.",
-      data: {},
-    });
-    return;
-  }
   if (!req?.body?.id || req.body.id === "") {
     res.json({
       status: "error",
-      message: "Id is required in body.",
+      message: "Id is required.",
       data: {},
     });
     return;
@@ -142,7 +134,7 @@ module.exports.updateState = async (req, res) => {
     return;
   }
   try {
-    const stateID = req.params.stateID;
+    const stateID = req.body.id;
     const foundDataObj = await StatesUtility.getStateByIdUtil({
       stateID,
     });
@@ -161,7 +153,7 @@ module.exports.updateState = async (req, res) => {
 };
 
 module.exports.deleteState = async (req, res) => {
-  if (!req?.params?.stateID || req.params.stateID === "") {
+  if (!req?.body?.stateID || req.body.stateID === "") {
     res.json({
       status: "error",
       message: "State id is required in url.",
@@ -170,7 +162,7 @@ module.exports.deleteState = async (req, res) => {
     return;
   }
   try {
-    const stateID = req.params.stateID;
+    const stateID = req.body.stateID;
     const foundDataObj = await StatesUtility.getStateByIdUtil({
       stateID,
     });
@@ -189,7 +181,7 @@ module.exports.deleteState = async (req, res) => {
 };
 
 module.exports.getStatesByCountryId = async (req, res) => {
-  if (!req?.params?.countryID || req.params.countryID === "") {
+  if (!req?.body?.countryID || req.body.countryID === "") {
     res.json({
       status: "error",
       message: "Country id is required in url.",

@@ -3,8 +3,8 @@ const CommonUtility = require("../../utilities/v3/commonUtility");
 const UserRolesUtility = require("../../utilities/v3/userRolesUtility");
 
 module.exports.getAllUserRoles = (req, res) => {
-  const limit = Number(req.query.limit) || 0;
-  const sort = req.query.sort == "desc" ? -1 : 1;
+  const limit = req?.body?.limit ? Number(req.body.limit) : 0;
+  const sort = req?.body?.sort == "desc" ? -1 : 1;
 
   UserRoles.find()
     .select(["-_id"])
@@ -36,17 +36,17 @@ module.exports.getAllUserRoles = (req, res) => {
 };
 
 module.exports.getUserRoleByID = async (req, res) => {
-  if (!req?.params?.userRoleID || req.params.userRoleID === "") {
+  if (!req?.body?.userRoleID || req.body.userRoleID === "") {
     res.json({
       status: "error",
-      message: "User role id should be provided",
+      message: "User role id is required",
       data: {},
     });
     return;
   }
 
   try {
-    const userRoleID = req.params.userRoleID;
+    const userRoleID = req.body.userRoleID;
     const foundResponseObj = await UserRolesUtility.getUserRoleByIdUtil({
       userRoleID,
     });
@@ -77,17 +77,9 @@ module.exports.addUserRole = async (req, res) => {
     });
     return;
   }
-  if (!req.body.userType || req.body.userType === "") {
-    res.json({
-      status: "error",
-      message: "User type is required.",
-      data: {},
-    });
-    return;
-  }
 
   try {
-    const userRole = req.params.userRole;
+    const userRole = req.body.role;
     const foundResponseObj = await UserRolesUtility.getUserRoleByRoleUtil({
       userRole,
     });
@@ -106,17 +98,17 @@ module.exports.addUserRole = async (req, res) => {
 };
 
 module.exports.deleteUserRole = async (req, res) => {
-  if (!req?.params?.userRoleID || req.params.userRoleID === "") {
+  if (!req?.body?.userRoleID || req.body.userRoleID === "") {
     res.json({
       status: "error",
-      message: "User role id is required in url.",
+      message: "User role id is required.",
       data: {},
     });
     return;
   }
 
   try {
-    const userRoleID = req.params.userRoleID;
+    const userRoleID = req.body.userRoleID;
     const foundResponseObj = await UserRolesUtility.getUserRoleByIdUtil({
       userRoleID,
     });
@@ -136,18 +128,10 @@ module.exports.deleteUserRole = async (req, res) => {
 };
 
 module.exports.updateUserRole = async (req, res) => {
-  if (!req?.params?.userRoleID || req.params.userRoleID === "") {
-    res.json({
-      status: "error",
-      message: "User role id is required in url",
-      data: {},
-    });
-    return;
-  }
   if (!req?.body?.id || req.body.id === "") {
     res.json({
       status: "error",
-      message: "Id is required in body",
+      message: "Id is required",
       data: {},
     });
     return;
@@ -156,14 +140,6 @@ module.exports.updateUserRole = async (req, res) => {
     res.json({
       status: "error",
       message: "Role is required",
-      data: {},
-    });
-    return;
-  }
-  if (!req?.body?.userType || req.body.userType === "") {
-    res.json({
-      status: "error",
-      message: "User type is required",
       data: {},
     });
     return;
@@ -186,7 +162,7 @@ module.exports.updateUserRole = async (req, res) => {
   }
 
   try {
-    const userRoleID = req.params.userRoleID;
+    const userRoleID = req.body.id;
     const foundResponseObj = await UserRolesUtility.getUserRoleByIdUtil({
       userRoleID,
     });
@@ -206,7 +182,7 @@ module.exports.updateUserRole = async (req, res) => {
 };
 
 module.exports.getUserRoleByRole = async (req, res) => {
-  if (!req?.params?.userRole || req.params.userRole === "") {
+  if (!req?.body?.userRole || req.body.userRole === "") {
     res.json({
       status: "error",
       message: "User role is required",
@@ -216,7 +192,7 @@ module.exports.getUserRoleByRole = async (req, res) => {
   }
 
   try {
-    const userRole = req.params.userRole;
+    const userRole = req.body.userRole;
     const foundResponseObj = await UserRolesUtility.getUserRoleByRoleUtil({
       userRole,
     });

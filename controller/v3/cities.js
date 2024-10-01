@@ -14,7 +14,7 @@ module.exports.getAllCities = async (req, res) => {
 };
 
 module.exports.getCityById = async (req, res) => {
-  if (!req?.params?.cityID || req.params.cityID === "") {
+  if (!req?.body?.cityID || req.body.cityID === "") {
     res.json({
       status: "error",
       message: "City id is required in url.",
@@ -23,7 +23,7 @@ module.exports.getCityById = async (req, res) => {
     return;
   }
   try {
-    const cityID = req.params.cityID;
+    const cityID = req.body.cityID;
     const foundDataObj = await CitiesUtility.getCityByIdUtil({
       cityID,
     });
@@ -98,18 +98,10 @@ module.exports.addCity = async (req, res) => {
 };
 
 module.exports.updateCity = async (req, res) => {
-  if (!req?.params?.cityID || req.params.cityID === "") {
-    res.json({
-      status: "error",
-      message: "City id is required in url.",
-      data: {},
-    });
-    return;
-  }
   if (!req?.body?.id || req.body.id === "") {
     res.json({
       status: "error",
-      message: "Id is required in body.",
+      message: "Id is required.",
       data: {},
     });
     return;
@@ -158,7 +150,7 @@ module.exports.updateCity = async (req, res) => {
     return;
   }
   try {
-    const cityID = req.params.cityID;
+    const cityID = req.body.id;
     const foundDataObj = await CitiesUtility.getCityByIdUtil({
       cityID,
     });
@@ -177,16 +169,16 @@ module.exports.updateCity = async (req, res) => {
 };
 
 module.exports.deleteCity = async (req, res) => {
-  if (!req?.params?.cityID || req.params.cityID === "") {
+  if (!req?.body?.cityID || req.body.cityID === "") {
     res.json({
       status: "error",
-      message: "State id is required in url.",
+      message: "City id is required.",
       data: {},
     });
     return;
   }
   try {
-    const cityID = req.params.cityID;
+    const cityID = req.body.cityID;
     const foundDataObj = await CitiesUtility.getCityByIdUtil({
       cityID,
     });
@@ -205,10 +197,10 @@ module.exports.deleteCity = async (req, res) => {
 };
 
 module.exports.getCitiesByStateId = async (req, res) => {
-  if (!req?.params?.stateID || req.params.stateID === "") {
+  if (!req?.body?.stateID || req.body.stateID === "") {
     res.json({
       status: "error",
-      message: "State id is required in url.",
+      message: "State id is required.",
       data: {},
     });
     return;
@@ -237,10 +229,10 @@ module.exports.getCitiesByStateId = async (req, res) => {
 };
 
 module.exports.getCitiesByCountryId = async (req, res) => {
-  if (!req?.params?.countryID || req.params.countryID === "") {
+  if (!req?.body?.countryID || req.body.countryID === "") {
     res.json({
       status: "error",
-      message: "Country id is required in url.",
+      message: "Country id is required.",
       data: {},
     });
     return;

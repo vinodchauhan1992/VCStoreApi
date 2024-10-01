@@ -5,8 +5,8 @@ const CategoryUtility = require("../../utilities/v3/categoryUtility");
 var dataObject = { status: "success", message: "", data: [] };
 
 module.exports.getAllProductCategories = (req, res) => {
-  const limit = Number(req.query.limit) || 0;
-  const sort = req.query.sort == "desc" ? -1 : 1;
+  const limit = req?.body?.limit ? Number(req.body.limit) : 0;
+  const sort = req?.body?.sort == "desc" ? -1 : 1;
 
   Categories.find()
     .select(["-_id"])
@@ -37,19 +37,21 @@ module.exports.getAllProductCategories = (req, res) => {
     });
 };
 
-module.exports.getProductCategory = async (req, res) => {
-  if (!req?.params?.categoryID || req.params.categoryID === "") {
-    dataObject.status = "error";
-    dataObject.message = "Category id should be provided";
-    res.json(dataObject);
-  } else {
-    const categoryID = req.params.categoryID;
-
-    const foundCategoryResponse = await CategoryUtility.getCategoryById({
-      categoryID,
+module.exports.getProductCategoryById = async (req, res) => {
+  if (!req?.body?.categoryID || req.body.categoryID === "") {
+    res.json({
+      status: "error",
+      message: "Category id is required",
+      data: {},
     });
-    res.json(foundCategoryResponse);
+    return;
   }
+  const categoryID = req.body.categoryID;
+
+  const foundCategoryResponse = await CategoryUtility.getCategoryById({
+    categoryID,
+  });
+  res.json(foundCategoryResponse);
 };
 
 module.exports.addProductCategory = async (req, res) => {
@@ -118,81 +120,83 @@ module.exports.addProductCategory = async (req, res) => {
 };
 
 module.exports.deleteProductCategory = async (req, res) => {
-  if (req.params.categoryID == null) {
-    dataObject.status = "error";
-    dataObject.message = "Category id must be provided to delete a category.";
-    dataObject.data = {};
-    res.json(dataObject);
-  } else {
-    const categoryID = req.params.categoryID;
+  if (!req?.body?.categoryID || req.body.categoryID === "") {
+    res.json({
+      status: "error",
+      message: "Category id must be provided to delete a category.",
+      data: {},
+    });
+    return;
+  }
 
-    Categories.findOne({
-      id: categoryID,
-    })
-      .select(["-_id"])
-      .then((category) => {
-        if (category && Object.keys(category).length > 0) {
-          Categories.deleteOne({
-            id: categoryID,
-          })
-            .select(["-_id"])
-            .then(async (result) => {
-              if (result && result.deletedCount === 1) {
-                if (
-                  category?.imageData?.imageUrl &&
-                  category.imageData.imageUrl !== ""
-                ) {
-                  const deleteFileResp =
-                    await CategoryUtility.deleteUploadedCategoryImageToFS({
-                      fileUrl: category?.imageData?.imageUrl,
-                    });
-                  let msg = `Category with category id ${categoryID} is deleted successfully with category image.`;
-                  if (!deleteFileResp.isSucceeded) {
-                    msg = `Category with category id ${categoryID} is deleted successfully but category image is not deleted. FileDeletionError: ${deleteFileResp?.message}`;
-                  }
-                  res.json({
-                    status: "success",
-                    message: msg,
-                    data: {},
+  const categoryID = req.body.categoryID;
+
+  Categories.findOne({
+    id: categoryID,
+  })
+    .select(["-_id"])
+    .then((category) => {
+      if (category && Object.keys(category).length > 0) {
+        Categories.deleteOne({
+          id: categoryID,
+        })
+          .select(["-_id"])
+          .then(async (result) => {
+            if (result && result.deletedCount === 1) {
+              if (
+                category?.imageData?.imageUrl &&
+                category.imageData.imageUrl !== ""
+              ) {
+                const deleteFileResp =
+                  await CategoryUtility.deleteUploadedCategoryImageToFS({
+                    fileUrl: category?.imageData?.imageUrl,
                   });
-                } else {
-                  res.json({
-                    status: "success",
-                    message: `Category with category id ${categoryID} is deleted successfully.`,
-                    data: {},
-                  });
+                let msg = `Category with category id ${categoryID} is deleted successfully with category image.`;
+                if (!deleteFileResp.isSucceeded) {
+                  msg = `Category with category id ${categoryID} is deleted successfully but category image is not deleted. FileDeletionError: ${deleteFileResp?.message}`;
                 }
+                res.json({
+                  status: "success",
+                  message: msg,
+                  data: {},
+                });
               } else {
                 res.json({
-                  status: "error",
-                  message: `Category with category id ${categoryID} is not deleted.`,
+                  status: "success",
+                  message: `Category with category id ${categoryID} is deleted successfully.`,
                   data: {},
                 });
               }
-            })
-            .catch((err) => {
+            } else {
               res.json({
                 status: "error",
-                message: `There is an error occurred. ${err.message}`,
+                message: `Category with category id ${categoryID} is not deleted.`,
                 data: {},
               });
+            }
+          })
+          .catch((err) => {
+            res.json({
+              status: "error",
+              message: `There is an error occurred. ${err.message}`,
+              data: {},
             });
-        } else {
-          res.json({
-            status: "error",
-            message: `There is no category exists with categoryID ${categoryID}.`,
-            data: {},
           });
-        }
-      })
-      .catch((err) => {
+      } else {
         res.json({
           status: "error",
-          message: `There is an error occurred. ${err.message}`,
+          message: `There is no category exists with categoryID ${categoryID}.`,
           data: {},
         });
+      }
+    })
+    .catch((err) => {
+      res.json({
+        status: "error",
+        message: `There is an error occurred. ${err.message}`,
+        data: {},
       });
-  }
+    });
 };
 
 module.exports.updateProductCategory = async (req, res) => {
@@ -200,14 +204,6 @@ module.exports.updateProductCategory = async (req, res) => {
     res.json({
       status: "error",
       message: "Send all required data to update a category.",
-      data: {},
-    });
-    return;
-  }
-  if (!req?.params?.categoryID || req.params.categoryID === "") {
-    res.json({
-      status: "error",
-      message: "Send category id in url.",
       data: {},
     });
     return;

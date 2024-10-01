@@ -2,11 +2,9 @@ const User = require("../../model/v3/user");
 const CommonUtility = require("../../utilities/v3/commonUtility");
 const UserUtility = require("../../utilities/v3/userUtility");
 
-var dataObject = { status: "success", message: "", data: [] };
-
-module.exports.getAllUser = (req, res) => {
-  const limit = Number(req.query.limit) || 0;
-  const sort = req.query.sort == "desc" ? -1 : 1;
+module.exports.getAllUser = async (req, res) => {
+  const limit = req?.body?.limit ? Number(req.body.limit) : 0;
+  const sort = req.body.sort == "desc" ? -1 : 1;
 
   User.find()
     .select(["-_id"])
@@ -14,12 +12,15 @@ module.exports.getAllUser = (req, res) => {
     .sort({
       id: sort,
     })
-    .then((users) => {
+    .then(async (users) => {
+      const fullDetailsUsers = await UserUtility.getAllUsersWithAllDetails({
+        allUsers: CommonUtility.sortObjectsOfArray(users),
+      });
       if (users && users.length > 0) {
         res.json({
           status: "success",
           message: "Users fetched successfully.",
-          data: CommonUtility.sortObjectsOfArray(users),
+          data: fullDetailsUsers,
         });
       } else {
         res.json({
@@ -40,24 +41,24 @@ module.exports.getAllUser = (req, res) => {
 };
 
 module.exports.getUserByID = async (req, res) => {
-  if (!req?.params?.userID || req.params.userID === "") {
+  if (!req?.body?.userID || req.body.userID === "") {
     res.json({
       status: "error",
       message: "User id is required to get user by id.",
       data: {},
     });
-  } else {
-    const userID = req.params.userID;
-    const { isSucceeded, message, data } =
-      await UserUtility.checkUserExistenceByUserIDInDB({
-        userID: userID,
-      });
-    res.json({
-      status: isSucceeded ? "success" : "error",
-      message: message,
-      data: data,
-    });
+    return;
   }
+  const userID = req.body.userID;
+  const { isSucceeded, message, data } =
+    await UserUtility.checkUserExistenceByUserIDInDB({
+      userID: userID,
+    });
+  res.json({
+    status: isSucceeded ? "success" : "error",
+    message: message,
+    data: data,
+  });
 };
 
 module.exports.addNewUser = async (req, res) => {
@@ -72,7 +73,6 @@ module.exports.addNewUser = async (req, res) => {
   const username = req.body.username;
   const email = req.body.email;
   const phone = req.body.phone;
-  const userType = req.body.userType;
 
   let uploadResponse = null;
   let uploadedFileStatus = "no file added";
@@ -101,16 +101,14 @@ module.exports.addNewUser = async (req, res) => {
     },
     address: {
       address: req.body.address,
-      city: req.body.city,
-      state: req.body.state,
+      countryID: req.body.countryID,
+      cityID: req.body.cityID,
+      stateID: req.body.stateID,
       zipcode: req.body.zipcode,
     },
     phone: phone,
     userRoleID: req.body.userRoleID,
-    userRole: req.body.userRole,
-    userType: userType,
     userStatusID: req.body.userStatusID,
-    userStatus: req.body.userStatus,
     dateOfBirth: req.body.dateOfBirth,
     imageData: uploadedFileData,
     dateAdded: new Date(),
@@ -139,33 +137,33 @@ module.exports.addNewUser = async (req, res) => {
 };
 
 module.exports.deleteUser = async (req, res) => {
-  if (req.params.userID == null) {
+  if (!req?.body?.userID || req.body.userID === "") {
     res.json({
       status: "error",
-      message: "User id must be provided to delete a user.",
+      message: "User id is required.",
       data: {},
     });
+    return;
+  }
+  const userID = req.body.userID;
+
+  const { isSucceeded, isUserExists, isCatchError, message, data } =
+    await UserUtility.checkUserExistenceByUserIDInDB({
+      userID: userID,
+    });
+
+  if (isUserExists && isSucceeded) {
+    await UserUtility.deleteUserUtil({
+      userID: userID,
+      imageData: data?.imageData ?? null,
+      res: res,
+    });
   } else {
-    const userID = req.params.userID;
-
-    const { isSucceeded, isUserExists, isCatchError, message, data } =
-      await UserUtility.checkUserExistenceByUserIDInDB({
-        userID: userID,
-      });
-
-    if (isUserExists && isSucceeded) {
-      await UserUtility.deleteUserUtil({
-        userID: userID,
-        imageData: data?.imageData ?? null,
-        res: res,
-      });
-    } else {
-      res.json({
-        status: isSucceeded ? "success" : "error",
-        message: message,
-        data: data,
-      });
-    }
+    res.json({
+      status: isSucceeded ? "success" : "error",
+      message: message,
+      data: data,
+    });
   }
 };
 
@@ -185,7 +183,7 @@ module.exports.updateUser = async (req, res) => {
 };
 
 module.exports.updateUserRole = async (req, res) => {
-  if (!req?.params?.userID || req.params.userID === "") {
+  if (!req?.body?.userID || req.body.userID === "") {
     res.json({
       status: "error",
       message: "User id is required.",
@@ -201,27 +199,12 @@ module.exports.updateUserRole = async (req, res) => {
     });
     return;
   }
-  if (!req?.body?.userRole || req.body.userRole === "") {
-    res.json({
-      status: "error",
-      message: "User role is required.",
-      data: {},
-    });
-    return;
-  }
 
-  const userID = req.params.userID;
-
-  let userType = "Employee";
-  if (req.body.userRoleID === "a5c6c1be-565b-4a6d-a8bf-64384bfad3d8") {
-    userType = "Customer";
-  }
+  const userID = req.body.userID;
 
   const updatedUserRoleUser = {
     id: userID,
     userRoleID: req.body.userRoleID,
-    userRole: req.body.userRole,
-    userType: userType,
     dateModified: new Date(),
   };
 
@@ -234,12 +217,12 @@ module.exports.updateUserRole = async (req, res) => {
 
   if (isUserExists && isSucceeded) {
     User.updateOne({ id: userID }, updatedUserRoleUserSet)
-      .then((respondedUser) => {
+      .then(async (respondedUser) => {
         if (respondedUser && Object.keys(respondedUser).length > 0) {
           res.json({
             status: "success",
             message: `User role is updated successfully.`,
-            data: data,
+            data: CommonUtility.sortObject(data),
           });
         } else {
           res.json({
@@ -266,7 +249,7 @@ module.exports.updateUserRole = async (req, res) => {
 };
 
 module.exports.updateUserStatus = async (req, res) => {
-  if (!req?.params?.userID || req.params.userID === "") {
+  if (!req?.body?.userID || req.body.userID === "") {
     res.json({
       status: "error",
       message: "User id is required.",
@@ -282,21 +265,12 @@ module.exports.updateUserStatus = async (req, res) => {
     });
     return;
   }
-  if (!req?.body?.userStatus || req.body.userStatus === "") {
-    res.json({
-      status: "error",
-      message: "User status is required.",
-      data: {},
-    });
-    return;
-  }
 
-  const userID = req.params.userID;
+  const userID = req.body.userID;
 
   const updatedUserStatusUser = {
     id: userID,
     userStatusID: req.body.userStatusID,
-    userStatus: req.body.userStatus,
     dateModified: new Date(),
   };
 
@@ -309,12 +283,12 @@ module.exports.updateUserStatus = async (req, res) => {
 
   if (isUserExists && isSucceeded) {
     User.updateOne({ id: userID }, updatedUserStatusUserSet)
-      .then((respondedUser) => {
+      .then(async (respondedUser) => {
         if (respondedUser && Object.keys(respondedUser).length > 0) {
           res.json({
             status: "success",
             message: `User status is updated successfully.`,
-            data: data,
+            data: CommonUtility.sortObject(data),
           });
         } else {
           res.json({

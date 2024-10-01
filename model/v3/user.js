@@ -31,8 +31,9 @@ const userSchema = new schema({
   },
   address: {
     address: String,
-    city: String,
-    state: String,
+    countryID: String,
+    cityID: String,
+    stateID: String,
     zipcode: String,
   },
   phone: {
@@ -43,19 +44,7 @@ const userSchema = new schema({
     type: String,
     required: true,
   },
-  userRole: {
-    type: String,
-    required: true,
-  },
   userStatusID: {
-    type: String,
-    required: true,
-  },
-  userStatus: {
-    type: String,
-    required: true,
-  },
-  userType: {
     type: String,
     required: true,
   },

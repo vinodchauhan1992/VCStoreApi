@@ -16,21 +16,21 @@ module.exports.getAllProductBrands = async (req, res) => {
 };
 
 module.exports.getProductBrandByBrandId = async (req, res) => {
-  if (!req?.params?.brandID || req.params.brandID === "") {
+  if (!req?.body?.brandID || req.body.brandID === "") {
     res.json({
       status: "error",
-      message: "Product brand id should be provided",
-      data: null,
+      message: "Product brand id is required",
+      data: {},
     });
-  } else {
-    const brandID = req.params.brandID;
-
-    const foundProductBrandResponse =
-      await BrandsUtility.getProductBrandDataByBrandId({
-        brandID,
-      });
-    res.json(foundProductBrandResponse);
+    return;
   }
+  const brandID = req.body.brandID;
+
+  const foundProductBrandResponse =
+    await BrandsUtility.getProductBrandDataByBrandId({
+      brandID,
+    });
+  res.json(foundProductBrandResponse);
 };
 
 module.exports.addProductBrand = async (req, res) => {
@@ -105,16 +105,16 @@ module.exports.addProductBrand = async (req, res) => {
 };
 
 module.exports.deleteProductBrand = async (req, res) => {
-  if (!req.params.brandID || req.params.brandID === "") {
+  if (!req.body.brandID || req.body.brandID === "") {
     res.json({
       status: "error",
-      message: "Product brand id must be provided to delete a product brand.",
+      message: "Product brand id is required.",
       data: {},
     });
     return;
   }
 
-  const brandID = req.params.brandID;
+  const brandID = req.body.brandID;
 
   try {
     const foundProductBrandResponse =
@@ -158,18 +158,10 @@ module.exports.updateProductBrand = async (req, res) => {
     });
     return;
   }
-  if (!req?.params?.brandID || req.params.brandID === "") {
-    res.json({
-      status: "error",
-      message: "Send brand id in url.",
-      data: {},
-    });
-    return;
-  }
   if (!req?.body?.id || req.body.id === "") {
     res.json({
       status: "error",
-      message: "Send id in body.",
+      message: "Id is required.",
       data: {},
     });
     return;
@@ -177,7 +169,7 @@ module.exports.updateProductBrand = async (req, res) => {
   if (!req?.body?.title || req.body.title === "") {
     res.json({
       status: "error",
-      message: "Send title in body.",
+      message: "Title in required.",
       data: {},
     });
     return;
@@ -185,7 +177,7 @@ module.exports.updateProductBrand = async (req, res) => {
   if (!req?.body?.description || req.body.description === "") {
     res.json({
       status: "error",
-      message: "Send description in body.",
+      message: "Description is required.",
       data: {},
     });
     return;

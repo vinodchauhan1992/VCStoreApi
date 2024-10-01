@@ -18,7 +18,7 @@ module.exports.getAllProductStocks = async (req, res) => {
 };
 
 module.exports.getProductStockByStockId = async (req, res) => {
-  if (!req?.params?.stockID || req.params.stockID === "") {
+  if (!req?.body?.stockID || req.body.stockID === "") {
     res.json({
       status: "error",
       message: "Product stock id should be provided",
@@ -26,7 +26,7 @@ module.exports.getProductStockByStockId = async (req, res) => {
     });
     return;
   }
-  const stockID = req.params.stockID;
+  const stockID = req.body.stockID;
 
   const foundProductStockResponse =
     await StocksUtility.getProductStockDataByStockId({
@@ -36,15 +36,15 @@ module.exports.getProductStockByStockId = async (req, res) => {
 };
 
 module.exports.getProductStockDataByProductId = async (req, res) => {
-  if (!req?.params?.productID || req.params.productID === "") {
+  if (!req?.body?.productID || req.body.productID === "") {
     res.json({
       status: "error",
-      message: "Product id should be provided to get stock by product id",
+      message: "Product id is required to get stock by product id",
       data: null,
     });
     return;
   }
-  const productID = req.params.productID;
+  const productID = req.body.productID;
 
   const foundProductStockResponse =
     await StocksUtility.getProductStockDataByProductIdUtil({
@@ -54,15 +54,15 @@ module.exports.getProductStockDataByProductId = async (req, res) => {
 };
 
 module.exports.getProductStockDataByBrandId = async (req, res) => {
-  if (!req?.params?.brandID || req.params.brandID === "") {
+  if (!req?.body?.brandID || req.body.brandID === "") {
     res.json({
       status: "error",
-      message: "Brand id should be provided to get stock by brand id",
+      message: "Brand id is required to get stock by brand id",
       data: null,
     });
     return;
   }
-  const brandID = req.params.brandID;
+  const brandID = req.body.brandID;
 
   const foundProductStockResponse =
     await StocksUtility.getProductStockDataByBrandIdUtil({
@@ -135,7 +135,7 @@ module.exports.addProductStock = async (req, res) => {
 };
 
 module.exports.deleteProductStock = async (req, res) => {
-  if (!req.params.stockID || req.params.stockID === "") {
+  if (!req.body.stockID || req.body.stockID === "") {
     res.json({
       status: "error",
       message: "Stock id must be provided to delete a stock.",
@@ -144,7 +144,7 @@ module.exports.deleteProductStock = async (req, res) => {
     return;
   }
 
-  const stockID = req.params.stockID;
+  const stockID = req.body.stockID;
 
   const foundProductStockResponse =
     await StocksUtility.getProductStockDataByStockId({
@@ -166,10 +166,10 @@ module.exports.deleteProductStock = async (req, res) => {
 };
 
 module.exports.updateProductStock = async (req, res) => {
-  if (!req?.params?.stockID || req.body.stockID === "") {
+  if (!req?.body?.stockID || req.body.stockID === "") {
     res.json({
       status: "error",
-      message: "Stock id is required in url",
+      message: "Stock id is required",
       data: null,
     });
     return;
@@ -197,7 +197,7 @@ module.exports.updateProductStock = async (req, res) => {
     return;
   }
 
-  const stockID = req.params.stockID;
+  const stockID = req.body.stockID;
 
   const foundProductStockResponse =
     await StocksUtility.getProductStockDataByStockId({

@@ -85,8 +85,8 @@ module.exports.addNewProduct = async ({ productSchema, res }) => {
 };
 
 module.exports.getAllProductsData = async ({ req }) => {
-  const limit = Number(req.query.limit) || 0;
-  const sort = req.query.sort == "desc" ? -1 : 1;
+  const limit = req?.body?.limit ? Number(req.body.limit) : 0;
+  const sort = req?.body?.sort == "desc" ? -1 : 1;
 
   return await Products.find()
     .select(["-_id"])
@@ -210,9 +210,9 @@ module.exports.deleteProductDataUtil = async ({
 };
 
 module.exports.getProductsDataByCategoryIdUtil = async ({ req }) => {
-  const categoryID = req.params.categoryID;
-  const limit = Number(req.query.limit) || 0;
-  const sort = req.query.sort == "desc" ? -1 : 1;
+  const categoryID = req.body.categoryID;
+  const limit = req?.body?.limit ? Number(req.body.limit) : 0;
+  const sort = req?.body?.sort == "desc" ? -1 : 1;
 
   return await Products.find({
     "categoryDetails.categoryID": categoryID,

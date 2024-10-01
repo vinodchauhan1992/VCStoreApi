@@ -62,13 +62,11 @@ module.exports.getUserRoleByRoleUtil = async ({ userRole }) => {
 module.exports.updateUserRoleUtil = async ({ req, res }) => {
   const roleID = req.body.id;
   const role = req.body.role;
-  const userType = req.body.userType;
   const description = req.body.description;
   const dateAdded = req.body.dateAdded;
   const newUserRole = {
     id: roleID,
     role: role,
-    userType: userType,
     description: description,
     dateAdded: dateAdded,
     dateModified: new Date(),
@@ -107,7 +105,7 @@ module.exports.updateUserRoleUtil = async ({ req, res }) => {
 };
 
 module.exports.deleteUserRoleUtil = async ({ req, res }) => {
-  const userRoleID = req.params.userRoleID;
+  const userRoleID = req.body.userRoleID;
   UserRoles.deleteOne({
     id: userRoleID,
   })
@@ -140,7 +138,6 @@ module.exports.addUserRoleUtil = async ({ req, res }) => {
   const userRole = new UserRoles({
     id: CommonUtility.getUniqueID(),
     role: req.body.role,
-    userType: req.body.userType,
     description: req.body.description,
     dateAdded: new Date(),
     dateModified: new Date(),

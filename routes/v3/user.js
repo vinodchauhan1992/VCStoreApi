@@ -7,13 +7,13 @@ const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).single("file");
 
-router.get("/allUsers", user.getAllUser);
-router.get("/userByID/:userID", user.getUserByID);
+router.post("/allUsers", user.getAllUser);
+router.post("/userByID", user.getUserByID);
 router.post("/addNewUser", upload, user.addNewUser);
-router.put("/updateUser/:userID", upload, user.updateUser);
-router.delete("/deleteUser/:userID", user.deleteUser);
-router.put("/changeUserPassword/:userID", user.changeUserPassword);
-router.put("/updateUserRole/:userID", user.updateUserRole);
-router.put("/updateUserStatus/:userID", user.updateUserStatus);
+router.post("/updateUser", upload, user.updateUser);
+router.post("/deleteUser", user.deleteUser);
+router.post("/changeUserPassword", user.changeUserPassword);
+router.post("/updateUserRole", user.updateUserRole);
+router.post("/updateUserStatus", user.updateUserStatus);
 
 module.exports = router;

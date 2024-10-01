@@ -10,10 +10,6 @@ const userRolesSchema = new schema({
     type: String,
     required: true,
   },
-  userType: {
-    type: String,
-    required: true,
-  },
   description: {
     type: String,
     required: true,

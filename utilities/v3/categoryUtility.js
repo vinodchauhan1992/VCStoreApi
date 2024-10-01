@@ -53,7 +53,7 @@ module.exports.addNewCategory = async ({ categorySchema, res }) => {
         res.json({
           status: "success",
           message: `New category is added successfully.`,
-          data: respondedCategory,
+          data: CommonUtility.sortObject(respondedCategory),
         });
       } else {
         res.json({

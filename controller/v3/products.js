@@ -20,15 +20,15 @@ module.exports.getAllProducts = async (req, res) => {
 };
 
 module.exports.getProduct = async (req, res) => {
-  if (!req?.params?.productID || req.params.productID === "") {
+  if (!req?.body?.productID || req.body.productID === "") {
     res.json({
       status: "error",
-      message: "Please send product id to get a product by id.",
+      message: "Product id is required.",
       data: {},
     });
     return;
   }
-  const productId = req.params.productID;
+  const productId = req.body.productID;
 
   try {
     const foundDataObject = await ProductUtility.getProductDataByProductId({
@@ -45,10 +45,10 @@ module.exports.getProduct = async (req, res) => {
 };
 
 module.exports.getProductsInCategory = async (req, res) => {
-  if (!req?.params?.categoryID || req.params.categoryID === "") {
+  if (!req?.body?.categoryID || req.body.categoryID === "") {
     res.json({
       status: "error",
-      message: "Please send category id to get a product by category id.",
+      message: "Category id is required to get a product by category id.",
       data: [],
     });
     return;
@@ -71,54 +71,68 @@ module.exports.getProductsInCategory = async (req, res) => {
 
 module.exports.addProduct = async (req, res) => {
   if (!req?.body?.title || req.body.title === "") {
-    dataObject.status = "error";
-    dataObject.message = "Product title is required.";
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Product title is required.",
+      data: {},
+    });
     return;
   }
   if (!req?.body?.description || req.body.description === "") {
-    dataObject.status = "error";
-    dataObject.message = "Product description is required.";
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Product description is required.",
+      data: {},
+    });
     return;
   }
   if (!req?.body?.categoryID || req.body.categoryID === "") {
-    dataObject.status = "error";
-    dataObject.message = "Category id is required.";
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Category id is required.",
+      data: {},
+    });
     return;
   }
   if (
     req?.body?.purchasePrice === null ||
     req?.body?.purchasePrice === undefined
   ) {
-    dataObject.status = "error";
-    dataObject.message = "Purchase price is required.";
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Purchase price is required.",
+      data: {},
+    });
     return;
   }
   if (
     req?.body?.sellingPrice === null ||
     req?.body?.sellingPrice === undefined
   ) {
-    dataObject.status = "error";
-    dataObject.message = "Selling price is required.";
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Selling price is required.",
+      data: {},
+    });
     return;
   }
   if (
     req?.body?.maxDiscountPercentage === null ||
     req?.body?.maxDiscountPercentage === undefined
   ) {
-    dataObject.status = "error";
-    dataObject.message = "Max discount percentage is required.";
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Max discount percentage is required.",
+      data: {},
+    });
     return;
   }
   if (!req?.body?.brandID || req.body.brandID === "") {
-    dataObject.status = "error";
-    dataObject.message = "Product brand id is required.";
-    res.json(dataObject);
+    res.json({
+      status: "error",
+      message: "Product brand id is required.",
+      data: {},
+    });
     return;
   }
 
@@ -236,13 +250,13 @@ module.exports.addProduct = async (req, res) => {
 };
 
 module.exports.updateProductBasicDetails = (req, res) => {
-  if (typeof req.body == undefined || req.params.id == null) {
+  if (typeof req.body == undefined || req.body.id == null) {
     dataObject.status = "error";
     dataObject.message = "something went wrong! check your sent data.";
     res.json(dataObject);
   } else {
     res.json({
-      id: parseInt(req.params.id),
+      id: parseInt(req.body.id),
       title: req.body.title,
       price: req.body.price,
       description: req.body.description,
@@ -263,9 +277,9 @@ module.exports.updateProductBasicDetails = (req, res) => {
 };
 
 module.exports.deleteProduct = async (req, res) => {
-  if (req.params.productID == null) {
+  if (!req?.body?.productID || req.body.productID === "") {
     dataObject.status = "error";
-    dataObject.message = "Product id must be provided to delete a product.";
+    dataObject.message = "Product id is required.";
     res.json({
       status: "error",
       message: "Product id is required to delete a product.",
@@ -274,7 +288,7 @@ module.exports.deleteProduct = async (req, res) => {
     return;
   }
 
-  const productID = req.params.productID;
+  const productID = req.body.productID;
 
   try {
     const foundProductResponse = await ProductUtility.getProductDataByProductId(
@@ -310,13 +324,13 @@ module.exports.deleteProduct = async (req, res) => {
 };
 
 module.exports.updateCategoryOfProduct = (req, res) => {
-  if (typeof req.body == undefined || req.params.id == null) {
+  if (typeof req.body == undefined || req.body.id == null) {
     dataObject.status = "error";
     dataObject.message = "something went wrong! check your sent data.";
     res.json(dataObject);
   } else {
     res.json({
-      id: parseInt(req.params.id),
+      id: parseInt(req.body.id),
       title: req.body.title,
       price: req.body.price,
       description: req.body.description,
@@ -337,13 +351,13 @@ module.exports.updateCategoryOfProduct = (req, res) => {
 };
 
 module.exports.updateBrandOfProduct = (req, res) => {
-  if (typeof req.body == undefined || req.params.id == null) {
+  if (typeof req.body == undefined || req.body.id == null) {
     dataObject.status = "error";
     dataObject.message = "something went wrong! check your sent data.";
     res.json(dataObject);
   } else {
     res.json({
-      id: parseInt(req.params.id),
+      id: parseInt(req.body.id),
       title: req.body.title,
       price: req.body.price,
       description: req.body.description,
@@ -364,13 +378,13 @@ module.exports.updateBrandOfProduct = (req, res) => {
 };
 
 module.exports.updateProductStatus = (req, res) => {
-  if (typeof req.body == undefined || req.params.id == null) {
+  if (typeof req.body == undefined || req.body.id == null) {
     dataObject.status = "error";
     dataObject.message = "something went wrong! check your sent data.";
     res.json(dataObject);
   } else {
     res.json({
-      id: parseInt(req.params.id),
+      id: parseInt(req.body.id),
       title: req.body.title,
       price: req.body.price,
       description: req.body.description,
@@ -391,13 +405,13 @@ module.exports.updateProductStatus = (req, res) => {
 };
 
 module.exports.updateProductPriceDetails = (req, res) => {
-  if (typeof req.body == undefined || req.params.id == null) {
+  if (typeof req.body == undefined || req.body.id == null) {
     dataObject.status = "error";
     dataObject.message = "something went wrong! check your sent data.";
     res.json(dataObject);
   } else {
     res.json({
-      id: parseInt(req.params.id),
+      id: parseInt(req.body.id),
       title: req.body.title,
       price: req.body.price,
       description: req.body.description,
@@ -418,13 +432,13 @@ module.exports.updateProductPriceDetails = (req, res) => {
 };
 
 module.exports.updateProductRating = (req, res) => {
-  if (typeof req.body == undefined || req.params.id == null) {
+  if (typeof req.body == undefined || req.body.id == null) {
     dataObject.status = "error";
     dataObject.message = "something went wrong! check your sent data.";
     res.json(dataObject);
   } else {
     res.json({
-      id: parseInt(req.params.id),
+      id: parseInt(req.body.id),
       title: req.body.title,
       price: req.body.price,
       description: req.body.description,

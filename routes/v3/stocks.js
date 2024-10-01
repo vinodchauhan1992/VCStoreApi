@@ -2,18 +2,12 @@ const express = require("express");
 const router = express.Router();
 const stocks = require("../../controller/v3/stocks");
 
-router.get("/allProductStocks", stocks.getAllProductStocks);
-router.get("/productStockByStockId/:stockID", stocks.getProductStockByStockId);
+router.post("/allProductStocks", stocks.getAllProductStocks);
+router.post("/productStockByStockId", stocks.getProductStockByStockId);
 router.post("/addProductStock", stocks.addProductStock);
-router.delete("/deleteProductStock/:stockID", stocks.deleteProductStock);
-router.put("/updateProductStock/:stockID", stocks.updateProductStock);
-router.get(
-  "/productStockByProductId/:productID",
-  stocks.getProductStockDataByProductId
-);
-router.get(
-  "/productStockByBrandId/:brandID",
-  stocks.getProductStockDataByBrandId
-);
+router.post("/deleteProductStock", stocks.deleteProductStock);
+router.post("/updateProductStock", stocks.updateProductStock);
+router.post("/productStockByProductId", stocks.getProductStockDataByProductId);
+router.post("/productStockByBrandId", stocks.getProductStockDataByBrandId);
 
 module.exports = router;

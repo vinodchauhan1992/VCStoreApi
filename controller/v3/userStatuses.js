@@ -1,149 +1,112 @@
 const UserStatuses = require("../../model/v3/userStatuses");
-const CommonUtility = require("../../utilities/v3/commonUtility");
+const UserStatusesUtility = require("../../utilities/v3/userStatusesUtility");
 
-let dataObject = { status: "success", message: "", data: [] };
+module.exports.getAllUserStatuses = async (req, res) => {
+  try {
+    const foundDataObject = await UserStatusesUtility.getAllUserStatusesUtil({
+      req,
+    });
+    res.json(foundDataObject);
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occurred in catch block in getAllUserStatuses function. ${err.message}`,
+      data: [],
+    });
+  }
+};
 
-module.exports.getAllUserStatuses = (req, res) => {
-  const limit = Number(req.query.limit) || 0;
-  const sort = req.query.sort == "desc" ? -1 : 1;
+module.exports.getUserStatusByID = async (req, res) => {
+  if (!req?.body?.userStatusID || req.body.userStatusID === "") {
+    res.json({
+      status: "error",
+      message: "User status id is required",
+      data: {},
+    });
+    return;
+  }
 
-  UserStatuses.find()
+  const userStatusID = req.body.userStatusID;
+
+  try {
+    const foundDataObject =
+      await UserStatusesUtility.getUserStatusByUserStatusIdUtil({
+        userStatusID,
+      });
+    res.json(foundDataObject);
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occurred in catch block in getUserStatusByID function. ${error.message}`,
+      data: {},
+    });
+  }
+};
+
+module.exports.addUserStatus = (req, res) => {
+  if (!req?.body?.status || req.body.status === "") {
+    res.json({
+      status: "error",
+      message: "Status is required.",
+      data: {},
+    });
+    return;
+  }
+  if (!req?.body?.description || req.body.description === "") {
+    res.json({
+      status: "error",
+      message: "Description is required.",
+      data: {},
+    });
+    return;
+  }
+
+  try {
+    UserStatusesUtility.addNewUserUtil({ req, res });
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: `There is an error occurred in addUserStatus function. ${error.message}`,
+      data: {},
+    });
+  }
+};
+
+module.exports.deleteUserStatus = (req, res) => {
+  if (!req?.body?.userStatusID || req.body.userStatusID === "") {
+    res.json({
+      status: "error",
+      message: "User status id must be provided to delete a user status.",
+      data: {},
+    });
+    return;
+  }
+
+  const userStatusID = req.body.userStatusID;
+  UserStatuses.deleteOne({
+    id: userStatusID,
+  })
     .select(["-_id"])
-    .limit(limit)
-    .sort({ id: sort })
-    .then((userStatusesData) => {
-      if (userStatusesData && userStatusesData.length > 0) {
+    .then((result) => {
+      if (result && result.deletedCount === 1) {
         res.json({
           status: "success",
-          message: "User statuses fetched successfully.",
-          data: CommonUtility.sortObjectsOfArray(userStatusesData),
+          message: `User status with user status id ${userStatusID} is deleted successfully.`,
+          data: {},
         });
       } else {
         res.json({
-          status: "success",
-          message:
-            "User statuses fetched successfully. But user statuses doesn't have any data.",
-          data: [],
+          status: "error",
+          message: `User status with user status id ${userStatusID} is not deleted.`,
+          data: {},
         });
       }
     })
     .catch((err) => {
       res.json({
         status: "error",
-        message: `There is an error occurred. ${err}`,
-        data: [],
+        message: `There is an error occurred. ${err.message}`,
+        data: {},
       });
     });
-};
-
-module.exports.getUserStatusByID = (req, res) => {
-  if (!req?.params?.userStatusID || req.params.userStatusID === "") {
-    dataObject.status = "error";
-    dataObject.message = "User status id should be provided";
-    res.json(dataObject);
-  } else {
-    const userStatusID = req.params.userStatusID;
-
-    UserStatuses.findOne({
-      id: userStatusID,
-    })
-      .select(["-_id"])
-      .then((userStatus) => {
-        if (userStatus && Object.keys(userStatus).length > 0) {
-          res.json({
-            status: "success",
-            message: `User status with userStatusID ${userStatusID} fetched successfully.`,
-            data: CommonUtility.sortObject(userStatus),
-          });
-        } else {
-          res.json({
-            status: "error",
-            message: `There is no user status exists with userStatusID ${userStatusID}.`,
-            data: {},
-          });
-        }
-      })
-      .catch((err) => {
-        res.json({
-          status: "error",
-          message: `There is an error occurred. ${err}`,
-          data: {},
-        });
-      });
-  }
-};
-
-module.exports.addUserStatus = (req, res) => {
-  if (typeof req.body == undefined) {
-    dataObject.status = "error";
-    dataObject.message = "Please send all required data to add a user status.";
-    dataObject.data = {};
-    res.json(dataObject);
-  } else {
-    const userStatus = new UserStatuses({
-      id: CommonUtility.getUniqueID(),
-      status: req.body.status,
-      description: req.body.description,
-      dateAdded: new Date(),
-      dateModified: new Date(),
-    });
-
-    userStatus
-      .save()
-      .then((respondedUserStatus) => {
-        if (
-          respondedUserStatus &&
-          Object.keys(respondedUserStatus).length > 0
-        ) {
-          dataObject.status = "success";
-          dataObject.message = `New user status is added successfully.`;
-          dataObject.data = respondedUserStatus;
-        } else {
-          dataObject.status = "error";
-          dataObject.message = `User status is not added due to unknown error.`;
-          dataObject.data = {};
-        }
-        res.json(dataObject);
-      })
-      .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        dataObject.data = {};
-        res.json(dataObject);
-      });
-  }
-};
-
-module.exports.deleteUserStatus = (req, res) => {
-  if (req.params.userStatusID == null) {
-    dataObject.status = "error";
-    dataObject.message =
-      "User status id must be provided to delete a user status.";
-    dataObject.data = {};
-    res.json(dataObject);
-  } else {
-    const userStatusID = req.params.userStatusID;
-    UserStatuses.deleteOne({
-      id: userStatusID,
-    })
-      .select(["-_id"])
-      .then((result) => {
-        if (result && result.deletedCount === 1) {
-          dataObject.status = "success";
-          dataObject.message = `User status with user status id ${userStatusID} is deleted successfully.`;
-          dataObject.data = {};
-        } else {
-          dataObject.status = "error";
-          dataObject.message = `User status with user status id ${userStatusID} is not deleted.`;
-          dataObject.data = {};
-        }
-        res.json(dataObject);
-      })
-      .catch((err) => {
-        dataObject.status = "error";
-        dataObject.message = `There is an error occurred. ${err}`;
-        dataObject.data = {};
-        res.json(dataObject);
-      });
-  }
 };

@@ -2,12 +2,12 @@ const express = require("express");
 const router = express.Router();
 const cities = require("../../controller/v3/cities");
 
-router.get("/allCities", cities.getAllCities);
-router.get("/cityByID/:cityID", cities.getCityById);
+router.post("/allCities", cities.getAllCities);
+router.post("/cityByID", cities.getCityById);
 router.post("/addNewCity", cities.addCity);
-router.put("/updateCity/:cityID", cities.updateCity);
-router.delete("/deleteCity/:cityID", cities.deleteCity);
-router.get("/citiesByStateID/:stateID", cities.getCitiesByStateId);
-router.get("/citiesByCountryID/:countryID", cities.getCitiesByCountryId);
+router.post("/updateCity", cities.updateCity);
+router.post("/deleteCity", cities.deleteCity);
+router.post("/citiesByStateID", cities.getCitiesByStateId);
+router.post("/citiesByCountryID", cities.getCitiesByCountryId);
 
 module.exports = router;

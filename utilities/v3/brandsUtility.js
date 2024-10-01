@@ -20,8 +20,8 @@ module.exports.uploadProductBrandImageToFS = async ({
 };
 
 module.exports.getAllProductBrands = async ({ req }) => {
-  const limit = Number(req.query.limit) || 0;
-  const sort = req.query.sort == "desc" ? -1 : 1;
+  const limit = req?.body?.limit ? Number(req.body.limit) : 0;
+  const sort = req?.body?.sort == "desc" ? -1 : 1;
 
   return await Brands.find()
     .select(["-_id"])
@@ -92,7 +92,7 @@ module.exports.addNewProductBrandData = async ({ productBrandSchema, res }) => {
         res.json({
           status: "success",
           message: `New product brand is added successfully.`,
-          data: respondedProductBrand,
+          data: CommonUtility.sortObject(respondedProductBrand),
         });
       } else {
         res.json({

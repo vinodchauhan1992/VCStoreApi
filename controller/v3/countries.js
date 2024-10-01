@@ -14,16 +14,16 @@ module.exports.getAllCountries = async (req, res) => {
 };
 
 module.exports.getCountryById = async (req, res) => {
-  if (!req?.params?.countryID || req.params.countryID === "") {
+  if (!req?.body?.countryID || req.body.countryID === "") {
     res.json({
       status: "error",
-      message: "Country id is required in url.",
+      message: "Country id is required.",
       data: {},
     });
     return;
   }
   try {
-    const countryID = req.params.countryID;
+    const countryID = req.body.countryID;
     const foundDataObj = await CountriesUtility.getCountryByIdUtil({
       countryID,
     });
@@ -103,18 +103,10 @@ module.exports.addCountry = async (req, res) => {
 };
 
 module.exports.updateCountry = async (req, res) => {
-  if (!req?.params?.countryID || req.params.countryID === "") {
-    res.json({
-      status: "error",
-      message: "Country id is required in url.",
-      data: {},
-    });
-    return;
-  }
   if (!req?.body?.id || req.body.id === "") {
     res.json({
       status: "error",
-      message: "Id is required in body.",
+      message: "Id is required.",
       data: {},
     });
     return;
@@ -156,7 +148,7 @@ module.exports.updateCountry = async (req, res) => {
   }
 
   try {
-    const countryID = req.params.countryID;
+    const countryID = req.body.id;
     const foundDataObj = await CountriesUtility.getCountryByIdUtil({
       countryID,
     });
@@ -175,7 +167,7 @@ module.exports.updateCountry = async (req, res) => {
 };
 
 module.exports.deleteCountry = async (req, res) => {
-  if (!req?.params?.countryID || req.params.countryID === "") {
+  if (!req?.body?.countryID || req.body.countryID === "") {
     res.json({
       status: "error",
       message: "Country id is required in url.",
@@ -184,7 +176,7 @@ module.exports.deleteCountry = async (req, res) => {
     return;
   }
   try {
-    const countryID = req.params.countryID;
+    const countryID = req.body.countryID;
     const foundDataObj = await CountriesUtility.getCountryByIdUtil({
       countryID,
     });

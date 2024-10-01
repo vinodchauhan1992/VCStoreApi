@@ -29,8 +29,8 @@ module.exports.getSingleProductStockWithDetails = async ({ productStock }) => {
 };
 
 module.exports.getAllProductStocksData = async ({ req }) => {
-  const limit = Number(req.query.limit) || 0;
-  const sort = req.query.sort == "desc" ? -1 : 1;
+  const limit = req?.body?.limit ? Number(req.body.limit) : 0;
+  const sort = req?.body?.sort == "desc" ? -1 : 1;
 
   return await Stocks.find()
     .select(["-_id"])
@@ -186,7 +186,7 @@ module.exports.addNewProductStockUtil = async ({ productStockSchema, res }) => {
         Object.keys(respondedProductStockObject).length > 0
       ) {
         const returnedData = await this.getSingleProductStockWithDetails({
-          productStock: respondedProductStockObject,
+          productStock: CommonUtility.sortObject(respondedProductStockObject),
         });
         res.json({
           status: "success",
@@ -244,7 +244,7 @@ module.exports.updateProductStockUtil = async ({
   res,
   alreadyAddedTotalQuantities,
 }) => {
-  const stockId = req.params.stockID;
+  const stockId = req.body.stockID;
   const quantityRecieved = req.body.quantityRecieved;
   const quantityAvailable = req.body.quantityAvailable;
   const totalQuantities =

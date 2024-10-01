@@ -1,7 +1,7 @@
 const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
 const storage = require("../../firebase/v3/firebaseSettings");
 const CommonUtility = require("../../utilities/v3/commonUtility");
-const FileFolders = require("../../model/v3/fileFolders");
+const FileFolders = require("../../model/fileFolders");
 
 var dataObject = { status: "success", message: "", data: {} };
 
