@@ -42,7 +42,6 @@ module.exports.addNewStateUtil = async ({ req, res }) => {
     title: stateTitle,
   });
 
-  console.log("stateCode", stateCode);
   const newStateSchema = States({
     id: stateID,
     title: stateTitle,

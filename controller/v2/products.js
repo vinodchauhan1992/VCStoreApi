@@ -169,14 +169,12 @@ module.exports.addProduct = async (req, res) => {
   let uploadedFileStatus = "no file added";
   let uploadedFileMessage = "";
   let uploadedFileData = {};
-  console.log("add product_req.file", req.file);
   if (req.file) {
     uploadResponse = await ProductUtility.uploadProductImageToFS({
       file: req.file,
       productID: productID,
       productTitle: productTitle,
     });
-    console.log("add product_uploadResponse", uploadResponse);
     uploadedFileStatus = uploadResponse?.isSucceeded ? "success" : "error";
     uploadedFileMessage = uploadResponse?.message;
     uploadedFileData = uploadResponse?.fileData;

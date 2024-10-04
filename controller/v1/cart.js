@@ -6,8 +6,6 @@ module.exports.getAllCarts = (req, res) => {
 	const startDate = req.query.startdate || new Date('1970-1-1');
 	const endDate = req.query.enddate || new Date();
 
-	console.log(startDate, endDate);
-
 	Cart.find({
 		date: { $gte: new Date(startDate), $lt: new Date(endDate) },
 	})

@@ -43,7 +43,6 @@ module.exports.addNewCityUtil = async ({ req, res }) => {
     title: cityTitle,
   });
 
-  console.log("cityCode", cityCode);
   const newCitySchema = Cities({
     id: cityID,
     title: cityTitle,

@@ -74,14 +74,7 @@ module.exports.addNewUser = async (req, res) => {
   const email = req.body.email;
   const phone = req.body.phone;
   const genderID = req.body.genderID;
-  const genderDescription = `For Male gender id is "male_01", For Female gender id is "female_02", For Other gender id is "other_03"`;
-  let gender = "Other";
-  if (genderID === "female_02") {
-    gender = "Female";
-  } else if (genderID === "male_01") {
-    gender = "Male";
-  }
-
+  
   let uploadResponse = null;
   let uploadedFileStatus = "no file added";
   let uploadedFileMessage = "";
@@ -115,8 +108,6 @@ module.exports.addNewUser = async (req, res) => {
       zipcode: req.body.zipcode,
     },
     genderID: genderID,
-    gender: gender,
-    genderDescription: genderDescription,
     phone: phone,
     userRoleID: req.body.userRoleID,
     userStatusID: req.body.userStatusID,

@@ -10,12 +10,16 @@ const StatesUtility = require("./statesUtility");
 const CitiesUtility = require("./citiesUtility");
 const UserRolesUtility = require("./userRolesUtility");
 const UserStatusesUtility = require("./userStatusesUtility");
+const GendersUtility = require("./gendersUtility");
 
 module.exports.getCountryDetailsByCountryId = async ({ countryID }) => {
   const foundCountryObject = await CountriesUtility.getCountryByIdUtil({
     countryID: countryID,
   });
-  if (foundCountryObject.status === "success") {
+  if (
+    foundCountryObject.status === "success" &&
+    Object.keys(foundCountryObject?.data).length > 0
+  ) {
     return foundCountryObject;
   }
   return {
@@ -31,7 +35,10 @@ module.exports.getStateDetailsByStateId = async ({ stateID }) => {
   const foundStateObject = await StatesUtility.getStateByIdUtil({
     stateID: stateID,
   });
-  if (foundStateObject.status === "success") {
+  if (
+    foundStateObject.status === "success" &&
+    Object.keys(foundStateObject?.data).length > 0
+  ) {
     return foundStateObject;
   }
   return {
@@ -47,7 +54,10 @@ module.exports.getCityDetailsByCityId = async ({ cityID }) => {
   const foundCityObject = await CitiesUtility.getCityByIdUtil({
     cityID: cityID,
   });
-  if (foundCityObject.status === "success") {
+  if (
+    foundCityObject.status === "success" &&
+    Object.keys(foundCityObject?.data).length > 0
+  ) {
     return foundCityObject;
   }
   return {
@@ -63,7 +73,10 @@ module.exports.getUserRoleDetailsByUserRoleId = async ({ userRoleID }) => {
   const foundUserRoleObject = await UserRolesUtility.getUserRoleByIdUtil({
     userRoleID: userRoleID,
   });
-  if (foundUserRoleObject.status === "success") {
+  if (
+    foundUserRoleObject.status === "success" &&
+    Object.keys(foundUserRoleObject?.data).length > 0
+  ) {
     return foundUserRoleObject;
   }
   return {
@@ -82,7 +95,10 @@ module.exports.getUserStatusDetailsByUserStatusId = async ({
     await UserStatusesUtility.getUserStatusByUserStatusIdUtil({
       userStatusID: userStatusID,
     });
-  if (foundUserStatusObject.status === "success") {
+  if (
+    foundUserStatusObject.status === "success" &&
+    Object.keys(foundUserStatusObject?.data).length > 0
+  ) {
     return foundUserStatusObject;
   }
   return {
@@ -133,11 +149,33 @@ module.exports.getUserRoleAndStatusRelatedDetails = async ({ userData }) => {
   };
 };
 
+module.exports.getGenderRelatedDetailsByGenderId = async ({ genderID }) => {
+  const foundGenderObject = await GendersUtility.getGenderByIdUtil({
+    req: { body: { id: genderID } },
+  });
+  if (
+    foundGenderObject?.status === "success" &&
+    Object.keys(foundGenderObject?.data).length > 0
+  ) {
+    return foundGenderObject;
+  }
+  return {
+    status: foundGenderObject?.status,
+    message: foundGenderObject?.message,
+    data: {
+      genderID: genderID && genderID !== "" ? genderID : "",
+    },
+  };
+};
+
 module.exports.getSingleUserWithAllDetails = async ({ userData }) => {
   const { countryDetails, stateDetails, cityDetails } =
     await this.getAddressRelatedDetails({ userData });
   const { userRoleDetails, userStatusDetails } =
     await this.getUserRoleAndStatusRelatedDetails({ userData });
+  const genderDetailsObject = await this.getGenderRelatedDetailsByGenderId({
+    genderID: userData?.genderID,
+  });
   return {
     id: userData?.id,
     email: userData?.email,
@@ -151,9 +189,7 @@ module.exports.getSingleUserWithAllDetails = async ({ userData }) => {
       stateDetails: stateDetails,
       zipcode: userData?.address?.zipcode,
     },
-    genderID: userData?.genderID,
-    gender: userData?.gender,
-    genderDescription: userData?.genderDescription,
+    genderDetails: genderDetailsObject?.data,
     phone: userData?.phone,
     userRoleDetails: userRoleDetails,
     userStatusDetails: userStatusDetails,
@@ -250,17 +286,6 @@ module.exports.checkAddUserBodyInfoValidation = (req) => {
     return {
       isSucceeded: false,
       message: "Gender id is required.",
-    };
-  }
-  if (
-    req.body.genderID !== "male_01" &&
-    req.body.genderID !== "female_02" &&
-    req.body.genderID !== "other_03"
-  ) {
-    return {
-      isSucceeded: false,
-      message:
-        "Gender id can be male_01 for Male or female_02 for Female or other_03 for Other gender.",
     };
   }
 
@@ -626,14 +651,7 @@ module.exports.updateExistingUser = async ({
   const username = req.body.username;
   const email = req.body.email;
   const phone = req.body.phone;
-  const genderDescription = `For Male gender id is "male_01", For Female gender id is "female_02", For Other gender id is "other_03"`;
   const genderID = req.body.genderID;
-  let gender = "Other";
-  if (genderID === "female_02") {
-    gender = "Female";
-  } else if (genderID === "male_01") {
-    gender = "Male";
-  }
 
   const newUser = {
     id: userID,
@@ -652,8 +670,6 @@ module.exports.updateExistingUser = async ({
       zipcode: req.body.zipcode,
     },
     genderID: genderID,
-    gender: gender,
-    genderDescription: genderDescription,
     phone: phone,
     userRoleID: req.body.userRoleID,
     userStatusID: req.body.userStatusID,
