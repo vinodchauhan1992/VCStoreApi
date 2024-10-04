@@ -13,10 +13,16 @@ router.post("/addNewUser", upload, user.addNewUser);
 router.post("/updateUser", upload, user.updateUser);
 router.post("/deleteUser", user.deleteUser);
 router.post("/changeUserPassword", user.changeUserPassword);
-router.post("/updateUserRole", user.updateUserRole);
-router.post("/updateUserStatus", user.updateUserStatus);
 router.post("/userByUsername", user.getUserByUsername);
 router.post("/userByEmail", user.getUserByEmail);
 router.post("/userByPhone", user.getUserByPhone);
+router.post("/updateUserRole", user.updateUserRole);
+router.post("/updateUserStatus", user.updateUserStatus);
+router.post("/updateNameOfUser", user.updateNameOfUser);
+router.post("/updateUserDateOfBirth", user.updateUserDateOfBirth);
+router.post("/updateUserGender", user.updateUserGender);
+router.post("/updateUserPhone", user.updateUserPhone);
+router.post("/updateUserAddress", user.updateUserAddress);
+router.post("/updateUserPhoto", upload, user.updateUserPhoto);
 
 module.exports = router;

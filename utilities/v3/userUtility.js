@@ -11,6 +11,7 @@ const CitiesUtility = require("./citiesUtility");
 const UserRolesUtility = require("./userRolesUtility");
 const UserStatusesUtility = require("./userStatusesUtility");
 const GendersUtility = require("./gendersUtility");
+const CommonApisUtility = require("./commonApisUtility");
 
 module.exports.getCountryDetailsByCountryId = async ({ countryID }) => {
   const foundCountryObject = await CountriesUtility.getCountryByIdUtil({
@@ -410,41 +411,11 @@ module.exports.checkUserExistenceByPhoneInDB = async ({ phone }) => {
 };
 
 module.exports.checkUserExistenceByUserIDInDB = async ({ userID }) => {
-  return await User.findOne({
-    id: userID,
-  })
-    .select(["-_id"])
-    .then(async (respondedUser) => {
-      if (respondedUser && Object.keys(respondedUser).length > 0) {
-        const fullDetailsUser = await this.getSingleUserWithAllDetails({
-          userData: CommonUtility.sortObject(respondedUser),
-        });
-        return {
-          isUserExists: true,
-          isSucceeded: true,
-          isCatchError: false,
-          message: `User with userID '${userID}' is already exists.`,
-          data: CommonUtility.sortObject(fullDetailsUser),
-        };
-      } else {
-        return {
-          isUserExists: false,
-          isSucceeded: false,
-          isCatchError: false,
-          message: `User with userID '${userID}' doesn't exists.`,
-          data: {},
-        };
-      }
-    })
-    .catch((err) => {
-      return {
-        isUserExists: true,
-        isSucceeded: false,
-        isCatchError: true,
-        message: `There is an error occurred in fetching user by userID. ${err.message}`,
-        data: {},
-      };
-    });
+  return await CommonApisUtility.getDataByIdFromSchemaUtil({
+    schema: User,
+    schemaName: "User",
+    dataID: userID,
+  });
 };
 
 module.exports.checkUserValidationToAddNewUser = async (req) => {
@@ -605,15 +576,14 @@ module.exports.checkUpdateUserInfoValidation = async (req) => {
       message: "Created date is required.",
     };
   }
-  const { isUserExists, isSucceeded, message, data } =
-    await this.checkUserExistenceByUserIDInDB({
-      userID: req.body.id,
-    });
-  if (!isUserExists || !isSucceeded) {
+  const foundUserObject = await this.checkUserExistenceByUserIDInDB({
+    userID: req.body.id,
+  });
+  if (foundUserObject?.status === "error") {
     return {
       isSucceeded: false,
-      message: message,
-      data: data,
+      message: foundUserObject?.message,
+      data: foundUserObject?.data,
     };
   }
   return {
@@ -805,4 +775,278 @@ module.exports.updateUserUtil = async ({ req, res }) => {
       res: res,
     });
   }
+};
+
+module.exports.updateNameOfUserUtil = async ({ req }) => {
+  if (!req?.body?.userID || req.body.userID === "") {
+    return {
+      status: "error",
+      message: "User id is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.firstname || req.body.firstname === "") {
+    return {
+      status: "error",
+      message: "First name is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.lastname || req.body.lastname === "") {
+    return {
+      status: "error",
+      message: "Last name is required.",
+      data: {},
+    };
+  }
+
+  const userID = req.body.userID;
+  const firstname = req.body.firstname;
+  const lastname = req.body.lastname;
+
+  const foundUserObject = await this.checkUserExistenceByUserIDInDB({
+    userID: userID,
+  });
+  if (foundUserObject?.status === "error") {
+    return foundUserObject;
+  }
+
+  const newNameOfUser = {
+    id: userID,
+    name: {
+      firstname: firstname,
+      lastname: lastname,
+    },
+    dateModified: new Date(),
+  };
+
+  const updatedNameOfUserSet = {
+    $set: newNameOfUser,
+  };
+
+  return await CommonApisUtility.updateDataInSchemaUtil({
+    schema: User,
+    newDataObject: newNameOfUser,
+    updatedDataSet: updatedNameOfUserSet,
+    schemaName: "User",
+    dataID: userID,
+  });
+};
+
+module.exports.updateUserDateOfBirthUtil = async ({ req }) => {
+  if (!req?.body?.userID || req.body.userID === "") {
+    return {
+      status: "error",
+      message: "User id is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.dateOfBirth || req.body.dateOfBirth === "") {
+    return {
+      status: "error",
+      message: "Date of birth is required.",
+      data: {},
+    };
+  }
+
+  const userID = req.body.userID;
+  const dateOfBirth = req.body.dateOfBirth;
+
+  const foundUserObject = await this.checkUserExistenceByUserIDInDB({
+    userID: userID,
+  });
+  if (foundUserObject?.status === "error") {
+    return foundUserObject;
+  }
+
+  const newDateOfBirthOfUser = {
+    id: userID,
+    dateOfBirth: dateOfBirth,
+    dateModified: new Date(),
+  };
+
+  const updatedDateOfBirthOfUserSet = {
+    $set: newDateOfBirthOfUser,
+  };
+
+  return await CommonApisUtility.updateDataInSchemaUtil({
+    schema: User,
+    newDataObject: newDateOfBirthOfUser,
+    updatedDataSet: updatedDateOfBirthOfUserSet,
+    schemaName: "User",
+    dataID: userID,
+  });
+};
+
+module.exports.updateUserGenderUtil = async ({ req }) => {
+  if (!req?.body?.userID || req.body.userID === "") {
+    return {
+      status: "error",
+      message: "User id is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.genderID || req.body.genderID === "") {
+    return {
+      status: "error",
+      message: "Gender id is required.",
+      data: {},
+    };
+  }
+
+  const userID = req.body.userID;
+  const genderID = req.body.genderID;
+
+  const foundUserObject = await this.checkUserExistenceByUserIDInDB({
+    userID: userID,
+  });
+  if (foundUserObject?.status === "error") {
+    return foundUserObject;
+  }
+
+  const newUserGender = {
+    id: userID,
+    genderID: genderID,
+    dateModified: new Date(),
+  };
+
+  const updatedUserGenderSet = {
+    $set: newUserGender,
+  };
+
+  return await CommonApisUtility.updateDataInSchemaUtil({
+    schema: User,
+    newDataObject: newUserGender,
+    updatedDataSet: updatedUserGenderSet,
+    schemaName: "User",
+    dataID: userID,
+  });
+};
+
+module.exports.updateUserPhoneUtil = async ({ req }) => {
+  if (!req?.body?.userID || req.body.userID === "") {
+    return {
+      status: "error",
+      message: "User id is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.phone || req.body.phone === "") {
+    return {
+      status: "error",
+      message: "Phone is required.",
+      data: {},
+    };
+  }
+
+  const userID = req.body.userID;
+  const phone = req.body.phone;
+
+  const foundUserObject = await this.checkUserExistenceByUserIDInDB({
+    userID: userID,
+  });
+  if (foundUserObject?.status === "error") {
+    return foundUserObject;
+  }
+
+  const newUserPhone = {
+    id: userID,
+    phone: phone,
+    dateModified: new Date(),
+  };
+
+  const updatedUserPhoneSet = {
+    $set: newUserPhone,
+  };
+
+  return await CommonApisUtility.updateDataInSchemaUtil({
+    schema: User,
+    newDataObject: newUserPhone,
+    updatedDataSet: updatedUserPhoneSet,
+    schemaName: "User",
+    dataID: userID,
+  });
+};
+
+module.exports.updateUserAddressUtil = async ({ req }) => {
+  if (!req?.body?.userID || req.body.userID === "") {
+    return {
+      status: "error",
+      message: "User id is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.address || req.body.address === "") {
+    return {
+      status: "error",
+      message: "Address is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.countryID || req.body.countryID === "") {
+    return {
+      status: "error",
+      message: "Country id is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.stateID || req.body.stateID === "") {
+    return {
+      status: "error",
+      message: "State id is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.cityID || req.body.cityID === "") {
+    return {
+      status: "error",
+      message: "City id is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.zipcode || req.body.zipcode === "") {
+    return {
+      status: "error",
+      message: "Zipcode is required.",
+      data: {},
+    };
+  }
+
+  const userID = req.body.userID;
+  const address = req.body.address;
+  const countryID = req.body.countryID;
+  const stateID = req.body.stateID;
+  const cityID = req.body.cityID;
+  const zipcode = req.body.zipcode;
+
+  const foundUserObject = await this.checkUserExistenceByUserIDInDB({
+    userID: userID,
+  });
+  if (foundUserObject?.status === "error") {
+    return foundUserObject;
+  }
+
+  const newUserAddress = {
+    id: userID,
+    address: {
+      address: address,
+      countryID: countryID,
+      cityID: cityID,
+      stateID: stateID,
+      zipcode: zipcode,
+    },
+    dateModified: new Date(),
+  };
+
+  const updatedUserAddressSet = {
+    $set: newUserAddress,
+  };
+
+  return await CommonApisUtility.updateDataInSchemaUtil({
+    schema: User,
+    newDataObject: newUserAddress,
+    updatedDataSet: updatedUserAddressSet,
+    schemaName: "User",
+    dataID: userID,
+  });
 };

@@ -21,12 +21,12 @@ module.exports.getUniqueID = () => {
   return `${uuidv4()}`;
 };
 
-module.exports.getFileDetails = (file) => {
+module.exports.getFileDetails = ({ file, parentDocumentID, uniqueString }) => {
   const fileNameArray = file?.originalname?.split(".");
-  let actualFileName = this.getUniqueID();
+  let actualFileName = `${parentDocumentID}_${uniqueString}`;
   let extension = "";
   if (fileNameArray && fileNameArray.length > 0) {
-    actualFileName = this.getUniqueID();
+    actualFileName = `${parentDocumentID}_${uniqueString}`;
     if (fileNameArray.length > 1) {
       extension = fileNameArray[fileNameArray.length - 1];
     }
