@@ -15,5 +15,8 @@ router.post("/deleteUser", user.deleteUser);
 router.post("/changeUserPassword", user.changeUserPassword);
 router.post("/updateUserRole", user.updateUserRole);
 router.post("/updateUserStatus", user.updateUserStatus);
+router.post("/userByUsername", user.getUserByUsername);
+router.post("/userByEmail", user.getUserByEmail);
+router.post("/userByPhone", user.getUserByPhone);
 
 module.exports = router;

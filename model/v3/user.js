@@ -48,6 +48,19 @@ const userSchema = new schema({
     type: String,
     required: true,
   },
+  genderID: {
+    // male_01 = Male, female_02 = Female, other_03 = Other
+    type: String,
+    required: true,
+  },
+  gender: {
+    type: String,
+    required: true,
+  },
+  genderDescription: {
+    type: String,
+    required: true,
+  },
   imageData: fileUploaderSchema.schema,
   dateOfBirth: {
     type: Date,

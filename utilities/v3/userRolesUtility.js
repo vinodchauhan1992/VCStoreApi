@@ -63,12 +63,10 @@ module.exports.updateUserRoleUtil = async ({ req, res }) => {
   const roleID = req.body.id;
   const role = req.body.role;
   const description = req.body.description;
-  const dateAdded = req.body.dateAdded;
   const newUserRole = {
     id: roleID,
     role: role,
     description: description,
-    dateAdded: dateAdded,
     dateModified: new Date(),
   };
 

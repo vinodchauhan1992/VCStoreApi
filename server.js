@@ -63,6 +63,7 @@ const stocksRouteV3 = require("./routes/v3/stocks");
 const countriesV3 = require("./routes/v3/countries");
 const statesV3 = require("./routes/v3/states");
 const citiesV3 = require("./routes/v3/cities");
+const gendersV3 = require("./routes/v3/genders");
 
 //middleware
 app.use(cors());
@@ -126,6 +127,7 @@ app.use("/v3/stocks", stocksRouteV3);
 app.use("/v3/countries", countriesV3);
 app.use("/v3/states", statesV3);
 app.use("/v3/cities", citiesV3);
+app.use("/v3/genders", gendersV3);
 
 //mongoose
 mongoose.set("useFindAndModify", false);

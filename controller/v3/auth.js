@@ -1,7 +1,9 @@
 const User = require("../../model/v3/user");
 const jwt = require("jsonwebtoken");
+const UserUtility = require("../../utilities/v3/userUtility");
+const CommonUtility = require("../../utilities/v3/commonUtility");
 
-module.exports.login = (req, res) => {
+module.exports.login = async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
@@ -11,49 +13,57 @@ module.exports.login = (req, res) => {
       message: "Username is required to login.",
       data: {},
     });
-  } else if (!password || password === "") {
+    return;
+  }
+  if (!password || password === "") {
     res.json({
       status: "error",
       message: "Password is required to login.",
       data: {},
     });
-  } else {
-    User.findOne({
-      username: username,
-      password: password,
-    })
-      .then((user) => {
-        if (user && Object.keys(user).length > 0) {
-          if (user?.userStatus && user.userStatus === "Active") {
-            res.json({
-              status: "success",
-              message: "You are successfully loggedin.",
-              data: {
-                user: user,
-                jwtToken: jwt.sign({ user: username }, "secret_key"),
-              },
-            });
-          } else {
-            res.json({
-              status: "error",
-              message: `You can't login with this user as this user is ${user.userStatus}`,
-              data: {},
-            });
-          }
+    return;
+  }
+  User.findOne({
+    username: username,
+    password: password,
+  })
+    .then(async (user) => {
+      if (user && Object.keys(user).length > 0) {
+        const fullDetailsUser = await UserUtility.getSingleUserWithAllDetails({
+          userData: CommonUtility.sortObject(user),
+        });
+        if (
+          fullDetailsUser?.userStatusDetails?.status &&
+          fullDetailsUser.userStatusDetails.status === "Active"
+        ) {
+          res.json({
+            status: "success",
+            message: "You are successfully logged in.",
+            data: {
+              user: fullDetailsUser,
+              jwtToken: jwt.sign({ user: username }, "secret_key"),
+            },
+          });
         } else {
           res.json({
             status: "error",
-            message: `There is no user exists with username ${username}.`,
+            message: `You can't login with this user as this user is ${fullDetailsUser.userStatusDetails.status}`,
             data: {},
           });
         }
-      })
-      .catch((err) => {
+      } else {
         res.json({
           status: "error",
-          message: `There is an error occurred. ${err}`,
+          message: `There is no user exists with this username ${username} and password.`,
           data: {},
         });
+      }
+    })
+    .catch((err) => {
+      res.json({
+        status: "error",
+        message: `There is an error occurred. ${err.message}`,
+        data: {},
       });
-  }
+    });
 };

@@ -73,6 +73,14 @@ module.exports.addNewUser = async (req, res) => {
   const username = req.body.username;
   const email = req.body.email;
   const phone = req.body.phone;
+  const genderID = req.body.genderID;
+  const genderDescription = `For Male gender id is "male_01", For Female gender id is "female_02", For Other gender id is "other_03"`;
+  let gender = "Other";
+  if (genderID === "female_02") {
+    gender = "Female";
+  } else if (genderID === "male_01") {
+    gender = "Male";
+  }
 
   let uploadResponse = null;
   let uploadedFileStatus = "no file added";
@@ -106,6 +114,9 @@ module.exports.addNewUser = async (req, res) => {
       stateID: req.body.stateID,
       zipcode: req.body.zipcode,
     },
+    genderID: genderID,
+    gender: gender,
+    genderDescription: genderDescription,
     phone: phone,
     userRoleID: req.body.userRoleID,
     userStatusID: req.body.userStatusID,
@@ -315,3 +326,78 @@ module.exports.updateUserStatus = async (req, res) => {
 };
 
 module.exports.changeUserPassword = async (req, res) => {};
+
+module.exports.getUserByUsername = async (req, res) => {
+  if (!req?.body?.username || req.body.username === "") {
+    res.json({
+      status: "error",
+      message: "Username is required.",
+      data: {},
+    });
+    return;
+  }
+
+  const username = req.body.username;
+
+  const { isUserExists, isSucceeded, data } =
+    await UserUtility.checkUserExistenceByUsernameInDB({ username });
+
+  res.json({
+    status: isSucceeded && isUserExists ? "success" : "error",
+    message:
+      isSucceeded && isUserExists
+        ? `User found successfully by username ${username}`
+        : `User not found by username ${username}`,
+    data: data && Object.keys(data) ? data : {},
+  });
+};
+
+module.exports.getUserByEmail = async (req, res) => {
+  if (!req?.body?.email || req.body.email === "") {
+    res.json({
+      status: "error",
+      message: "Email is required.",
+      data: {},
+    });
+    return;
+  }
+
+  const email = req.body.email;
+
+  const { isUserExists, isSucceeded, data } =
+    await UserUtility.checkUserExistenceByEmailInDB({ email });
+
+  res.json({
+    status: isSucceeded && isUserExists ? "success" : "error",
+    message:
+      isSucceeded && isUserExists
+        ? `User found successfully by email ${email}`
+        : `User not found by email ${email}`,
+    data: data && Object.keys(data) ? data : {},
+  });
+};
+
+module.exports.getUserByPhone = async (req, res) => {
+  if (!req?.body?.phone || req.body.phone === "") {
+    res.json({
+      status: "error",
+      message: "Phone is required.",
+      data: {},
+    });
+    return;
+  }
+
+  const phone = req.body.phone;
+
+  const { isUserExists, isSucceeded, data } =
+    await UserUtility.checkUserExistenceByPhoneInDB({ phone });
+
+  res.json({
+    status: isSucceeded && isUserExists ? "success" : "error",
+    message:
+      isSucceeded && isUserExists
+        ? `User found successfully by phone ${phone}`
+        : `User not found by phone ${phone}`,
+    data: data && Object.keys(data) ? data : {},
+  });
+};

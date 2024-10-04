@@ -152,14 +152,6 @@ module.exports.updateUserRole = async (req, res) => {
     });
     return;
   }
-  if (!req?.body?.dateAdded || req.body.dateAdded === "") {
-    res.json({
-      status: "error",
-      message: "Date added is required",
-      data: {},
-    });
-    return;
-  }
 
   try {
     const userRoleID = req.body.id;

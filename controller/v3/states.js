@@ -184,7 +184,7 @@ module.exports.getStatesByCountryId = async (req, res) => {
   if (!req?.body?.countryID || req.body.countryID === "") {
     res.json({
       status: "error",
-      message: "Country id is required in url.",
+      message: "Country id is required.",
       data: {},
     });
     return;

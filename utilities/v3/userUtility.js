@@ -151,6 +151,9 @@ module.exports.getSingleUserWithAllDetails = async ({ userData }) => {
       stateDetails: stateDetails,
       zipcode: userData?.address?.zipcode,
     },
+    genderID: userData?.genderID,
+    gender: userData?.gender,
+    genderDescription: userData?.genderDescription,
     phone: userData?.phone,
     userRoleDetails: userRoleDetails,
     userStatusDetails: userStatusDetails,
@@ -243,6 +246,23 @@ module.exports.checkAddUserBodyInfoValidation = (req) => {
       message: "City id is required.",
     };
   }
+  if (!req?.body?.genderID || req.body.genderID === "") {
+    return {
+      isSucceeded: false,
+      message: "Gender id is required.",
+    };
+  }
+  if (
+    req.body.genderID !== "male_01" &&
+    req.body.genderID !== "female_02" &&
+    req.body.genderID !== "other_03"
+  ) {
+    return {
+      isSucceeded: false,
+      message:
+        "Gender id can be male_01 for Male or female_02 for Female or other_03 for Other gender.",
+    };
+  }
 
   return {
     isSucceeded: true,
@@ -255,14 +275,17 @@ module.exports.checkUserExistenceByUsernameInDB = async ({ username }) => {
     username: username,
   })
     .select(["-_id"])
-    .then((respondedUser) => {
+    .then(async (respondedUser) => {
       if (respondedUser && Object.keys(respondedUser).length > 0) {
+        const fullDetailsUser = await this.getSingleUserWithAllDetails({
+          userData: CommonUtility.sortObject(respondedUser),
+        });
         return {
           isUserExists: true,
           isSucceeded: true,
           isCatchError: false,
           message: `User with username '${username}' is already exists. Please use a different username.`,
-          data: respondedUser,
+          data: fullDetailsUser,
         };
       } else {
         return {
@@ -290,14 +313,17 @@ module.exports.checkUserExistenceByEmailInDB = async ({ email }) => {
     email: email,
   })
     .select(["-_id"])
-    .then((respondedUser) => {
+    .then(async (respondedUser) => {
       if (respondedUser && Object.keys(respondedUser).length > 0) {
+        const fullDetailsUser = await this.getSingleUserWithAllDetails({
+          userData: CommonUtility.sortObject(respondedUser),
+        });
         return {
           isUserExists: true,
           isSucceeded: true,
           isCatchError: false,
           message: `User with email '${email}' is already exists. Please use a different email.`,
-          data: respondedUser,
+          data: fullDetailsUser,
         };
       } else {
         return {
@@ -325,14 +351,17 @@ module.exports.checkUserExistenceByPhoneInDB = async ({ phone }) => {
     phone: phone,
   })
     .select(["-_id"])
-    .then((respondedUser) => {
+    .then(async (respondedUser) => {
       if (respondedUser && Object.keys(respondedUser).length > 0) {
+        const fullDetailsUser = await this.getSingleUserWithAllDetails({
+          userData: CommonUtility.sortObject(respondedUser),
+        });
         return {
           isUserExists: true,
           isSucceeded: true,
           isCatchError: false,
           message: `User with phone '${phone}' is already exists.`,
-          data: respondedUser,
+          data: fullDetailsUser,
         };
       } else {
         return {
@@ -597,6 +626,15 @@ module.exports.updateExistingUser = async ({
   const username = req.body.username;
   const email = req.body.email;
   const phone = req.body.phone;
+  const genderDescription = `For Male gender id is "male_01", For Female gender id is "female_02", For Other gender id is "other_03"`;
+  const genderID = req.body.genderID;
+  let gender = "Other";
+  if (genderID === "female_02") {
+    gender = "Female";
+  } else if (genderID === "male_01") {
+    gender = "Male";
+  }
+
   const newUser = {
     id: userID,
     email: email,
@@ -613,6 +651,9 @@ module.exports.updateExistingUser = async ({
       stateID: req.body.stateID,
       zipcode: req.body.zipcode,
     },
+    genderID: genderID,
+    gender: gender,
+    genderDescription: genderDescription,
     phone: phone,
     userRoleID: req.body.userRoleID,
     userStatusID: req.body.userStatusID,
