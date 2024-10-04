@@ -688,6 +688,7 @@ module.exports.updateUserImageUtil = async ({ req }) => {
   const username = req.body.username;
   let finalImageData = null;
   if (req?.body?.imageData && req.body.imageData !== "") {
+    console.log("req.body.imageData", req.body.imageData);
     const localImgData = JSON.parse(JSON.parse(req.body.imageData));
     if (localImgData && Object.keys(localImgData).length > 1) {
       finalImageData = localImgData;
@@ -1046,6 +1047,96 @@ module.exports.updateUserAddressUtil = async ({ req }) => {
     schema: User,
     newDataObject: newUserAddress,
     updatedDataSet: updatedUserAddressSet,
+    schemaName: "User",
+    dataID: userID,
+  });
+};
+
+module.exports.updateUserPhotoUtil = async ({ req }) => {
+  if (!req?.file) {
+    return {
+      status: "error",
+      message: "File is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.id || req.body.id === "") {
+    return {
+      status: "error",
+      message: "User id is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.username || req.body.username === "") {
+    return {
+      status: "error",
+      message: "Username is required.",
+      data: {},
+    };
+  }
+  const userID = req.body.id;
+
+  const foundUserObject = await this.checkUserExistenceByUserIDInDB({
+    userID: userID,
+  });
+  if (foundUserObject?.status === "error") {
+    return foundUserObject;
+  }
+
+  console.log("foundUserObject", foundUserObject);
+
+  const updatedRequestBody = {
+    ...req.body,
+    imageData: foundUserObject?.data?.imageData
+      ? JSON.stringify(JSON.stringify(foundUserObject.data.imageData))
+      : req?.body?.imageData,
+  };
+
+  const updatedRequest = {
+    ...req,
+    body: {
+      ...updatedRequestBody,
+    },
+  };
+
+  console.log("updatedRequest", updatedRequest);
+
+  const {
+    updatedUploadedFileData,
+    updatedUploadedFileMessage,
+    updatedUploadedFileStatus,
+    updatedUploadedResponse,
+  } = await this.updateUserImageUtil({ req: updatedRequest });
+
+  console.log("updatedUploadedFileMessage", updatedUploadedFileMessage);
+  console.log("updatedUploadedFileStatus", updatedUploadedFileStatus);
+  console.log("updatedUploadedResponse", updatedUploadedResponse);
+  console.log("updatedUploadedFileData", updatedUploadedFileData);
+
+  if (!updatedUploadedResponse?.isSucceeded) {
+    return {
+      status: updatedUploadedFileStatus,
+      message: updatedUploadedFileMessage
+        ? updatedUploadedFileMessage
+        : "User photo cannot be uploaded due to an unknown error.",
+      data: updatedUploadedFileData ? updatedUploadedFileData : {},
+    };
+  }
+
+  const newUserPhoto = {
+    id: userID,
+    imageData: updatedUploadedFileData,
+    dateModified: new Date(),
+  };
+
+  const updatedUserPhotoSet = {
+    $set: newUserPhoto,
+  };
+
+  return await CommonApisUtility.updateDataInSchemaUtil({
+    schema: User,
+    newDataObject: newUserPhoto,
+    updatedDataSet: updatedUserPhotoSet,
     schemaName: "User",
     dataID: userID,
   });

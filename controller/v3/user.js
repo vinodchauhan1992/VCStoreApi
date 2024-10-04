@@ -147,7 +147,6 @@ module.exports.deleteUser = async (req, res) => {
   const foundUserObject = await UserUtility.checkUserExistenceByUserIDInDB({
     userID: userID,
   });
-  res.json(foundUserObject);
 
   if (foundUserObject?.status === "success") {
     await UserUtility.deleteUserUtil({
@@ -451,4 +450,22 @@ module.exports.updateUserAddress = async (req, res) => {
   }
 };
 
-module.exports.updateUserPhoto = async (req, res) => {};
+module.exports.updateUserPhoto = async (req, res) => {
+  // try {
+  //   const foundUserObject = await UserUtility.updateUserPhotoUtil({
+  //     req,
+  //   });
+  //   res.json(foundUserObject);
+  // } catch (error) {
+  //   res.json({
+  //     status: "error",
+  //     message: `There is an error occurred in updating photo of user. ${error.message}`,
+  //     data: {},
+  //   });
+  // }
+
+  const foundUserObject = await UserUtility.updateUserPhotoUtil({
+    req,
+  });
+  res.json(foundUserObject);
+};

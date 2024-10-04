@@ -51,7 +51,11 @@ module.exports.uploadFileToFirebaseStorage = async ({
       fileData: {},
     };
   }
-  const { fileNameWithExtension } = CommonUtility.getFileDetails(file);
+  const { fileNameWithExtension } = CommonUtility.getFileDetails({
+    file: file,
+    parentDocumentID: parentDocumentID,
+    uniqueString: parentDocumentName,
+  });
 
   const fileFolderPath = `${imageBasePath}/${parentDocumentID}`;
 
