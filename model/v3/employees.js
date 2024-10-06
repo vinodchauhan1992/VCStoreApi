@@ -67,7 +67,7 @@ const employeesSchema = new schema({
     type: String,
     required: true,
   },
-  roleID: {
+  employeeDataRoleID: {
     type: String,
     required: true,
   },
