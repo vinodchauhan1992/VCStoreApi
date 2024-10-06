@@ -39,7 +39,7 @@ module.exports.addNewCityUtil = async ({ req, res }) => {
   const isAdminDeleteable = req.body.isAdminDeleteable;
   const dateAdded = new Date();
   const dateModified = new Date();
-  const cityCode = CommonUtility.getStateCityCodeFromTitle({
+  const cityCode = CommonUtility.getCodeFromTitle({
     title: cityTitle,
   });
 
@@ -179,7 +179,7 @@ module.exports.updateCityUtil = async ({ req, res }) => {
   const isDeleteable = req.body.isDeleteable;
   const isAdminDeleteable = req.body.isAdminDeleteable;
   const dateModified = new Date();
-  const cityCode = CommonUtility.getStateCityCodeFromTitle({
+  const cityCode = CommonUtility.getCodeFromTitle({
     title: cityTitle,
   });
   const newCity = {

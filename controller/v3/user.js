@@ -252,218 +252,49 @@ module.exports.getUserByPhone = async (req, res) => {
 };
 
 module.exports.updateUserRole = async (req, res) => {
-  if (!req?.body?.userID || req.body.userID === "") {
-    res.json({
-      status: "error",
-      message: "User id is required.",
-      data: {},
-    });
-    return;
-  }
-  if (!req?.body?.userRoleID || req.body.userRoleID === "") {
-    res.json({
-      status: "error",
-      message: "User role id is required.",
-      data: {},
-    });
-    return;
-  }
-
-  const userID = req.body.userID;
-
-  const updatedUserRoleUser = {
-    id: userID,
-    userRoleID: req.body.userRoleID,
-    dateModified: new Date(),
-  };
-
-  const updatedUserRoleUserSet = {
-    $set: updatedUserRoleUser,
-  };
-
-  const foundUserObject = await UserUtility.checkUserExistenceByUserIDInDB({
-    userID: userID,
-  });
-
-  if (foundUserObject?.status === "success") {
-    User.updateOne({ id: userID }, updatedUserRoleUserSet)
-      .then(async (respondedUser) => {
-        if (respondedUser && Object.keys(respondedUser).length > 0) {
-          res.json({
-            status: "success",
-            message: `User role is updated successfully.`,
-            data: CommonUtility.sortObject(foundUserObject?.data),
-          });
-        } else {
-          res.json({
-            status: "error",
-            message: `User role is not updated due to unknown error.`,
-            data: {},
-          });
-        }
-      })
-      .catch((err) => {
-        res.json({
-          status: "error",
-          message: `There is an error occurred. ${err.message}`,
-          data: {},
-        });
-      });
-  } else {
-    res.json(foundUserObject);
-  }
+  const foundUserObject = await UserUtility.updateUserRoleUtil({ req });
+  res.json(foundUserObject);
 };
 
 module.exports.updateUserStatus = async (req, res) => {
-  if (!req?.body?.userID || req.body.userID === "") {
-    res.json({
-      status: "error",
-      message: "User id is required.",
-      data: {},
-    });
-    return;
-  }
-  if (!req?.body?.userStatusID || req.body.userStatusID === "") {
-    res.json({
-      status: "error",
-      message: "User status id is required.",
-      data: {},
-    });
-    return;
-  }
-
-  const userID = req.body.userID;
-
-  const updatedUserStatusUser = {
-    id: userID,
-    userStatusID: req.body.userStatusID,
-    dateModified: new Date(),
-  };
-
-  const updatedUserStatusUserSet = {
-    $set: updatedUserStatusUser,
-  };
-
-  const foundUserObject = await UserUtility.checkUserExistenceByUserIDInDB({
-    userID: userID,
-  });
-
-  if (foundUserObject?.status === "success") {
-    User.updateOne({ id: userID }, updatedUserStatusUserSet)
-      .then(async (respondedUser) => {
-        if (respondedUser && Object.keys(respondedUser).length > 0) {
-          res.json({
-            status: "success",
-            message: `User status is updated successfully.`,
-            data: CommonUtility.sortObject(foundUserObject?.data),
-          });
-        } else {
-          res.json({
-            status: "error",
-            message: `User status is not updated due to unknown error.`,
-            data: {},
-          });
-        }
-      })
-      .catch((err) => {
-        res.json({
-          status: "error",
-          message: `There is an error occurred. ${err.message}`,
-          data: {},
-        });
-      });
-  } else {
-    res.json(foundUserObject);
-  }
+  const foundUserObject = await UserUtility.updateUserStatusUtil({ req });
+  res.json(foundUserObject);
 };
 
 module.exports.updateNameOfUser = async (req, res) => {
-  try {
-    const foundUserObject = await UserUtility.updateNameOfUserUtil({ req });
-    res.json(foundUserObject);
-  } catch (error) {
-    res.json({
-      status: "error",
-      message: `There is an error occurred in updating name of user. ${error.message}`,
-      data: {},
-    });
-  }
+  const foundUserObject = await UserUtility.updateNameOfUserUtil({ req });
+  res.json(foundUserObject);
 };
 
 module.exports.updateUserDateOfBirth = async (req, res) => {
-  try {
-    const foundUserObject = await UserUtility.updateUserDateOfBirthUtil({
-      req,
-    });
-    res.json(foundUserObject);
-  } catch (error) {
-    res.json({
-      status: "error",
-      message: `There is an error occurred in updating date of birth of user. ${error.message}`,
-      data: {},
-    });
-  }
+  const foundUserObject = await UserUtility.updateUserDateOfBirthUtil({
+    req,
+  });
+  res.json(foundUserObject);
 };
 
 module.exports.updateUserGender = async (req, res) => {
-  try {
-    const foundUserObject = await UserUtility.updateUserGenderUtil({
-      req,
-    });
-    res.json(foundUserObject);
-  } catch (error) {
-    res.json({
-      status: "error",
-      message: `There is an error occurred in updating gender of user. ${error.message}`,
-      data: {},
-    });
-  }
+  const foundUserObject = await UserUtility.updateUserGenderUtil({
+    req,
+  });
+  res.json(foundUserObject);
 };
 
 module.exports.updateUserPhone = async (req, res) => {
-  try {
-    const foundUserObject = await UserUtility.updateUserPhoneUtil({
-      req,
-    });
-    res.json(foundUserObject);
-  } catch (error) {
-    res.json({
-      status: "error",
-      message: `There is an error occurred in updating phone number of user. ${error.message}`,
-      data: {},
-    });
-  }
+  const foundUserObject = await UserUtility.updateUserPhoneUtil({
+    req,
+  });
+  res.json(foundUserObject);
 };
 
 module.exports.updateUserAddress = async (req, res) => {
-  try {
-    const foundUserObject = await UserUtility.updateUserAddressUtil({
-      req,
-    });
-    res.json(foundUserObject);
-  } catch (error) {
-    res.json({
-      status: "error",
-      message: `There is an error occurred in updating address of user. ${error.message}`,
-      data: {},
-    });
-  }
+  const foundUserObject = await UserUtility.updateUserAddressUtil({
+    req,
+  });
+  res.json(foundUserObject);
 };
 
 module.exports.updateUserPhoto = async (req, res) => {
-  // try {
-  //   const foundUserObject = await UserUtility.updateUserPhotoUtil({
-  //     req,
-  //   });
-  //   res.json(foundUserObject);
-  // } catch (error) {
-  //   res.json({
-  //     status: "error",
-  //     message: `There is an error occurred in updating photo of user. ${error.message}`,
-  //     data: {},
-  //   });
-  // }
-
   const foundUserObject = await UserUtility.updateUserPhotoUtil({
     req,
   });

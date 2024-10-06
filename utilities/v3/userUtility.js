@@ -383,17 +383,13 @@ module.exports.checkUserExistenceByPhoneInDB = async ({ phone }) => {
           userData: CommonUtility.sortObject(respondedUser),
         });
         return {
-          isUserExists: true,
-          isSucceeded: true,
-          isCatchError: false,
+          status: "success",
           message: `User with phone '${phone}' is already exists.`,
           data: fullDetailsUser,
         };
       } else {
         return {
-          isUserExists: false,
-          isSucceeded: false,
-          isCatchError: false,
+          status: "error",
           message: `User with phone '${phone}' doesn't exists.`,
           data: {},
         };
@@ -401,9 +397,7 @@ module.exports.checkUserExistenceByPhoneInDB = async ({ phone }) => {
     })
     .catch((err) => {
       return {
-        isUserExists: true,
-        isSucceeded: false,
-        isCatchError: true,
+        status: "error",
         message: `There is an error occurred in fetching user by phone. ${err.message}`,
         data: {},
       };
@@ -411,11 +405,21 @@ module.exports.checkUserExistenceByPhoneInDB = async ({ phone }) => {
 };
 
 module.exports.checkUserExistenceByUserIDInDB = async ({ userID }) => {
-  return await CommonApisUtility.getDataByIdFromSchemaUtil({
+  const userByIdDataObj = await CommonApisUtility.getDataByIdFromSchemaUtil({
     schema: User,
     schemaName: "User",
     dataID: userID,
   });
+  if (userByIdDataObj?.status === "error") {
+    return userByIdDataObj;
+  }
+  const fullUserDetails = await this.getSingleUserWithAllDetails({
+    userData: userByIdDataObj?.data,
+  });
+  return {
+    ...userByIdDataObj,
+    data: fullUserDetails,
+  };
 };
 
 module.exports.checkUserValidationToAddNewUser = async (req) => {
@@ -453,7 +457,7 @@ module.exports.checkUserValidationToAddNewUser = async (req) => {
 
   const checkUserExistenceByPhoneInDB =
     await this.checkUserExistenceByPhoneInDB({ phone: req.body.phone });
-  if (checkUserExistenceByPhoneInDB.isUserExists) {
+  if (checkUserExistenceByPhoneInDB?.status === "success") {
     return {
       status: "error",
       message: checkUserExistenceByPhoneInDB.message,
@@ -950,6 +954,17 @@ module.exports.updateUserPhoneUtil = async ({ req }) => {
     return foundUserObject;
   }
 
+  const foundUserByPhoneObject = await this.checkUserExistenceByPhoneInDB({
+    phone: phone,
+  });
+  if (foundUserByPhoneObject?.status === "success") {
+    return {
+      ...foundUserObject,
+      status: "error",
+      message: `Another user is already registered with the same phone number "${phone}"`,
+    };
+  }
+
   const newUserPhone = {
     id: userID,
     phone: phone,
@@ -1083,8 +1098,6 @@ module.exports.updateUserPhotoUtil = async ({ req }) => {
     return foundUserObject;
   }
 
-  console.log("foundUserObject", foundUserObject);
-
   const updatedRequestBody = {
     ...req.body,
     imageData: foundUserObject?.data?.imageData
@@ -1098,8 +1111,6 @@ module.exports.updateUserPhotoUtil = async ({ req }) => {
       ...updatedRequestBody,
     },
   };
-
-  console.log("updatedRequest", updatedRequest);
 
   const {
     updatedUploadedFileData,
@@ -1137,6 +1148,117 @@ module.exports.updateUserPhotoUtil = async ({ req }) => {
     schema: User,
     newDataObject: newUserPhoto,
     updatedDataSet: updatedUserPhotoSet,
+    schemaName: "User",
+    dataID: userID,
+  });
+};
+
+module.exports.updateUserRoleUtil = async ({ req }) => {
+  if (!req?.body?.userID || req.body.userID === "") {
+    return {
+      status: "error",
+      message: "User id is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.userRoleID || req.body.userRoleID === "") {
+    return {
+      status: "error",
+      message: "User role id is required.",
+      data: {},
+    };
+  }
+
+  const userID = req.body.userID;
+  const userRoleID = req.body.userRoleID;
+
+  const foundUserObject = await this.checkUserExistenceByUserIDInDB({
+    userID: userID,
+  });
+  if (foundUserObject?.status === "error") {
+    return foundUserObject;
+  }
+
+  const foundUserRoleObject = await UserRolesUtility.getUserRoleByIdUtil({
+    userRoleID: userRoleID,
+  });
+  if (foundUserRoleObject?.status === "error") {
+    return {
+      ...foundUserRoleObject,
+      message: `Role of user cannot be updated. ${foundUserRoleObject?.message}`,
+    };
+  }
+
+  const updatedUserRoleUser = {
+    id: userID,
+    userRoleID: userRoleID,
+    dateModified: new Date(),
+  };
+
+  const updatedUserRoleUserSet = {
+    $set: updatedUserRoleUser,
+  };
+
+  return await CommonApisUtility.updateDataInSchemaUtil({
+    schema: User,
+    newDataObject: updatedUserRoleUser,
+    updatedDataSet: updatedUserRoleUserSet,
+    schemaName: "User",
+    dataID: userID,
+  });
+};
+
+module.exports.updateUserStatusUtil = async ({ req }) => {
+  if (!req?.body?.userID || req.body.userID === "") {
+    return {
+      status: "error",
+      message: "User id is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.userStatusID || req.body.userStatusID === "") {
+    return {
+      status: "error",
+      message: "User status id is required.",
+      data: {},
+    };
+  }
+
+  const userID = req.body.userID;
+  const userStatusID = req.body.userStatusID;
+
+  const foundUserObject = await this.checkUserExistenceByUserIDInDB({
+    userID: userID,
+  });
+  if (foundUserObject?.status === "error") {
+    return foundUserObject;
+  }
+
+  const foundUserStatusObject =
+    await UserStatusesUtility.getUserStatusByUserStatusIdUtil({
+      userStatusID: userStatusID,
+    });
+  if (foundUserStatusObject?.status === "error") {
+    return {
+      ...foundUserStatusObject,
+      message: `Status of user cannot be updated. ${foundUserStatusObject?.message}`,
+    };
+  }
+
+  const updatedUserStatusUser = {
+    id: userID,
+    userStatusID: userStatusID,
+    dateModified: new Date(),
+  };
+
+  const updatedUserStatusUserSet = {
+    $set: updatedUserStatusUser,
+  };
+
+  return await CommonApisUtility.updateDataInSchemaUtil({
+    schema: User,
+    newDataObject: updatedUserStatusUser,
+    updatedDataSet: updatedUserStatusUserSet,
     schemaName: "User",
     dataID: userID,
   });

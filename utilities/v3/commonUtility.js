@@ -125,9 +125,10 @@ module.exports.sortObjectsOfArray = (array) => {
   return newSortedObjectArray;
 };
 
-module.exports.getStateCityCodeFromTitle = ({ title }) => {
+module.exports.getCodeFromTitle = ({ title }) => {
   if (title && title !== "") {
-    const splittedTitleArray = title.split(" ");
+    const updatedTitle = title?.toUpperCase?.();
+    const splittedTitleArray = updatedTitle.split(" ");
     if (splittedTitleArray.length === 1) {
       let secondChar = "";
       if (splittedTitleArray[0].length >= 3) {
