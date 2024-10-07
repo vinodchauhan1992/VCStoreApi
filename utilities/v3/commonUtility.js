@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const BrandsUtility = require("./brandsUtility");
 const ProductUtility = require("./productUtility");
 const validator = require("validator");
+const jwt = require("jsonwebtoken");
 
 module.exports.getTimestamp = () => {
   const timestamp = new Date().getTime();
@@ -231,4 +232,16 @@ module.exports.isValidDate = ({ date }) => {
     return true;
   }
   return false;
+};
+
+module.exports.generateJwtToken = ({ uniqueID, uniqueCode }) => {
+  let jwtToken = jwt.sign({ user: uniqueCode }, "secret_key");
+  if (uniqueID && uniqueID !== "") {
+    jwtToken = `${jwtToken}${uniqueID}`;
+  }
+  if (uniqueCode && uniqueCode !== "") {
+    jwtToken = `${jwtToken}${uniqueCode}`;
+  }
+  jwtToken = `${jwtToken}${uniqueCode}${new Date().valueOf()}`;
+  return jwtToken;
 };

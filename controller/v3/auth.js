@@ -14,3 +14,9 @@ module.exports.customerLogin = async (req, res) => {
   const loginObj = await AuthUtility.customerLoginUtil({ req });
   res.json(loginObj);
 };
+
+module.exports.employeeLogout = async (req, res) => {
+  console.log("req_employeeLogout_headers", req.headers);
+  const loginObj = await AuthUtility.employeeLogoutUtil({ req });
+  res.json(loginObj);
+};

@@ -41,10 +41,12 @@ module.exports.getDataByIdFromSchemaUtil = async ({
   schema,
   schemaName,
   dataID,
+  keyname,
 }) => {
+  const updateKeyName = keyname && keyname !== "" ? keyname : "id";
   return await schema
     .findOne({
-      id: dataID,
+      [updateKeyName]: dataID,
     })
     .select(["-_id"])
     .then((dataByID) => {
@@ -115,12 +117,12 @@ module.exports.getDataByCodeFromSchemaUtil = async ({
       code: dataCode,
     })
     .select(["-_id"])
-    .then((dataByTitle) => {
-      if (dataByTitle && Object.keys(dataByTitle).length > 0) {
+    .then((dataByCode) => {
+      if (dataByCode && Object.keys(dataByCode).length > 0) {
         return {
           status: "success",
           message: `${schemaName} with ${schemaName?.toLowerCase()} code ${dataCode} fetched successfully.`,
-          data: CommonUtility.sortObject(dataByTitle),
+          data: CommonUtility.sortObject(dataByCode),
         };
       } else {
         return {
@@ -302,6 +304,151 @@ module.exports.getDataByPhoneFromSchemaUtil = async ({
       return {
         status: "error",
         message: `There is an error occurred in getDataByEmailFromSchemaUtil function while fetching ${schemaName} data by phone ${phone}. ${err.message}`,
+        data: {},
+      };
+    });
+};
+
+module.exports.getDataArrayByIdFromSchemaUtil = async ({
+  schema,
+  schemaName,
+  dataID,
+  keyname,
+}) => {
+  const updateKeyName = keyname && keyname !== "" ? keyname : "id";
+  return await schema
+    .find({
+      [updateKeyName]: dataID,
+    })
+    .select(["-_id"])
+    .then((dataArrayByID) => {
+      if (dataArrayByID && dataArrayByID.length > 0) {
+        return {
+          status: "success",
+          message: `${schemaName} with ${schemaName?.toLowerCase()} id ${dataID} fetched successfully.`,
+          data: CommonUtility.sortObjectsOfArray(dataArrayByID),
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There is no ${schemaName?.toLowerCase()} exists with ${schemaName?.toLowerCase()} id ${dataID}.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in getDataArrayByIdFromSchemaUtil function while fetching ${schemaName} data by id ${dataID}. ${err.message}`,
+        data: {},
+      };
+    });
+};
+
+module.exports.getDataArrayByCodeFromSchemaUtil = async ({
+  schema,
+  schemaName,
+  dataCode,
+  keyname,
+}) => {
+  const updateKeyName = keyname && keyname !== "" ? keyname : "code";
+  return await schema
+    .find({
+      [updateKeyName]: dataCode,
+    })
+    .select(["-_id"])
+    .then((dataArrayByCode) => {
+      if (dataArrayByCode && dataArrayByCode.length > 0) {
+        return {
+          status: "success",
+          message: `${schemaName} with ${schemaName?.toLowerCase()} code ${dataCode} fetched successfully.`,
+          data: CommonUtility.sortObjectsOfArray(dataArrayByCode),
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There is no ${schemaName?.toLowerCase()} exists with ${schemaName?.toLowerCase()} code ${dataCode}.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in getDataArrayByCodeFromSchemaUtil function while fetching ${schemaName} data by code ${dataCode}. ${err.message}`,
+        data: {},
+      };
+    });
+};
+
+module.exports.getDataByJwtTokenFromSchemaUtil = async ({
+  schema,
+  schemaName,
+  jwtToken,
+  keyname,
+}) => {
+  const updateKeyName = keyname && keyname !== "" ? keyname : "jwtToken";
+  return await schema
+    .findOne({
+      [updateKeyName]: jwtToken,
+    })
+    .select(["-_id"])
+    .then((dataByJwtToken) => {
+      if (dataByJwtToken && Object.keys(dataByJwtToken).length > 0) {
+        return {
+          status: "success",
+          message: `${schemaName} with ${schemaName?.toLowerCase()} jwtToken ${jwtToken} fetched successfully.`,
+          data: CommonUtility.sortObject(dataByJwtToken),
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There is no ${schemaName?.toLowerCase()} exists with ${schemaName?.toLowerCase()} jwtToken ${jwtToken}.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in getDataByJwtTokenFromSchemaUtil function while fetching ${schemaName} data by jwtToken ${jwtToken}. ${err.message}`,
+        data: {},
+      };
+    });
+};
+
+module.exports.updateDataByJwtTokenInSchemaUtil = async ({
+  schema,
+  newDataObject,
+  updatedDataSet,
+  schemaName,
+  jwtToken,
+  keyname,
+}) => {
+  const updateKeyName = keyname && keyname !== "" ? keyname : "jwtToken";
+  return await schema
+    .updateOne({ [updateKeyName]: jwtToken }, updatedDataSet)
+    .then((respondedData) => {
+      if (respondedData && Object.keys(respondedData).length > 0) {
+        return {
+          status: "success",
+          message: `${schemaName} with ${schemaName?.toLowerCase()} jwtToken "${jwtToken}" is updated successfully.`,
+          data: newDataObject,
+        };
+      } else {
+        return {
+          status: "error",
+          message: `${schemaName} with ${schemaName?.toLowerCase()} jwtToken "${jwtToken}" is not updated due to unknown error.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in updateDataByJwtTokenInSchemaUtil function while updating ${schemaName?.toLowerCase()} with ${schemaName?.toLowerCase()} jwtToken "${jwtToken}". ${
+          err.message
+        }`,
         data: {},
       };
     });

@@ -1,12 +1,11 @@
 const User = require("../../model/v3/user");
 const EmployeesSchema = require("../../model/v3/employees");
 const CustomersSchema = require("../../model/v3/customers");
-const jwt = require("jsonwebtoken");
 const UserUtility = require("./userUtility");
 const CommonUtility = require("./commonUtility");
-const CommonApisUtility = require("./commonApisUtility");
 const EmployeesValidationsUtility = require("./employeesValidationsUtility");
 const ConstantsUtility = require("./constantsUtility");
+const EmployeesLoginUtility = require("./employeesLoginUtility");
 
 module.exports.loginUtil = async ({ req }) => {
   if (!req?.body?.username || req.body.username === "") {
@@ -20,6 +19,38 @@ module.exports.loginUtil = async ({ req }) => {
     return {
       status: "error",
       message: "Password is required to login.",
+      data: {},
+    };
+  }
+  if (!req?.headers?.user_panel || req.body.user_panel === "") {
+    return {
+      status: "error",
+      message:
+        "You are not authorised to login. Please pass user_panel in header",
+      data: {},
+    };
+  }
+  if (req.headers.user_panel !== "User") {
+    return {
+      status: "error",
+      message:
+        "You are not authorised to login. Please pass user_panel in header",
+      data: {},
+    };
+  }
+  if (req?.headers?.admin_panel) {
+    return {
+      status: "error",
+      message:
+        "You are not authorised to login as you are passing admin_panel in header in user login api.",
+      data: {},
+    };
+  }
+  if (req?.headers?.customer_panel) {
+    return {
+      status: "error",
+      message:
+        "You are not authorised to login as you are passing customer_panel in header in user login api.",
       data: {},
     };
   }
@@ -40,12 +71,16 @@ module.exports.loginUtil = async ({ req }) => {
           fullDetailsUser?.userStatusDetails?.status &&
           fullDetailsUser.userStatusDetails.status === "Active"
         ) {
+          const jwtToken = CommonUtility.generateJwtToken({
+            uniqueID: fullDetailsUser?.id ?? "",
+            uniqueCode: fullDetailsUser?.username ?? "",
+          });
           return {
             status: "success",
             message: "You are successfully logged in.",
             data: {
               user: fullDetailsUser,
-              jwtToken: jwt.sign({ user: username }, "secret_key"),
+              jwtToken: jwtToken,
             },
           };
         } else {
@@ -87,9 +122,49 @@ module.exports.employeeLoginUtil = async ({ req }) => {
       data: {},
     };
   }
+  if (!req?.headers?.admin_panel || req.body.admin_panel === "") {
+    return {
+      status: "error",
+      message:
+        "You are not authorised to login. Please pass admin_panel in header",
+      data: {},
+    };
+  }
+  if (req.headers.admin_panel !== "Administrations") {
+    return {
+      status: "error",
+      message:
+        "You are not authorised to login. Please pass admin_panel in header",
+      data: {},
+    };
+  }
+  if (req?.headers?.customer_panel) {
+    return {
+      status: "error",
+      message:
+        "You are not authorised to login to admin panel as you are passing customer_panel in header.",
+      data: {},
+    };
+  }
+  if (req?.headers?.user_panel) {
+    return {
+      status: "error",
+      message:
+        "You are not authorised to login to admin panel as you are passing user_panel in header.",
+      data: {},
+    };
+  }
 
   const employeeCode = req.body.employeeCode;
   const password = req.body.password;
+
+  const foundLoginObj =
+    await EmployeesLoginUtility.checkIfEmployeeIsAlreadyLoggedInByEmpCodeUtil({
+      req,
+    });
+  if (foundLoginObj?.status === "error") {
+    return foundLoginObj;
+  }
 
   return await EmployeesSchema.findOne({
     employeeCode: employeeCode,
@@ -123,12 +198,27 @@ module.exports.employeeLoginUtil = async ({ req }) => {
           };
         }
 
+        const jwtToken = CommonUtility.generateJwtToken({
+          uniqueID: fullDetailsObj?.id ?? "",
+          uniqueCode: fullDetailsObj?.employeeCode ?? "",
+        });
+
+        const employeeLoginObj =
+          await EmployeesLoginUtility.addNewEmployeeLoginEntryUtil({
+            employeeLoginData: fullDetailsObj,
+            jwtToken: jwtToken,
+          });
+
+        if (employeeLoginObj?.status === "error") {
+          return employeeLoginObj;
+        }
+
         return {
           status: "success",
           message: "You are successfully logged in.",
           data: {
             employee: fullDetailsObj,
-            jwtToken: jwt.sign({ user: employeeCode }, "secret_key"),
+            jwtToken: jwtToken,
           },
         };
       } else {
@@ -163,6 +253,37 @@ module.exports.customerLoginUtil = async ({ req }) => {
       data: {},
     };
   }
+  if (req?.headers?.admin_panel) {
+    return {
+      status: "error",
+      message:
+        "You are not authorised to login as you are passing admin_panel to customer login api.",
+      data: {},
+    };
+  }
+  if (req?.headers?.user_panel) {
+    return {
+      status: "error",
+      message:
+        "You are not authorised to login as you are passing user_panel to customer login api.",
+      data: {},
+    };
+  }
+  if (!req?.headers?.customer_panel || req.body.customer_panel === "") {
+    return {
+      status: "error",
+      message:
+        "You are not authorised to login. Please pass customer_panel in header",
+      data: {},
+    };
+  }
+  if (req.headers.customer_panel !== "Customer") {
+    return {
+      status: "error",
+      message: `You are not authorised to login. Please pass "Customer" in customer_panel in header`,
+      data: {},
+    };
+  }
 
   const username = req.body.username;
   const password = req.body.password;
@@ -173,12 +294,16 @@ module.exports.customerLoginUtil = async ({ req }) => {
   })
     .then(async (customerData) => {
       if (customerData && Object.keys(customerData).length > 0) {
+        const jwtToken = CommonUtility.generateJwtToken({
+          uniqueID: customerData?.id ?? "",
+          uniqueCode: customerData?.username ?? "",
+        });
         return {
           status: "success",
           message: "You are successfully logged in.",
           data: {
             customer: customerData,
-            jwtToken: jwt.sign({ user: username }, "secret_key"),
+            jwtToken: jwtToken,
           },
         };
       } else {
@@ -196,4 +321,18 @@ module.exports.customerLoginUtil = async ({ req }) => {
         data: {},
       };
     });
+};
+
+module.exports.employeeLogoutUtil = async ({ req }) => {
+  const jwttoken = req?.headers?.jwttoken ?? null;
+  if (!jwttoken || jwttoken === "") {
+    return {
+      status: "error",
+      message: `Jwt token is required to logout`,
+      data: {},
+    };
+  }
+  return await EmployeesLoginUtility.updateEmployeeLoginLogoutEntryUtil({
+    jwtToken: jwttoken,
+  });
 };
