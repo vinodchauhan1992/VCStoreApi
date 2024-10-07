@@ -11,6 +11,10 @@ const employeesSchema = new schema({
     type: String,
     required: true,
   },
+  employeeNumber: {
+    type: Number,
+    required: true,
+  },
   email: {
     type: String,
     required: true,
@@ -28,6 +32,10 @@ const employeesSchema = new schema({
       type: String,
       required: true,
     },
+  },
+  preferredName: {
+    type: String,
+    required: true,
   },
   address: {
     address: {
@@ -54,7 +62,7 @@ const employeesSchema = new schema({
       type: String,
       required: true,
     },
-    zipcode: {
+    pincode: {
       type: String,
       required: true,
     },
@@ -67,15 +75,15 @@ const employeesSchema = new schema({
     type: String,
     required: true,
   },
-  employeeDataRoleID: {
+  genderID: {
+    type: String,
+    required: true,
+  },
+  employeeRoleID: {
     type: String,
     required: true,
   },
   statusID: {
-    type: String,
-    required: true,
-  },
-  genderID: {
     type: String,
     required: true,
   },

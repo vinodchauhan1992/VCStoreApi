@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 const UserUtility = require("./userUtility");
 const CommonUtility = require("./commonUtility");
 const CommonApisUtility = require("./commonApisUtility");
+const EmployeesValidationsUtility = require("./employeesValidationsUtility");
+const ConstantsUtility = require("./constantsUtility");
 
 module.exports.loginUtil = async ({ req }) => {
   if (!req?.body?.username || req.body.username === "") {
@@ -95,11 +97,37 @@ module.exports.employeeLoginUtil = async ({ req }) => {
   })
     .then(async (employeeData) => {
       if (employeeData && Object.keys(employeeData).length > 0) {
+        const fullDetailsObj =
+          await EmployeesValidationsUtility.getSingleEmployeeWithAllDetails({
+            employeeData: CommonUtility.sortObject(employeeData),
+          });
+        if (
+          fullDetailsObj?.departmentDetails?.id !==
+          ConstantsUtility.utils.ADMIN_DEPARTMENT_ID
+        ) {
+          return {
+            status: "error",
+            message: `You cannot login with this employee code "${employeeCode}" as you are "${fullDetailsObj?.departmentDetails?.title}" department and not from Administration department. Please contact administrations department.`,
+            data: {},
+          };
+        }
+
+        if (
+          fullDetailsObj?.statusDetails?.id !==
+          ConstantsUtility.utils.ACTIVE_EMPLOYEE_STATUS_ID
+        ) {
+          return {
+            status: "error",
+            message: `You cannot login with this employee code "${employeeCode}" as your status is "${fullDetailsObj?.statusDetails?.title}". Please contact administrations department.`,
+            data: {},
+          };
+        }
+
         return {
           status: "success",
           message: "You are successfully logged in.",
           data: {
-            employee: employeeData,
+            employee: fullDetailsObj,
             jwtToken: jwt.sign({ user: employeeCode }, "secret_key"),
           },
         };

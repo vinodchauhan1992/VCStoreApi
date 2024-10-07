@@ -238,3 +238,71 @@ module.exports.updateDataInSchemaUtil = async ({
       };
     });
 };
+
+module.exports.getDataByEmailFromSchemaUtil = async ({
+  schema,
+  schemaName,
+  emailID,
+}) => {
+  return await schema
+    .findOne({
+      email: emailID,
+    })
+    .select(["-_id"])
+    .then((dataByEmail) => {
+      if (dataByEmail && Object.keys(dataByEmail).length > 0) {
+        return {
+          status: "success",
+          message: `${schemaName} with ${schemaName?.toLowerCase()} email ${emailID} fetched successfully.`,
+          data: CommonUtility.sortObject(dataByEmail),
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There is no ${schemaName?.toLowerCase()} exists with ${schemaName?.toLowerCase()} email ${emailID}.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in getDataByEmailFromSchemaUtil function while fetching ${schemaName} data by email ${emailID}. ${err.message}`,
+        data: {},
+      };
+    });
+};
+
+module.exports.getDataByPhoneFromSchemaUtil = async ({
+  schema,
+  schemaName,
+  phone,
+}) => {
+  return await schema
+    .findOne({
+      phone: phone,
+    })
+    .select(["-_id"])
+    .then((dataByPhone) => {
+      if (dataByPhone && Object.keys(dataByPhone).length > 0) {
+        return {
+          status: "success",
+          message: `${schemaName} with ${schemaName?.toLowerCase()} phone ${phone} fetched successfully.`,
+          data: CommonUtility.sortObject(dataByPhone),
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There is no ${schemaName?.toLowerCase()} exists with ${schemaName?.toLowerCase()} phone ${phone}.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in getDataByEmailFromSchemaUtil function while fetching ${schemaName} data by phone ${phone}. ${err.message}`,
+        data: {},
+      };
+    });
+};

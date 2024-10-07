@@ -2,6 +2,7 @@ var Jimp = require("jimp");
 const { v4: uuidv4 } = require("uuid");
 const BrandsUtility = require("./brandsUtility");
 const ProductUtility = require("./productUtility");
+const validator = require("validator");
 
 module.exports.getTimestamp = () => {
   const timestamp = new Date().getTime();
@@ -146,4 +147,88 @@ module.exports.getCodeFromTitle = ({ title }) => {
     }
   }
   return null;
+};
+
+module.exports.isValidEmail = ({ email }) => {
+  if (email && email !== "") {
+    return validator.isEmail(email) ? true : false;
+  }
+  return false;
+};
+
+module.exports.isValidPassword = ({ password }) => {
+  if (password && password !== "") {
+    // Checking length of the password
+    if (password.length < 8) {
+      return {
+        isValid: false,
+        message: "Your password is less than 8 characters.",
+      };
+    }
+
+    // checking uppercase letters
+    let uppercaseRegex = /[A-Z]/g;
+    if (!password.match(uppercaseRegex)) {
+      return {
+        isValid: false,
+        message: "Your password is lacking of atleast 1 uppercase character.",
+      };
+    }
+
+    // checking lowercase letters
+    let lowercaseRegex = /[a-z]/g;
+    if (!password.match(lowercaseRegex)) {
+      return {
+        isValid: false,
+        message: "Your password is lacking of atleast 1 lowercase character.",
+      };
+    }
+
+    // checking the number
+    let numbersRegex = /[0-9]/g;
+    if (!password.match(numbersRegex)) {
+      return {
+        isValid: false,
+        message: "Your password is lacking of atleast 1 number.",
+      };
+    }
+
+    // checking the special character
+    const specialCharRegex = /[!@#$%^&*()\-+.]/g;
+    if (!password.match(specialCharRegex)) {
+      return {
+        isValid: false,
+        message: "Your password is lacking of atleast 1 special character.",
+      };
+    }
+
+    return {
+      isValid: true,
+      message: "",
+    };
+  }
+  return {
+    isValid: false,
+    message: "Password is invalid.",
+  };
+};
+
+module.exports.isValidOnlyCharacters = ({ text }) => {
+  const validationRegex = /^[A-Za-z ]+$/;
+  if (text && text !== "") {
+    return validationRegex.test(text) ? true : false;
+  }
+  return false;
+};
+
+module.exports.isValidDate = ({ date }) => {
+  if (
+    date &&
+    date !== "" &&
+    new Date(date) !== "Invalid Date" &&
+    !isNaN(new Date(date))
+  ) {
+    return true;
+  }
+  return false;
 };
