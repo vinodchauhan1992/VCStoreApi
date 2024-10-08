@@ -2,6 +2,7 @@ const EmployeesLoginSchema = require("../../model/v3/employeesLogin");
 const CommonApisUtility = require("./commonApisUtility");
 const CommonUtility = require("./commonUtility");
 const EmployeesUtility = require("./employeesUtility");
+const AppIdsUtility = require("./appIdsUtility");
 
 module.exports.getSingleEmployeeLoginsWithAllEmployeesUtil = async ({
   employeeLoginData,
@@ -11,16 +12,26 @@ module.exports.getSingleEmployeeLoginsWithAllEmployeesUtil = async ({
   const foundEmployeeDataByIDObj = await EmployeesUtility.getEmployeeByIDUtil({
     req,
   });
-  if (foundEmployeeDataByIDObj?.status === "success") {
-    return {
-      ...employeeLoginData,
-      employeeData: foundEmployeeDataByIDObj?.data ?? {},
-    };
-  }
-  return {
+  let finalObj = {
     ...employeeLoginData,
     employeeData: {},
   };
+  if (foundEmployeeDataByIDObj?.status === "success") {
+    finalObj = {
+      ...finalObj,
+      employeeData: foundEmployeeDataByIDObj?.data ?? {},
+    };
+  }
+  const foundAppIdByAppIDObj = await AppIdsUtility.getAppIdByAppIdUtil({
+    req: { body: { id: employeeLoginData?.appID } },
+  });
+  if (foundAppIdByAppIDObj?.status === "success") {
+    finalObj = {
+      ...finalObj,
+      appIdDetails: foundAppIdByAppIDObj?.data,
+    };
+  }
+  return finalObj;
 };
 
 module.exports.getAllEmployeeLoginsWithAllEmployeesUtil = async ({
@@ -136,10 +147,7 @@ module.exports.getEmployeeLoginsByEmpCodeUtil = async ({ req }) => {
       dataCode: employeeCode,
       keyname: "employeeCode",
     });
-  console.log(
-    "employeeLoginObject_getEmployeeLoginsByEmpCodeUtil",
-    employeeLoginObject
-  );
+
   if (employeeLoginObject?.status === "error") {
     return {
       ...employeeLoginObject,
@@ -190,6 +198,7 @@ module.exports.getEmployeeLoginByJwtTokenUtil = async ({ req }) => {
 module.exports.addNewEmployeeLoginEntryUtil = async ({
   employeeLoginData,
   jwtToken,
+  appID,
 }) => {
   if (!employeeLoginData?.id || employeeLoginData.id === "") {
     return {
@@ -215,10 +224,18 @@ module.exports.addNewEmployeeLoginEntryUtil = async ({
       data: {},
     };
   }
+  if (!appID || appID === "") {
+    return {
+      status: "error",
+      message: "Invalid login. app id is required.",
+      data: {},
+    };
+  }
 
   const newEmployeeLogin = new EmployeesLoginSchema({
     id: CommonUtility.getUniqueID(),
     employeeID: employeeLoginData.id,
+    appID: appID,
     employeeCode: employeeLoginData.employeeCode,
     jwtToken: jwtToken,
     loginDateTime: new Date(),

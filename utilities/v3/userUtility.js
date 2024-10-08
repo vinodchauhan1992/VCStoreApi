@@ -692,7 +692,6 @@ module.exports.updateUserImageUtil = async ({ req }) => {
   const username = req.body.username;
   let finalImageData = null;
   if (req?.body?.imageData && req.body.imageData !== "") {
-    console.log("req.body.imageData", req.body.imageData);
     const localImgData = JSON.parse(JSON.parse(req.body.imageData));
     if (localImgData && Object.keys(localImgData).length > 1) {
       finalImageData = localImgData;
@@ -1118,11 +1117,6 @@ module.exports.updateUserPhotoUtil = async ({ req }) => {
     updatedUploadedFileStatus,
     updatedUploadedResponse,
   } = await this.updateUserImageUtil({ req: updatedRequest });
-
-  console.log("updatedUploadedFileMessage", updatedUploadedFileMessage);
-  console.log("updatedUploadedFileStatus", updatedUploadedFileStatus);
-  console.log("updatedUploadedResponse", updatedUploadedResponse);
-  console.log("updatedUploadedFileData", updatedUploadedFileData);
 
   if (!updatedUploadedResponse?.isSucceeded) {
     return {

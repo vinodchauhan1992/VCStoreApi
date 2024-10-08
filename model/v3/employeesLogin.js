@@ -6,6 +6,10 @@ const employeesLoginSchema = new schema({
     type: String,
     required: true,
   },
+  appID: {
+    type: String,
+    required: true,
+  },
   employeeID: {
     type: String,
     required: true,

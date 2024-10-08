@@ -78,11 +78,9 @@ module.exports.getNewEmployeeNumberUtil = async ({ req }) => {
   let currentMaxEmployeeNumber = 0;
 
   if (dataArr && dataArr.length > 0) {
-    console.log("dataArr", dataArr);
     const maxEmployeeNumberObject = dataArr.reduce(function (prev, current) {
       return prev && prev.y > current.y ? prev : current;
     });
-    console.log("maxEmployeeNumberObject", maxEmployeeNumberObject);
     if (maxEmployeeNumberObject) {
       currentMaxEmployeeNumber = maxEmployeeNumberObject?.employeeNumber ?? 0;
     }

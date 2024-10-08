@@ -6,6 +6,7 @@ const CommonUtility = require("./commonUtility");
 const EmployeesValidationsUtility = require("./employeesValidationsUtility");
 const ConstantsUtility = require("./constantsUtility");
 const EmployeesLoginUtility = require("./employeesLoginUtility");
+const AppIdsUtility = require("./appIdsUtility");
 
 module.exports.loginUtil = async ({ req }) => {
   if (!req?.body?.username || req.body.username === "") {
@@ -22,35 +23,33 @@ module.exports.loginUtil = async ({ req }) => {
       data: {},
     };
   }
-  if (!req?.headers?.user_panel || req.body.user_panel === "") {
+  if (!req?.headers?.app_id || req.body.app_id === "") {
     return {
       status: "error",
-      message:
-        "You are not authorised to login. Please pass user_panel in header",
+      message: "You are not authorised to login. Please pass app_id in header",
       data: {},
     };
   }
-  if (req.headers.user_panel !== "User") {
+  const appID = req.body.app_id;
+  const foundAppIdObj = await AppIdsUtility.getAppIdByAppIdUtil({
+    req: { body: { id: appID } },
+  });
+
+  if (foundAppIdObj?.status === "error") {
     return {
       status: "error",
-      message:
-        "You are not authorised to login. Please pass user_panel in header",
+      message: `You are not authorised to login to client panel. Your passed app_id is not found in app_ids table.`,
       data: {},
     };
   }
-  if (req?.headers?.admin_panel) {
+
+  if (
+    foundAppIdObj?.status === "success" &&
+    foundAppIdObj?.data?.title !== ConstantsUtility.utils.APP_TYPE_CLIENT
+  ) {
     return {
       status: "error",
-      message:
-        "You are not authorised to login as you are passing admin_panel in header in user login api.",
-      data: {},
-    };
-  }
-  if (req?.headers?.customer_panel) {
-    return {
-      status: "error",
-      message:
-        "You are not authorised to login as you are passing customer_panel in header in user login api.",
+      message: `You are not authorised to login to client panel. Your passed app_id is incorrect.`,
       data: {},
     };
   }
@@ -122,35 +121,33 @@ module.exports.employeeLoginUtil = async ({ req }) => {
       data: {},
     };
   }
-  if (!req?.headers?.admin_panel || req.body.admin_panel === "") {
+  if (!req?.headers?.app_id || req.body.app_id === "") {
     return {
       status: "error",
-      message:
-        "You are not authorised to login. Please pass admin_panel in header",
+      message: "You are not authorised to login. Please pass app_id in header",
       data: {},
     };
   }
-  if (req.headers.admin_panel !== "Administrations") {
+  const appID = req.headers.app_id;
+  const foundAppIdObj = await AppIdsUtility.getAppIdByAppIdUtil({
+    req: { body: { id: appID } },
+  });
+
+  if (foundAppIdObj?.status === "error") {
     return {
       status: "error",
-      message:
-        "You are not authorised to login. Please pass admin_panel in header",
+      message: `You are not authorised to login to admin panel. Your passed app_id is not found in app_ids table.`,
       data: {},
     };
   }
-  if (req?.headers?.customer_panel) {
+
+  if (
+    foundAppIdObj?.status === "success" &&
+    foundAppIdObj?.data?.title !== ConstantsUtility.utils.APP_TYPE_ADMIN
+  ) {
     return {
       status: "error",
-      message:
-        "You are not authorised to login to admin panel as you are passing customer_panel in header.",
-      data: {},
-    };
-  }
-  if (req?.headers?.user_panel) {
-    return {
-      status: "error",
-      message:
-        "You are not authorised to login to admin panel as you are passing user_panel in header.",
+      message: `You are not authorised to login to admin panel. Your passed app_id is incorrect.`,
       data: {},
     };
   }
@@ -207,6 +204,7 @@ module.exports.employeeLoginUtil = async ({ req }) => {
           await EmployeesLoginUtility.addNewEmployeeLoginEntryUtil({
             employeeLoginData: fullDetailsObj,
             jwtToken: jwtToken,
+            appID: appID,
           });
 
         if (employeeLoginObj?.status === "error") {
@@ -253,34 +251,33 @@ module.exports.customerLoginUtil = async ({ req }) => {
       data: {},
     };
   }
-  if (req?.headers?.admin_panel) {
+  if (!req?.headers?.app_id || req.body.app_id === "") {
     return {
       status: "error",
-      message:
-        "You are not authorised to login as you are passing admin_panel to customer login api.",
+      message: "You are not authorised to login. Please pass app_id in header",
       data: {},
     };
   }
-  if (req?.headers?.user_panel) {
+  const appID = req.body.app_id;
+  const foundAppIdObj = await AppIdsUtility.getAppIdByAppIdUtil({
+    req: { body: { id: appID } },
+  });
+
+  if (foundAppIdObj?.status === "error") {
     return {
       status: "error",
-      message:
-        "You are not authorised to login as you are passing user_panel to customer login api.",
+      message: `You are not authorised to login to client panel. Your passed app_id is not found in app_ids table.`,
       data: {},
     };
   }
-  if (!req?.headers?.customer_panel || req.body.customer_panel === "") {
+
+  if (
+    foundAppIdObj?.status === "success" &&
+    foundAppIdObj?.data?.title !== ConstantsUtility.utils.APP_TYPE_CLIENT
+  ) {
     return {
       status: "error",
-      message:
-        "You are not authorised to login. Please pass customer_panel in header",
-      data: {},
-    };
-  }
-  if (req.headers.customer_panel !== "Customer") {
-    return {
-      status: "error",
-      message: `You are not authorised to login. Please pass "Customer" in customer_panel in header`,
+      message: `You are not authorised to login to client panel. Your passed app_id is incorrect.`,
       data: {},
     };
   }
