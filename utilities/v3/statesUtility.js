@@ -34,8 +34,6 @@ module.exports.addNewStateUtil = async ({ req, res }) => {
   const stateID = CommonUtility.getUniqueID();
   const stateTitle = req.body.title;
   const countryID = req.body.countryID;
-  const isDeleteable = req.body.isDeleteable;
-  const isAdminDeleteable = req.body.isAdminDeleteable;
   const dateAdded = new Date();
   const dateModified = new Date();
   const stateCode = CommonUtility.getCodeFromTitle({
@@ -47,8 +45,6 @@ module.exports.addNewStateUtil = async ({ req, res }) => {
     title: stateTitle,
     code: stateCode?.toUpperCase(),
     countryID: countryID,
-    isDeleteable: isDeleteable,
-    isAdminDeleteable: isAdminDeleteable,
     dateAdded: dateAdded,
     dateModified: dateModified,
   });
@@ -174,8 +170,6 @@ module.exports.updateStateUtil = async ({ req, res }) => {
   const stateID = req.body.id;
   const countryID = req.body.countryID;
   const stateTitle = req.body.title;
-  const isDeleteable = req.body.isDeleteable;
-  const isAdminDeleteable = req.body.isAdminDeleteable;
   const dateModified = new Date();
   const stateCode = CommonUtility.getCodeFromTitle({
     title: stateTitle,
@@ -186,8 +180,6 @@ module.exports.updateStateUtil = async ({ req, res }) => {
     title: stateTitle,
     code: stateCode?.toUpperCase(),
     countryID: countryID,
-    isDeleteable: isDeleteable,
-    isAdminDeleteable: isAdminDeleteable,
     dateModified: dateModified,
   };
 

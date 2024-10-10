@@ -54,25 +54,6 @@ module.exports.addState = async (req, res) => {
     });
     return;
   }
-  if (req?.body?.isDeleteable === undefined || req.body.isDeleteable === null) {
-    res.json({
-      status: "error",
-      message: "Deleteable flag is required.",
-      data: {},
-    });
-    return;
-  }
-  if (
-    req?.body?.isAdminDeleteable === undefined ||
-    req.body.isAdminDeleteable === null
-  ) {
-    res.json({
-      status: "error",
-      message: "Admin deleteable flag is required.",
-      data: {},
-    });
-    return;
-  }
 
   const foundStateRespByTitle = await StatesUtility.getStateByStateTitle({
     stateTitle: req.body.title,
@@ -114,25 +95,7 @@ module.exports.updateState = async (req, res) => {
     });
     return;
   }
-  if (req?.body?.isDeleteable === undefined || req.body.isDeleteable === null) {
-    res.json({
-      status: "error",
-      message: "Deleteable flag is required.",
-      data: {},
-    });
-    return;
-  }
-  if (
-    req?.body?.isAdminDeleteable === undefined ||
-    req.body.isAdminDeleteable === null
-  ) {
-    res.json({
-      status: "error",
-      message: "Admin deleteable flag is required.",
-      data: {},
-    });
-    return;
-  }
+
   try {
     const stateID = req.body.id;
     const foundDataObj = await StatesUtility.getStateByIdUtil({

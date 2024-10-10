@@ -62,25 +62,6 @@ module.exports.addCity = async (req, res) => {
     });
     return;
   }
-  if (req?.body?.isDeleteable === undefined || req.body.isDeleteable === null) {
-    res.json({
-      status: "error",
-      message: "Deleteable flag is required.",
-      data: {},
-    });
-    return;
-  }
-  if (
-    req?.body?.isAdminDeleteable === undefined ||
-    req.body.isAdminDeleteable === null
-  ) {
-    res.json({
-      status: "error",
-      message: "Admin deleteable flag is required.",
-      data: {},
-    });
-    return;
-  }
 
   const foundStateRespByTitle = await CitiesUtility.getCityByCityTitle({
     cityTitle: req.body.title,
@@ -130,25 +111,7 @@ module.exports.updateCity = async (req, res) => {
     });
     return;
   }
-  if (req?.body?.isDeleteable === undefined || req.body.isDeleteable === null) {
-    res.json({
-      status: "error",
-      message: "Deleteable flag is required.",
-      data: {},
-    });
-    return;
-  }
-  if (
-    req?.body?.isAdminDeleteable === undefined ||
-    req.body.isAdminDeleteable === null
-  ) {
-    res.json({
-      status: "error",
-      message: "Admin deleteable flag is required.",
-      data: {},
-    });
-    return;
-  }
+
   try {
     const cityID = req.body.id;
     const foundDataObj = await CitiesUtility.getCityByIdUtil({

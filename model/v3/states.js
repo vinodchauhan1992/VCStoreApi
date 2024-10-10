@@ -18,14 +18,6 @@ const statesSchema = new schema({
     type: String,
     required: true,
   },
-  isDeleteable: {
-    type: Boolean,
-    required: true,
-  },
-  isAdminDeleteable: {
-    type: Boolean,
-    required: true,
-  },
   dateAdded: {
     type: Date,
     required: true,

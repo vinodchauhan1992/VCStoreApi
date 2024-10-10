@@ -35,8 +35,6 @@ module.exports.addNewCityUtil = async ({ req, res }) => {
   const cityTitle = req.body.title;
   const countryID = req.body.countryID;
   const stateID = req.body.stateID;
-  const isDeleteable = req.body.isDeleteable;
-  const isAdminDeleteable = req.body.isAdminDeleteable;
   const dateAdded = new Date();
   const dateModified = new Date();
   const cityCode = CommonUtility.getCodeFromTitle({
@@ -49,8 +47,6 @@ module.exports.addNewCityUtil = async ({ req, res }) => {
     code: cityCode?.toUpperCase(),
     countryID: countryID,
     stateID: stateID,
-    isDeleteable: isDeleteable,
-    isAdminDeleteable: isAdminDeleteable,
     dateAdded: dateAdded,
     dateModified: dateModified,
   });
@@ -176,8 +172,6 @@ module.exports.updateCityUtil = async ({ req, res }) => {
   const stateID = req.body.stateID;
   const countryID = req.body.countryID;
   const cityTitle = req.body.title;
-  const isDeleteable = req.body.isDeleteable;
-  const isAdminDeleteable = req.body.isAdminDeleteable;
   const dateModified = new Date();
   const cityCode = CommonUtility.getCodeFromTitle({
     title: cityTitle,
@@ -188,8 +182,6 @@ module.exports.updateCityUtil = async ({ req, res }) => {
     code: cityCode?.toUpperCase(),
     stateID: stateID,
     countryID: countryID,
-    isDeleteable: isDeleteable,
-    isAdminDeleteable: isAdminDeleteable,
     dateModified: dateModified,
   };
   const updatedCitySet = {

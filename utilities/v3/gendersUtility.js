@@ -76,8 +76,6 @@ module.exports.addNewGenderUtil = async ({ req }) => {
   const genderID = CommonUtility.getUniqueID();
   const genderTitle = req.body.title;
   const genderCode = req.body.title.toLowerCase();
-  const isDeleteable = req?.body?.isDeleteable ? true : false;
-  const isAdminDeleteable = req?.body?.isAdminDeleteable ? true : false;
   const dateAdded = new Date();
   const dateModified = new Date();
 
@@ -97,8 +95,6 @@ module.exports.addNewGenderUtil = async ({ req }) => {
     id: genderID,
     title: genderTitle,
     code: genderCode,
-    isDeleteable: isDeleteable,
-    isAdminDeleteable: isAdminDeleteable,
     dateAdded: dateAdded,
     dateModified: dateModified,
   });
@@ -157,8 +153,6 @@ module.exports.updateGenderUtil = async ({ req }) => {
   const genderID = req.body.id;
   const genderTitle = req.body.title;
   const genderCode = req.body.title.toLowerCase();
-  const isDeleteable = req?.body?.isDeleteable ? true : false;
-  const isAdminDeleteable = req?.body?.isAdminDeleteable ? true : false;
   const dateModified = new Date();
 
   const foundDataById = await this.getGenderByIdUtil({ req });
@@ -182,8 +176,6 @@ module.exports.updateGenderUtil = async ({ req }) => {
     id: genderID,
     title: genderTitle,
     code: genderCode,
-    isDeleteable: isDeleteable,
-    isAdminDeleteable: isAdminDeleteable,
     dateModified: dateModified,
   };
 

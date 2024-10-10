@@ -54,25 +54,6 @@ module.exports.addCountry = async (req, res) => {
     });
     return;
   }
-  if (req?.body?.isDeleteable === undefined || req.body.isDeleteable === null) {
-    res.json({
-      status: "error",
-      message: "Deleteable flag is required.",
-      data: {},
-    });
-    return;
-  }
-  if (
-    req?.body?.isAdminDeleteable === undefined ||
-    req.body.isAdminDeleteable === null
-  ) {
-    res.json({
-      status: "error",
-      message: "Admin deleteable flag is required.",
-      data: {},
-    });
-    return;
-  }
 
   const foundCountryRespByCode = await CountriesUtility.getCountryByCountryCode(
     { countryCode: req.body.code }
@@ -123,25 +104,6 @@ module.exports.updateCountry = async (req, res) => {
     res.json({
       status: "error",
       message: "Code is required.",
-      data: {},
-    });
-    return;
-  }
-  if (req?.body?.isDeleteable === undefined || req.body.isDeleteable === null) {
-    res.json({
-      status: "error",
-      message: "Deleteable flag is required.",
-      data: {},
-    });
-    return;
-  }
-  if (
-    req?.body?.isAdminDeleteable === undefined ||
-    req.body.isAdminDeleteable === null
-  ) {
-    res.json({
-      status: "error",
-      message: "Admin deleteable flag is required.",
       data: {},
     });
     return;

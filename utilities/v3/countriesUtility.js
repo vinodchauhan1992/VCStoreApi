@@ -63,8 +63,6 @@ module.exports.addNewCountryUtil = async ({ req, res }) => {
   const countryID = CommonUtility.getUniqueID();
   const countryTitle = req.body.title;
   const countryCode = req.body.code;
-  const isDeleteable = req.body.isDeleteable;
-  const isAdminDeleteable = req.body.isAdminDeleteable;
   const dateAdded = new Date();
   const dateModified = new Date();
 
@@ -72,8 +70,6 @@ module.exports.addNewCountryUtil = async ({ req, res }) => {
     id: countryID,
     title: countryTitle,
     code: countryCode,
-    isDeleteable: isDeleteable,
-    isAdminDeleteable: isAdminDeleteable,
     dateAdded: dateAdded,
     dateModified: dateModified,
   });
@@ -199,16 +195,12 @@ module.exports.updateCountryUtil = async ({ req, res }) => {
   const countryID = req.body.id;
   const countryTitle = req.body.title;
   const countryCode = req.body.code;
-  const isDeleteable = req.body.isDeleteable;
-  const isAdminDeleteable = req.body.isAdminDeleteable;
   const dateModified = new Date();
 
   const newCountry = {
     id: countryID,
     title: countryTitle,
     code: countryCode,
-    isDeleteable: isDeleteable,
-    isAdminDeleteable: isAdminDeleteable,
     dateModified: dateModified,
   };
 
