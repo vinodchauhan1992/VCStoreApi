@@ -245,3 +245,62 @@ module.exports.generateJwtToken = ({ uniqueID, uniqueCode }) => {
   jwtToken = `${jwtToken}${uniqueCode}${new Date().valueOf()}`;
   return jwtToken;
 };
+
+module.exports.amountRoundingFunc = ({ value, isAddFraction = true }) => {
+  let newValue = 0;
+  if (value !== undefined && value !== null && !isNaN(Number(value))) {
+    newValue = value;
+  }
+  if (isAddFraction) {
+    newValue = newValue + 0.01;
+  }
+  return parseFloat(Math.round(newValue * 100) / 100).toFixed(2);
+};
+
+// Function to calculate tax using old tax slab rates
+module.exports.getTaxByOldTaxRegime = ({ annualCtc }) => {
+  // Lies under tax rebate limit
+  if (annualCtc <= 500000) {
+    return 0;
+  }
+  if (annualCtc <= 1000000) {
+    return (annualCtc - 500000) * 0.2 + 250000 * 0.05;
+  }
+  return (annualCtc - 1000000) * 0.3 + 500000 * 0.2 + 250000 * 0.05;
+};
+
+// Function to calculate tax using new tax slab rates
+module.exports.getTaxByNewTaxRegime = ({ annualCtc }) => {
+  // lies under tax rebate limit
+  if (annualCtc <= 700000) {
+    return 0;
+  }
+  if (annualCtc <= 750000) {
+    return 250000 * 0.05 + (annualCtc - 500000) * 0.1;
+  }
+  if (annualCtc <= 1000000) {
+    return 250000 * 0.05 + 250000 * 0.1 + (annualCtc - 750000) * 0.15;
+  }
+  if (annualCtc <= 1250000) {
+    return (
+      250000 * 0.05 + 250000 * 0.1 + 250000 * 0.15 + (annualCtc - 1000000) * 0.2
+    );
+  }
+  if (annualCtc <= 1500000) {
+    return (
+      250000 * 0.05 +
+      250000 * 0.1 +
+      250000 * 0.15 +
+      250000 * 0.2 +
+      (annualCtc - 1250000) * 0.25
+    );
+  }
+  return (
+    250000 * 0.05 +
+    250000 * 0.1 +
+    250000 * 0.15 +
+    250000 * 0.2 +
+    250000 * 0.25 +
+    (annualCtc - 1500000) * 0.3
+  );
+};

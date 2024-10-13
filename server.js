@@ -70,6 +70,7 @@ const employeeRolesV3 = require("./routes/v3/employeeRoles");
 const statusesV3 = require("./routes/v3/statuses");
 const employeeLoginsV3 = require("./routes/v3/employeesLogin");
 const appIdsV3 = require("./routes/v3/appIds");
+const employeeSalariesV3 = require("./routes/v3/employeeSalaries");
 
 //middleware
 app.use(cors());
@@ -140,6 +141,7 @@ app.use("/v3/employeeRoles", employeeRolesV3);
 app.use("/v3/statuses", statusesV3);
 app.use("/v3/employeeLogins", employeeLoginsV3);
 app.use("/v3/appIds", appIdsV3);
+app.use("/v3/employeeSalaries", employeeSalariesV3);
 
 //mongoose
 mongoose.set("useFindAndModify", false);
