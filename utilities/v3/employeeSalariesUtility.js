@@ -105,6 +105,11 @@ module.exports.getAllEmployeeSalariesWithAllEmployeesUtil = async ({
 };
 
 module.exports.getAllEmpSalariesUtil = async ({ req }) => {
+  const foundAuthValidityObj =
+    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
+  if (foundAuthValidityObj?.status === "error") {
+    return foundAuthValidityObj;
+  }
   const foundSalaryObj = await CommonApisUtility.getAllDataFromSchemaUtil({
     req: req,
     schema: EmployeeSalariesSchema,
@@ -129,6 +134,11 @@ module.exports.getAllEmpSalariesUtil = async ({ req }) => {
 };
 
 module.exports.getEmpSalaryByIDUtil = async ({ req }) => {
+  const foundAuthValidityObj =
+    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
+  if (foundAuthValidityObj?.status === "error") {
+    return foundAuthValidityObj;
+  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -158,6 +168,11 @@ module.exports.getEmpSalaryByIDUtil = async ({ req }) => {
 };
 
 module.exports.getEmpSalaryByEmpIDUtil = async ({ req }) => {
+  const foundAuthValidityObj =
+    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
+  if (foundAuthValidityObj?.status === "error") {
+    return foundAuthValidityObj;
+  }
   if (!req?.body?.employeeID || req.body.employeeID === "") {
     return {
       status: "error",
@@ -193,6 +208,11 @@ module.exports.getEmpSalaryByEmpIDUtil = async ({ req }) => {
 };
 
 module.exports.getEmpSalaryByEmpCodeUtil = async ({ req }) => {
+  const foundAuthValidityObj =
+    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
+  if (foundAuthValidityObj?.status === "error") {
+    return foundAuthValidityObj;
+  }
   if (!req?.body?.employeeCode || req.body.employeeCode === "") {
     return {
       status: "error",
@@ -230,6 +250,11 @@ module.exports.getEmpSalaryByEmpCodeUtil = async ({ req }) => {
 };
 
 module.exports.addNewEmpSalaryUtil = async ({ req }) => {
+  const foundAuthValidityObj =
+    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
+  if (foundAuthValidityObj?.status === "error") {
+    return foundAuthValidityObj;
+  }
   if (!req?.body?.employeeID || req.body.employeeID === "") {
     return {
       status: "error",
@@ -368,6 +393,11 @@ module.exports.addNewEmpSalaryUtil = async ({ req }) => {
 };
 
 module.exports.updateEmpSalaryUtil = async ({ req }) => {
+  const foundAuthValidityObj =
+    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
+  if (foundAuthValidityObj?.status === "error") {
+    return foundAuthValidityObj;
+  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -496,6 +526,11 @@ module.exports.updateEmpSalaryUtil = async ({ req }) => {
 };
 
 module.exports.deleteEmpSalaryUtil = async ({ req }) => {
+  const foundAuthValidityObj =
+    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
+  if (foundAuthValidityObj?.status === "error") {
+    return foundAuthValidityObj;
+  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",

@@ -4,6 +4,10 @@ const BrandsUtility = require("./brandsUtility");
 const ProductUtility = require("./productUtility");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
+const CommonApisUtility = require("./commonApisUtility");
+const ConstantsUtility = require("./constantsUtility");
+const EmployeesLoginSchema = require("../../model/v3/employeesLogin");
+const AppIdsUtility = require("./appIdsUtility");
 
 module.exports.getTimestamp = () => {
   const timestamp = new Date().getTime();
@@ -303,4 +307,85 @@ module.exports.getTaxByNewTaxRegime = ({ annualCtc }) => {
     250000 * 0.25 +
     (annualCtc - 1500000) * 0.3
   );
+};
+
+module.exports.authValidationChecksForApiCalls = async ({ req, data }) => {
+  if (!req?.headers?.jwttoken || req.headers.jwttoken === "") {
+    return {
+      status: "error",
+      message: `You are not authorised to call this api. Jwt token is missing.`,
+      data: data,
+    };
+  }
+  if (!req?.headers?.app_id || req.body.app_id === "") {
+    return {
+      status: "error",
+      message: "You are not authorised to call this api. App id is missing.",
+      data: data,
+    };
+  }
+  const appID = req.headers.app_id;
+  const jwttoken = req.headers.jwttoken;
+
+  const foundEmpLogin = await CommonApisUtility.getDataByJwtTokenFromSchemaUtil(
+    {
+      schema: EmployeesLoginSchema,
+      schemaName: "Employee Login",
+      jwtToken: jwttoken,
+    }
+  );
+  if (foundEmpLogin?.status === "error") {
+    return {
+      status: "error",
+      message: `You are not authorised to call this api. Employee login details not found.`,
+      data: {},
+    };
+  }
+  if (foundEmpLogin?.status === "success" && foundEmpLogin?.data?.isLogout) {
+    return {
+      status: "error",
+      message: `You are not authorised to call this api. You are not logged in.`,
+      data: {},
+    };
+  }
+  if (
+    foundEmpLogin?.status === "success" &&
+    foundEmpLogin?.data?.departmentID ===
+      ConstantsUtility.utils.ADMIN_DEPARTMENT_ID
+  ) {
+    return {
+      status: "error",
+      message: `You are not authorised to call this api. You are not from administrations department.`,
+      data: {},
+    };
+  }
+
+  const foundAppIdObj = await AppIdsUtility.getAppIdByAppIdUtil({
+    req: { body: { id: appID } },
+  });
+
+  if (foundAppIdObj?.status === "error") {
+    return {
+      status: "error",
+      message: `You are not authorised to call this api. App id not found in database.`,
+      data: {},
+    };
+  }
+
+  if (
+    foundAppIdObj?.status === "success" &&
+    foundAppIdObj?.data?.title !== ConstantsUtility.utils.APP_TYPE_ADMIN
+  ) {
+    return {
+      status: "error",
+      message: `You are not authorised to call this api. App id is incorrect.`,
+      data: {},
+    };
+  }
+
+  return {
+    status: "success",
+    message: `All good.`,
+    data: data,
+  };
 };
