@@ -111,10 +111,12 @@ module.exports.getDataByCodeFromSchemaUtil = async ({
   schema,
   schemaName,
   dataCode,
+  keyname,
 }) => {
+  const updateKeyName = keyname && keyname !== "" ? keyname : "code";
   return await schema
     .findOne({
-      code: dataCode,
+      [updateKeyName]: dataCode,
     })
     .select(["-_id"])
     .then((dataByCode) => {
@@ -332,7 +334,7 @@ module.exports.getDataArrayByIdFromSchemaUtil = async ({
         return {
           status: "error",
           message: `There is no ${schemaName?.toLowerCase()} exists with ${schemaName?.toLowerCase()} id ${dataID}.`,
-          data: {},
+          data: [],
         };
       }
     })
@@ -340,7 +342,7 @@ module.exports.getDataArrayByIdFromSchemaUtil = async ({
       return {
         status: "error",
         message: `There is an error occurred in getDataArrayByIdFromSchemaUtil function while fetching ${schemaName} data by id ${dataID}. ${err.message}`,
-        data: {},
+        data: [],
       };
     });
 };
@@ -368,7 +370,7 @@ module.exports.getDataArrayByCodeFromSchemaUtil = async ({
         return {
           status: "error",
           message: `There is no ${schemaName?.toLowerCase()} exists with ${schemaName?.toLowerCase()} code ${dataCode}.`,
-          data: {},
+          data: [],
         };
       }
     })
@@ -376,7 +378,7 @@ module.exports.getDataArrayByCodeFromSchemaUtil = async ({
       return {
         status: "error",
         message: `There is an error occurred in getDataArrayByCodeFromSchemaUtil function while fetching ${schemaName} data by code ${dataCode}. ${err.message}`,
-        data: {},
+        data: [],
       };
     });
 };

@@ -14,6 +14,14 @@ module.exports.getEmployeeByID = async (req, res) => {
   res.json(foundEmployeeObject);
 };
 
+module.exports.getEmployeeByEmployeeCode = async (req, res) => {
+  const foundEmployeeObject =
+    await EmployeesUtility.getEmployeeByEmployeeCodeUtil({
+      req,
+    });
+  res.json(foundEmployeeObject);
+};
+
 module.exports.addNewEmployee = async (req, res) => {
   const foundEmployeeObject = await EmployeesUtility.addNewEmployeeUtil({
     req,

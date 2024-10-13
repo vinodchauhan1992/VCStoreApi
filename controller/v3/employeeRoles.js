@@ -16,6 +16,14 @@ module.exports.getEmployeeRoleByID = async (req, res) => {
   res.json(foundEmployeeRoleObject);
 };
 
+module.exports.getEmployeeRoleByDepartmentID = async (req, res) => {
+  const foundEmployeeRoleObject =
+    await EmployeeRolesUtility.getEmployeeRoleByDepartmentIDUtil({
+      req,
+    });
+  res.json(foundEmployeeRoleObject);
+};
+
 module.exports.addNewEmployeeRole = async (req, res) => {
   const foundEmployeeRoleObject =
     await EmployeeRolesUtility.addNewEmployeeRoleUtil({

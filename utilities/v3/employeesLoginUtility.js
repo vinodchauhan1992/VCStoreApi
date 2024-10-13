@@ -73,7 +73,7 @@ module.exports.getEmployeeLoginsByEmpIDUtil = async ({ req }) => {
     return {
       status: "error",
       message: `Employee id is required.`,
-      data: {},
+      data: [],
     };
   }
   const employeeID = req.body.employeeID;
@@ -97,6 +97,7 @@ module.exports.getEmployeeLoginsByEmpIDUtil = async ({ req }) => {
 
   return {
     ...employeeLoginObject,
+    message: `Employee login details found with employee id ${employeeID}`,
     data: fullEmpDetailsArr,
   };
 };
@@ -136,7 +137,7 @@ module.exports.getEmployeeLoginsByEmpCodeUtil = async ({ req }) => {
     return {
       status: "error",
       message: `Employee code is required.`,
-      data: {},
+      data: [],
     };
   }
   const employeeCode = req.body.employeeCode;
@@ -161,6 +162,7 @@ module.exports.getEmployeeLoginsByEmpCodeUtil = async ({ req }) => {
 
   return {
     ...employeeLoginObject,
+    message: `Employee login details found with employee code ${employeeCode}`,
     data: fullEmpDetailsArr,
   };
 };

@@ -108,6 +108,38 @@ module.exports.getEmployeeRoleByIDUtil = async ({ req }) => {
   };
 };
 
+module.exports.getEmployeeRoleByDepartmentIDUtil = async ({ req }) => {
+  if (!req?.body?.departmentID || req.body.departmentID === "") {
+    return {
+      status: "error",
+      message: "Department id is required.",
+      data: [],
+    };
+  }
+
+  const departmentID = req.body.departmentID;
+
+  const resultDataObject =
+    await CommonApisUtility.getDataArrayByIdFromSchemaUtil({
+      schema: EmployeeRolesSchema,
+      schemaName: "Employee roles",
+      dataID: departmentID,
+      keyname: "departmentID",
+    });
+
+  if (resultDataObject?.status === "error") {
+    return resultDataObject;
+  }
+
+  const fullDetailsData = await this.getAllEmployeeRolesWithAllDetails({
+    allEmployeeRoles: resultDataObject?.data ?? [],
+  });
+  return {
+    ...resultDataObject,
+    data: fullDetailsData,
+  };
+};
+
 module.exports.addNewEmployeeRoleUtil = async ({ req }) => {
   if (!req?.body?.title || req.body.title === "") {
     return {

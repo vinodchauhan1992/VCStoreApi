@@ -4,6 +4,10 @@ const employeeRoles = require("../../controller/v3/employeeRoles");
 
 router.post("/allEmployeeRoles", employeeRoles.getAllEmployeeRoles);
 router.post("/employeeRoleByID", employeeRoles.getEmployeeRoleByID);
+router.post(
+  "/employeeRoleByDepartmentID",
+  employeeRoles.getEmployeeRoleByDepartmentID
+);
 router.post("/addNewEmployeeRole", employeeRoles.addNewEmployeeRole);
 router.post("/updateEmployeeRole", employeeRoles.updateEmployeeRole);
 router.post("/deleteEmployeeRole", employeeRoles.deleteEmployeeRole);

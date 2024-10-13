@@ -9,11 +9,15 @@ const upload = multer({ storage: storage }).single("file");
 
 router.post("/allEmployees", employees.getAllEmployees);
 router.post("/employeeByID", employees.getEmployeeByID);
+router.post("/employeeByEmployeeCode", employees.getEmployeeByEmployeeCode);
 router.post("/addNewEmployee", upload, employees.addNewEmployee);
 router.post("/deleteEmployee", employees.deleteEmployee);
 router.post("/updateEmployeePhoto", upload, employees.updateEmployeePhoto);
 router.post("/updateEmployeeName", employees.updateEmployeeName);
-router.post("/updateEmployeePreferredName", employees.updateEmployeePreferredName);
+router.post(
+  "/updateEmployeePreferredName",
+  employees.updateEmployeePreferredName
+);
 router.post("/updateEmployeeAddress", employees.updateEmployeeAddress);
 router.post("/updateEmployeePhone", employees.updateEmployeePhone);
 router.post("/updateEmployeeDepartment", employees.updateEmployeeDepartment);

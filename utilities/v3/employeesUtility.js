@@ -54,8 +54,38 @@ module.exports.getEmployeeByIDUtil = async ({ req }) => {
   const employeeID = req.body.id;
   const employeeObj = await CommonApisUtility.getDataByIdFromSchemaUtil({
     schema: EmployeesSchema,
-    schemaName: "Employees",
+    schemaName: "Employee",
     dataID: employeeID,
+  });
+
+  if (employeeObj?.status === "error") {
+    return employeeObj;
+  }
+  const fullEmployeeDetailsDataObj =
+    await EmployeesValidationsUtility.getSingleEmployeeWithAllDetails({
+      employeeData: employeeObj?.data ?? [],
+    });
+  return {
+    ...employeeObj,
+    data: fullEmployeeDetailsDataObj,
+  };
+};
+
+module.exports.getEmployeeByEmployeeCodeUtil = async ({ req }) => {
+  if (!req?.body?.employeeCode || req.body.employeeCode === "") {
+    return {
+      status: "error",
+      message: "Employee code is required.",
+      data: {},
+    };
+  }
+
+  const employeeCode = req.body.employeeCode;
+  const employeeObj = await CommonApisUtility.getDataByCodeFromSchemaUtil({
+    schema: EmployeesSchema,
+    schemaName: "Employee",
+    dataCode: employeeCode,
+    keyname: "employeeCode",
   });
 
   if (employeeObj?.status === "error") {
@@ -735,6 +765,8 @@ module.exports.updateEmployeeStatusUtil = async ({ req }) => {
   const newEmployeeStatus = {
     id: employeeID,
     statusID: statusID,
+    dateOfLeaving: "",
+    reasonOfLeaving: "",
     dateModified: new Date(),
   };
 
