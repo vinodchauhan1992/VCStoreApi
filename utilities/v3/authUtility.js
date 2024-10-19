@@ -1,110 +1,10 @@
-const User = require("../../model/v3/user");
 const EmployeesSchema = require("../../model/v3/employees");
 const CustomersSchema = require("../../model/v3/customers");
-const UserUtility = require("./userUtility");
 const CommonUtility = require("./commonUtility");
 const EmployeesValidationsUtility = require("./employeesValidationsUtility");
 const ConstantsUtility = require("./constantsUtility");
 const EmployeesLoginUtility = require("./employeesLoginUtility");
 const AppIdsUtility = require("./appIdsUtility");
-
-module.exports.loginUtil = async ({ req }) => {
-  if (!req?.body?.username || req.body.username === "") {
-    return {
-      status: "error",
-      message: "Username is required to login.",
-      data: {},
-    };
-  }
-  if (!req?.body?.password || req.body.password === "") {
-    return {
-      status: "error",
-      message: "Password is required to login.",
-      data: {},
-    };
-  }
-  if (!req?.headers?.app_id || req.body.app_id === "") {
-    return {
-      status: "error",
-      message: "You are not authorised to login. Please pass app_id in header",
-      data: {},
-    };
-  }
-  const appID = req.body.app_id;
-  const foundAppIdObj = await AppIdsUtility.getAppIdByAppIdUtil({
-    req: { body: { id: appID } },
-  });
-
-  if (foundAppIdObj?.status === "error") {
-    return {
-      status: "error",
-      message: `You are not authorised to login to client panel. Your passed app_id is not found in app_ids table.`,
-      data: {},
-    };
-  }
-
-  if (
-    foundAppIdObj?.status === "success" &&
-    foundAppIdObj?.data?.title !== ConstantsUtility.utils.APP_TYPE_CLIENT
-  ) {
-    return {
-      status: "error",
-      message: `You are not authorised to login to client panel. Your passed app_id is incorrect.`,
-      data: {},
-    };
-  }
-
-  const username = req.body.username;
-  const password = req.body.password;
-
-  return await User.findOne({
-    username: username,
-    password: password,
-  })
-    .then(async (user) => {
-      if (user && Object.keys(user).length > 0) {
-        const fullDetailsUser = await UserUtility.getSingleUserWithAllDetails({
-          userData: CommonUtility.sortObject(user),
-        });
-        if (
-          fullDetailsUser?.userStatusDetails?.status &&
-          fullDetailsUser.userStatusDetails.status === "Active"
-        ) {
-          const jwtToken = CommonUtility.generateJwtToken({
-            uniqueID: fullDetailsUser?.id ?? "",
-            uniqueCode: fullDetailsUser?.username ?? "",
-          });
-          return {
-            status: "success",
-            message: "You are successfully logged in.",
-            data: {
-              user: fullDetailsUser,
-              jwtToken: jwtToken,
-            },
-          };
-        } else {
-          return {
-            status: "error",
-            message: `You can't login with this user as this user is ${fullDetailsUser.userStatusDetails.status}`,
-            data: {},
-          };
-        }
-      } else {
-        return {
-          status: "error",
-          message: `There is no user exists with this username ${username} and password.`,
-          data: {},
-        };
-      }
-    })
-    .catch((err) => {
-      return {
-        status: "error",
-        message: `There is an error occurred. ${err.message}`,
-        data: {},
-      };
-    });
-};
 
 module.exports.employeeLoginUtil = async ({ req }) => {
   if (!req?.body?.employeeCode || req.body.employeeCode === "") {
@@ -173,16 +73,6 @@ module.exports.employeeLoginUtil = async ({ req }) => {
           await EmployeesValidationsUtility.getSingleEmployeeWithAllDetails({
             employeeData: CommonUtility.sortObject(employeeData),
           });
-        if (
-          fullDetailsObj?.departmentDetails?.id !==
-          ConstantsUtility.utils.ADMIN_DEPARTMENT_ID
-        ) {
-          return {
-            status: "error",
-            message: `You cannot login with this employee code "${employeeCode}" as you are "${fullDetailsObj?.departmentDetails?.title}" department and not from Administration department. Please contact administrations department.`,
-            data: {},
-          };
-        }
 
         if (
           fullDetailsObj?.statusDetails?.id !==

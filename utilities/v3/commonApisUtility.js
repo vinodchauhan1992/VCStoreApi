@@ -455,3 +455,45 @@ module.exports.updateDataByJwtTokenInSchemaUtil = async ({
       };
     });
 };
+
+module.exports.getDataArrayByMonthAndYearFromSchemaUtil = async ({
+  schema,
+  schemaName,
+  monthInNumber,
+  monthKeyname,
+  year,
+  yearKeyname,
+}) => {
+  const updateMonthKeyName =
+    monthKeyname && monthKeyname !== "" ? monthKeyname : "month";
+  const updateYearKeyName =
+    yearKeyname && yearKeyname !== "" ? yearKeyname : "year";
+  return await schema
+    .find({
+      [updateMonthKeyName]: monthInNumber,
+      [updateYearKeyName]: year,
+    })
+    .select(["-_id"])
+    .then((dataArray) => {
+      if (dataArray && dataArray.length > 0) {
+        return {
+          status: "success",
+          message: `${schemaName} with month ${monthInNumber} and year ${year} fetched successfully.`,
+          data: CommonUtility.sortObjectsOfArray(dataArray),
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There is no ${schemaName?.toLowerCase()} exists with month ${monthInNumber} and year ${year}.`,
+          data: [],
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in getDataArrayByMonthAndYearFromSchemaUtil function while fetching ${schemaName} data by month ${monthInNumber} and year ${year}. ${err.message}`,
+        data: [],
+      };
+    });
+};

@@ -24,11 +24,6 @@ module.exports.uploadEmployeeImageToFS = async ({
 };
 
 module.exports.getAllEmployeesUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   const allEmployeesObj = await CommonApisUtility.getAllDataFromSchemaUtil({
     req: req,
     schema: EmployeesSchema,
@@ -48,11 +43,6 @@ module.exports.getAllEmployeesUtil = async ({ req }) => {
 };
 
 module.exports.getEmployeeByIDUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -82,11 +72,6 @@ module.exports.getEmployeeByIDUtil = async ({ req }) => {
 };
 
 module.exports.getEmployeeByEmployeeCodeUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.employeeCode || req.body.employeeCode === "") {
     return {
       status: "error",
@@ -123,11 +108,15 @@ module.exports.getNewEmployeeNumberUtil = async ({ req }) => {
   let currentMaxEmployeeNumber = 0;
 
   if (dataArr && dataArr.length > 0) {
-    const maxEmployeeNumberObject = dataArr.reduce(function (prev, current) {
-      return prev && prev.y > current.y ? prev : current;
+    const empNumbersArr = [];
+    dataArr.map((empData) => {
+      empNumbersArr.push(empData.employeeNumber);
     });
-    if (maxEmployeeNumberObject) {
-      currentMaxEmployeeNumber = maxEmployeeNumberObject?.employeeNumber ?? 0;
+    const maxEmployeeNumber = empNumbersArr.reduce(function (prev, current) {
+      return prev && prev > current ? prev : current;
+    });
+    if (maxEmployeeNumber) {
+      currentMaxEmployeeNumber = maxEmployeeNumber ?? 0;
     }
   }
   const newEmployeeNumber = currentMaxEmployeeNumber + 1;
@@ -154,11 +143,6 @@ module.exports.addEmployeeDataUtil = async ({ newEmployeeSchema }) => {
 };
 
 module.exports.addNewEmployeeUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   const validationObj =
     await EmployeesValidationsUtility.validateAddNewEmployeeUtil({ req });
   if (validationObj?.status === "error") {
@@ -216,11 +200,6 @@ module.exports.deleteUploadedEmployeeImageToFS = async ({ fileUrl }) => {
 };
 
 module.exports.deleteEmployeeUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -368,11 +347,6 @@ module.exports.getEmployeeDataByIdFromTableUtil = async ({ employeeID }) => {
 };
 
 module.exports.updateEmployeePhotoUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -451,12 +425,6 @@ module.exports.updateEmployeeNameUtil = async ({ req }) => {
     };
   }
 
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
-
   const employeeID = req.body.id;
   const firstname = req.body.firstname;
   const lastname = req.body.lastname;
@@ -489,11 +457,6 @@ module.exports.updateEmployeeNameUtil = async ({ req }) => {
 };
 
 module.exports.updateEmployeePreferredNameUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -537,11 +500,6 @@ module.exports.updateEmployeePreferredNameUtil = async ({ req }) => {
 };
 
 module.exports.updateEmployeeAddressUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -592,11 +550,6 @@ module.exports.updateEmployeeAddressUtil = async ({ req }) => {
 };
 
 module.exports.updateEmployeePhoneUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -657,11 +610,6 @@ module.exports.updateEmployeePhoneUtil = async ({ req }) => {
 };
 
 module.exports.updateEmployeeDepartmentUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -738,11 +686,6 @@ module.exports.updateEmployeeDepartmentUtil = async ({ req }) => {
 };
 
 module.exports.updateEmployeeGenderUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -792,11 +735,6 @@ module.exports.updateEmployeeGenderUtil = async ({ req }) => {
 };
 
 module.exports.updateEmployeeStatusUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -848,11 +786,6 @@ module.exports.updateEmployeeStatusUtil = async ({ req }) => {
 };
 
 module.exports.updateEmployeeDobUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -903,11 +836,6 @@ module.exports.updateEmployeeDobUtil = async ({ req }) => {
 };
 
 module.exports.updateEmployeeDojUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
@@ -958,11 +886,6 @@ module.exports.updateEmployeeDojUtil = async ({ req }) => {
 };
 
 module.exports.employeeLayOffUtil = async ({ req }) => {
-  const foundAuthValidityObj =
-    await CommonUtility.authValidationChecksForApiCalls({ req: req, data: [] });
-  if (foundAuthValidityObj?.status === "error") {
-    return foundAuthValidityObj;
-  }
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",

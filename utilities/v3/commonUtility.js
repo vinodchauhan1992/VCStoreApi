@@ -250,7 +250,7 @@ module.exports.generateJwtToken = ({ uniqueID, uniqueCode }) => {
   return jwtToken;
 };
 
-module.exports.amountRoundingFunc = ({ value, isAddFraction = true }) => {
+module.exports.amountRoundingFunc = ({ value, isAddFraction = false }) => {
   let newValue = 0;
   if (value !== undefined && value !== null && !isNaN(Number(value))) {
     newValue = value;
@@ -388,4 +388,18 @@ module.exports.authValidationChecksForApiCalls = async ({ req, data }) => {
     message: `All good.`,
     data: data,
   };
+};
+
+module.exports.capitalizeLetterOfEachWord = ({ str }) => {
+  // Split the input string into an array of words
+  str = str.split(" ");
+
+  // Iterate through each word in the array
+  for (var i = 0, x = str.length; i < x; i++) {
+    // Capitalize the first letter of each word and concatenate it with the rest of the word
+    str[i] = str[i][0].toUpperCase() + str[i].substr(1);
+  }
+
+  // Join the modified array of words back into a string
+  return str.join(" ");
 };

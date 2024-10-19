@@ -52,11 +52,7 @@ const userDropdownMenuV2 = require("./routes/v2/userDropdownMenu");
 const categoriesRouteV3 = require("./routes/v3/categories");
 const productsRouteV3 = require("./routes/v3/products");
 const homeRouteV3 = require("./routes/v3/home");
-const cartRouteV3 = require("./routes/v3/cart");
-const userRouteV3 = require("./routes/v3/user");
 const authRouteV3 = require("./routes/v3/auth");
-const userRolesRouteV3 = require("./routes/v3/userRoles");
-const userStatusesRouteV3 = require("./routes/v3/userStatuses");
 const brandsRouteV3 = require("./routes/v3/brands");
 const stocksRouteV3 = require("./routes/v3/stocks");
 const countriesV3 = require("./routes/v3/countries");
@@ -71,6 +67,7 @@ const statusesV3 = require("./routes/v3/statuses");
 const employeeLoginsV3 = require("./routes/v3/employeesLogin");
 const appIdsV3 = require("./routes/v3/appIds");
 const employeeSalariesV3 = require("./routes/v3/employeeSalaries");
+const attendancesV3 = require("./routes/v3/attendances");
 
 //middleware
 app.use(cors());
@@ -123,11 +120,7 @@ app.use("/v2/userDropdownMenu", userDropdownMenuV2);
 app.use("/", homeRouteV3);
 app.use("/v3/categories", categoriesRouteV3);
 app.use("/v3/products", productsRouteV3);
-app.use("/v3/carts", cartRouteV3);
-app.use("/v3/users", userRouteV3);
 app.use("/v3/auth", authRouteV3);
-app.use("/v3/userRoles", userRolesRouteV3);
-app.use("/v3/userStatuses", userStatusesRouteV3);
 app.use("/v3/brands", brandsRouteV3);
 app.use("/v3/stocks", stocksRouteV3);
 app.use("/v3/countries", countriesV3);
@@ -142,6 +135,7 @@ app.use("/v3/statuses", statusesV3);
 app.use("/v3/employeeLogins", employeeLoginsV3);
 app.use("/v3/appIds", appIdsV3);
 app.use("/v3/employeeSalaries", employeeSalariesV3);
+app.use("/v3/attendances", attendancesV3);
 
 //mongoose
 mongoose.set("useFindAndModify", false);

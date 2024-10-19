@@ -30,6 +30,10 @@ const employeeSalariesSchema = new schema({
     type: Number,
     required: true,
   },
+  monthlyCtc: {
+    type: Number,
+    required: true,
+  },
   annualHra: {
     type: Number,
     required: true,
@@ -47,10 +51,6 @@ const employeeSalariesSchema = new schema({
     required: true,
   },
   annualPfDeduction: {
-    type: Number,
-    required: true,
-  },
-  annualCtc: {
     type: Number,
     required: true,
   },
