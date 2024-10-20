@@ -413,7 +413,7 @@ module.exports.updateEmployeePhotoUtil = async ({ req }) => {
 
 module.exports.updateEmployeeNameUtil = async ({ req }) => {
   const validateEmployeeNameObj =
-    EmployeesValidationsUtility.validateAddNewEmployeeNameUtil({ req });
+    await EmployeesValidationsUtility.validateAddNewEmployeeNameUtil({ req });
   if (validateEmployeeNameObj?.status === "error") {
     return validateEmployeeNameObj;
   }
@@ -465,7 +465,7 @@ module.exports.updateEmployeePreferredNameUtil = async ({ req }) => {
     };
   }
   const validateEmployeePreferredNameObj =
-    EmployeesValidationsUtility.validateAddNewEmployeePreferredNameUtil({
+    await EmployeesValidationsUtility.validateAddNewEmployeePreferredNameUtil({
       req,
     });
   if (validateEmployeePreferredNameObj?.status === "error") {

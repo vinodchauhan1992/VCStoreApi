@@ -497,3 +497,39 @@ module.exports.getDataArrayByMonthAndYearFromSchemaUtil = async ({
       };
     });
 };
+
+module.exports.getDataByUsernameFromSchemaUtil = async ({
+  schema,
+  schemaName,
+  username,
+  keyname,
+}) => {
+  const updatedKeyname = keyname && keyname !== "" ? keyname : "username";
+  return await schema
+    .findOne({
+      [updatedKeyname]: username,
+    })
+    .select(["-_id"])
+    .then((dataByUsername) => {
+      if (dataByUsername && Object.keys(dataByUsername).length > 0) {
+        return {
+          status: "success",
+          message: `${schemaName} with ${schemaName?.toLowerCase()} username ${username} fetched successfully.`,
+          data: CommonUtility.sortObject(dataByUsername),
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There is no ${schemaName?.toLowerCase()} exists with ${schemaName?.toLowerCase()} username ${username}.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in getDataByUsernameFromSchemaUtil function while fetching ${schemaName} data by username ${username}. ${err.message}`,
+        data: {},
+      };
+    });
+};

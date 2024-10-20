@@ -1,71 +1,23 @@
 const CommonUtility = require("./commonUtility");
 const CommonApisUtility = require("./commonApisUtility");
-const EmployeesSchema = require("../../model/v3/employees");
+const CustomersSchema = require("../../model/v3/customers");
 const CountriesSchema = require("../../model/v3/countries");
 const StatesSchema = require("../../model/v3/states");
 const CitiesSchema = require("../../model/v3/cities");
-const DepartmentsSchema = require("../../model/v3/departments");
 const GendersSchema = require("../../model/v3/genders");
-const EmployeeRolesSchema = require("../../model/v3/employeeRoles");
-const StatusesSchema = require("../../model/v3/statuses");
 
-module.exports.getEmployeeRoleDetailsByUserRoleId = async ({
-  employeeRoleID,
-}) => {
-  const foundEmployeeRoleObject =
-    await CommonApisUtility.getDataByIdFromSchemaUtil({
-      schema: EmployeeRolesSchema,
-      schemaName: "Employee role",
-      dataID: employeeRoleID,
-    });
-  if (
-    foundEmployeeRoleObject.status === "success" &&
-    Object.keys(foundEmployeeRoleObject?.data).length > 0
-  ) {
-    return foundEmployeeRoleObject;
-  }
-  return {
-    status: foundEmployeeRoleObject?.status,
-    message: foundEmployeeRoleObject?.message,
-    data: {
-      employeeRoleID: employeeRoleID,
-    },
-  };
-};
-
-module.exports.getStatusDetailsByUserStatusId = async ({ statusID }) => {
-  const foundStatusObject = await CommonApisUtility.getDataByIdFromSchemaUtil({
-    schema: StatusesSchema,
-    schemaName: "Status",
-    dataID: statusID,
-  });
-  if (
-    foundStatusObject.status === "success" &&
-    Object.keys(foundStatusObject?.data).length > 0
-  ) {
-    return foundStatusObject;
-  }
-  return {
-    status: foundStatusObject?.status,
-    message: foundStatusObject?.message,
-    data: {
-      statusID: statusID,
-    },
-  };
-};
-
-module.exports.getAddressRelatedDetails = async ({ employeeData }) => {
-  const countryID = employeeData.address.countryID;
+module.exports.getAddressRelatedDetails = async ({ customerData }) => {
+  const countryID = customerData.address.countryID;
   const foundCountryObject = await CommonUtility.getCountryDetailsByCountryId({
     countryID: countryID,
   });
 
-  const stateID = employeeData.address.stateID;
+  const stateID = customerData.address.stateID;
   const foundStateObject = await CommonUtility.getStateDetailsByStateId({
     stateID: stateID,
   });
 
-  const cityID = employeeData.address.cityID;
+  const cityID = customerData.address.cityID;
   const foundCityObject = await CommonUtility.getCityDetailsByCityId({
     cityID: cityID,
   });
@@ -76,103 +28,54 @@ module.exports.getAddressRelatedDetails = async ({ employeeData }) => {
   };
 };
 
-module.exports.getEmployeeRoleAndStatusRelatedDetails = async ({
-  employeeData,
-}) => {
-  const employeeRoleID = employeeData.employeeRoleID;
-  const foundEmployeeRoleObject = await this.getEmployeeRoleDetailsByUserRoleId(
-    {
-      employeeRoleID: employeeRoleID,
-    }
-  );
-
-  const statusID = employeeData.statusID;
-  const foundStatusObject = await this.getStatusDetailsByUserStatusId({
-    statusID: statusID,
-  });
-
-  return {
-    employeeRoleDetails: foundEmployeeRoleObject.data,
-    statusDetails: foundStatusObject.data,
-  };
-};
-
-module.exports.getDepartmentRelatedDetailsById = async ({ departmentID }) => {
-  const foundDepartmentObject =
-    await CommonApisUtility.getDataByIdFromSchemaUtil({
-      schema: DepartmentsSchema,
-      schemaName: "Department",
-      dataID: departmentID,
-    });
-  if (
-    foundDepartmentObject?.status === "success" &&
-    Object.keys(foundDepartmentObject?.data).length > 0
-  ) {
-    return foundDepartmentObject;
-  }
-  return {
-    ...foundDepartmentObject,
-    data: {
-      departmentID: departmentID && departmentID !== "" ? departmentID : "",
-    },
-  };
-};
-
-module.exports.getSingleEmployeeWithAllDetails = async ({ employeeData }) => {
+module.exports.getSingleCustomerWithAllDetails = async ({ customerData }) => {
   const { countryDetails, stateDetails, cityDetails } =
-    await this.getAddressRelatedDetails({ employeeData });
-  const { employeeRoleDetails, statusDetails } =
-    await this.getEmployeeRoleAndStatusRelatedDetails({ employeeData });
-  const genderDetailsObject = await CommonUtility.getGenderRelatedDetailsByGenderId({
-    genderID: employeeData?.genderID,
-  });
-  const departmentDetailsObj = await this.getDepartmentRelatedDetailsById({
-    departmentID: employeeData?.departmentID,
-  });
+    await this.getAddressRelatedDetails({ customerData });
+  const genderDetailsObject =
+    await CommonUtility.getGenderRelatedDetailsByGenderId({
+      genderID: customerData?.genderID,
+    });
   return {
-    id: employeeData?.id,
-    employeeCode: employeeData?.employeeCode,
-    employeeNumber: employeeData?.employeeNumber,
-    email: employeeData?.email,
-    password: employeeData?.password,
-    name: employeeData?.name,
-    preferredName: employeeData?.preferredName,
+    id: customerData?.id,
+    customerNumber: customerData?.customerNumber,
+    email: customerData?.email,
+    username: customerData?.username,
+    customerCode: customerData?.customerCode,
+    password: customerData?.password,
+    name: customerData?.name,
     address: {
-      address: employeeData?.address?.address,
-      street: employeeData?.address?.street,
-      landmark: employeeData?.address?.landmark,
+      address: customerData?.address?.address,
+      street: customerData?.address?.street,
+      landmark: customerData?.address?.landmark,
       countryDetails: countryDetails,
-      stateDetails: stateDetails,
       cityDetails: cityDetails,
-      pincode: employeeData?.address?.pincode,
+      stateDetails: stateDetails,
+      pincode: customerData?.address?.pincode,
     },
-    phone: employeeData?.phone,
-    departmentDetails: departmentDetailsObj?.data,
+    phone: customerData?.phone,
+    isActive: customerData?.isActive ?? false,
     genderDetails: genderDetailsObject?.data,
-    employeeRoleDetails: employeeRoleDetails,
-    statusDetails: statusDetails,
-    imageData: employeeData?.imageData,
-    dateOfBirth: employeeData?.dateOfBirth,
-    dateOfJoining: employeeData?.dateOfJoining,
-    dateOfLeaving: employeeData?.dateOfLeaving,
-    reasonOfLeaving: employeeData?.reasonOfLeaving,
-    dateAdded: employeeData?.dateAdded,
-    dateModified: employeeData?.dateModified,
+    incomeDetails: customerData?.incomeDetails,
+    imageData: customerData?.imageData,
+    dateOfBirth: customerData?.dateOfBirth,
+    dateOfRegistration: customerData?.dateOfRegistration,
+    dateAdded: customerData?.dateAdded,
+    dateModified: customerData?.dateModified,
   };
 };
 
-module.exports.getAllEmployeesWithAllDetails = async ({ allEmployees }) => {
+module.exports.getAllCustomersWithAllDetails = async ({ allCustomers }) => {
   return Promise.all(
-    allEmployees?.map(async (employeeData) => {
-      const employeeDetails = await this.getSingleEmployeeWithAllDetails({
-        employeeData,
+    allCustomers?.map(async (customerData) => {
+      const customerDetails = await this.getSingleCustomerWithAllDetails({
+        customerData: customerData,
       });
-      return employeeDetails;
+      return customerDetails;
     })
   );
 };
 
-module.exports.validateAddNewEmployeeNameUtil = async ({ req }) => {
+module.exports.validateAddNewCustomerNameUtil = async ({ req }) => {
   if (!req?.body?.firstname || req.body.firstname === "") {
     return {
       status: "error",
@@ -210,19 +113,18 @@ module.exports.validateAddNewEmployeeNameUtil = async ({ req }) => {
   };
 };
 
-module.exports.validateAddNewEmployeePreferredNameUtil = async ({ req }) => {
-  if (!req?.body?.preferredName || req.body.preferredName === "") {
+module.exports.validateAddNewCustomerUserNameUtil = async ({ req }) => {
+  if (!req?.body?.username || req.body.username === "") {
     return {
       status: "error",
-      message: "Preferred name is required.",
+      message: "Username is required.",
       data: {},
     };
   }
-  if (!CommonUtility.isValidOnlyCharacters({ text: req.body.preferredName })) {
+  if (!CommonUtility.validCharactersForUsername({ text: req.body.username })) {
     return {
       status: "error",
-      message:
-        "Preferred name is not valid. Preferred name must only contains characters.",
+      message: "Username is not valid. Username can only lowercase letters, numbers, underscores and dots.",
       data: {},
     };
   }
@@ -233,7 +135,7 @@ module.exports.validateAddNewEmployeePreferredNameUtil = async ({ req }) => {
   };
 };
 
-module.exports.validateAddNewEmployeeEmailUtil = async ({ req }) => {
+module.exports.validateAddNewCustomerEmailUtil = async ({ req }) => {
   if (!req?.body?.email || req.body.email === "") {
     return {
       status: "error",
@@ -255,7 +157,7 @@ module.exports.validateAddNewEmployeeEmailUtil = async ({ req }) => {
   };
 };
 
-module.exports.validateAddNewEmployeePasswordUtil = async ({ req }) => {
+module.exports.validateAddNewCustomerPasswordUtil = async ({ req }) => {
   if (!req?.body?.password || req.body.password === "") {
     return {
       status: "error",
@@ -280,7 +182,7 @@ module.exports.validateAddNewEmployeePasswordUtil = async ({ req }) => {
   };
 };
 
-module.exports.validateAddNewEmployeeAddressUtil = async ({ req }) => {
+module.exports.validateAddNewCustomerAddressUtil = async ({ req }) => {
   if (!req?.body?.address || req.body.address === "") {
     return {
       status: "error",
@@ -340,20 +242,41 @@ module.exports.validateAddNewEmployeeAddressUtil = async ({ req }) => {
 module.exports.apiValidationForEmailUtil = async ({ req }) => {
   const email = req.body.email;
   const foundObj = await CommonApisUtility.getDataByEmailFromSchemaUtil({
-    schema: EmployeesSchema,
-    schemaName: "Employee",
+    schema: CustomersSchema,
+    schemaName: "Customer",
     emailID: email,
   });
   if (foundObj?.status === "success") {
     return {
       status: "error",
-      message: `Another employee is already registered with the same email "${email}"`,
+      message: `Another customer is already registered with the same email "${email}"`,
       data: {},
     };
   }
   return {
     status: "success",
-    message: `No employee is registered with email "${email}"`,
+    message: `No customer is registered with email "${email}"`,
+    data: {},
+  };
+};
+
+module.exports.apiValidationForUsernameUtil = async ({ req }) => {
+  const username = req.body.username;
+  const foundObj = await CommonApisUtility.getDataByUsernameFromSchemaUtil({
+    schema: CustomersSchema,
+    schemaName: "Customer",
+    username: username,
+  });
+  if (foundObj?.status === "success") {
+    return {
+      status: "error",
+      message: `Another customer is already registered with the same username "${username}"`,
+      data: {},
+    };
+  }
+  return {
+    status: "success",
+    message: `No customer is registered with username "${username}"`,
     data: {},
   };
 };
@@ -361,20 +284,20 @@ module.exports.apiValidationForEmailUtil = async ({ req }) => {
 module.exports.apiValidationForPhoneUtil = async ({ req }) => {
   const phone = req.body.phone;
   const foundObj = await CommonApisUtility.getDataByPhoneFromSchemaUtil({
-    schema: EmployeesSchema,
-    schemaName: "Employee",
+    schema: CustomersSchema,
+    schemaName: "Customer",
     phone: phone,
   });
   if (foundObj?.status === "success") {
     return {
       status: "error",
-      message: `Another employee is already registered with the same phone "${phone}"`,
+      message: `Another customer is already registered with the same phone "${phone}"`,
       data: {},
     };
   }
   return {
     status: "success",
-    message: `No employee is registered with phone "${phone}"`,
+    message: `No customer is registered with phone "${phone}"`,
     data: {},
   };
 };
@@ -415,76 +338,6 @@ module.exports.apiValidationForGenderUtil = async ({ req }) => {
     schema: GendersSchema,
     schemaName: "Gender",
     dataID: genderID,
-  });
-  return foundObj;
-};
-
-module.exports.apiValidationForDepartmentUtil = async ({ req }) => {
-  const departmentID = req.body.departmentID;
-  const foundObj = await CommonApisUtility.getDataByIdFromSchemaUtil({
-    schema: DepartmentsSchema,
-    schemaName: "Department",
-    dataID: departmentID,
-  });
-  return foundObj;
-};
-
-module.exports.apiValidationForEmployeeRoleUtil = async ({ req }) => {
-  const employeeRoleID = req.body.employeeRoleID;
-  const foundObj = await CommonApisUtility.getDataByIdFromSchemaUtil({
-    schema: EmployeeRolesSchema,
-    schemaName: "Employee role",
-    dataID: employeeRoleID,
-  });
-  return foundObj;
-};
-
-module.exports.apiValidationRoleFromDepartmentUtil = async ({ req }) => {
-  const employeeRoleID = req.body.employeeRoleID;
-  const departmentID = req.body.departmentID;
-  const allRolesDataObj = await CommonApisUtility.getAllDataFromSchemaUtil({
-    req: req,
-    schema: EmployeeRolesSchema,
-    schemaName: "Employees",
-  });
-
-  if (allRolesDataObj?.status === "error") {
-    return {
-      status: "error",
-      message: `Employee role not found in the given department ${departmentID}`,
-      data: {},
-    };
-  }
-
-  const foundRoleFromDepartment = allRolesDataObj?.data?.find(
-    (roleData) =>
-      roleData?.departmentID === departmentID && roleData?.id === employeeRoleID
-  );
-
-  if (
-    foundRoleFromDepartment &&
-    Object.keys(foundRoleFromDepartment).length > 0
-  ) {
-    return {
-      status: "success",
-      message: `Employee role found in the given department ${departmentID}`,
-      data: {},
-    };
-  }
-
-  return {
-    status: "error",
-    message: `Employee role not found in the given department ${departmentID}`,
-    data: {},
-  };
-};
-
-module.exports.apiValidationForStatusUtil = async ({ req }) => {
-  const statusID = req.body.statusID;
-  const foundObj = await CommonApisUtility.getDataByIdFromSchemaUtil({
-    schema: StatusesSchema,
-    schemaName: "Status",
-    dataID: statusID,
   });
   return foundObj;
 };
@@ -604,6 +457,11 @@ module.exports.apiValidationUtil = async ({ req }) => {
     return validateEmailObj;
   }
 
+  const validateUsernameObj = await this.apiValidationForUsernameUtil({ req });
+  if (validateUsernameObj?.status === "error") {
+    return validateUsernameObj;
+  }
+
   const validatePhoneObj = await this.apiValidationForPhoneUtil({ req });
   if (validatePhoneObj?.status === "error") {
     return validatePhoneObj;
@@ -629,28 +487,6 @@ module.exports.apiValidationUtil = async ({ req }) => {
     return validateGenderObj;
   }
 
-  const validateDepartmentObj = await this.apiValidationForDepartmentUtil({
-    req,
-  });
-  if (validateDepartmentObj?.status === "error") {
-    return validateDepartmentObj;
-  }
-
-  const validateEmployeeRoleObj = await this.apiValidationForEmployeeRoleUtil({
-    req,
-  });
-  if (validateEmployeeRoleObj?.status === "error") {
-    return validateEmployeeRoleObj;
-  }
-
-  const validateEmployeeRoleInDepartmentObj =
-    await this.apiValidationRoleFromDepartmentUtil({
-      req,
-    });
-  if (validateEmployeeRoleInDepartmentObj?.status === "error") {
-    return validateEmployeeRoleInDepartmentObj;
-  }
-
   const validateStateInCountryObj =
     await this.apiValidationStateFromCountryUtil({
       req,
@@ -673,13 +509,6 @@ module.exports.apiValidationUtil = async ({ req }) => {
     return validateCityInStateObj;
   }
 
-  const validateStatusObj = await this.apiValidationForStatusUtil({
-    req,
-  });
-  if (validateStatusObj?.status === "error") {
-    return validateStatusObj;
-  }
-
   return {
     status: "success",
     message: "Api validation succeeded.",
@@ -687,29 +516,28 @@ module.exports.apiValidationUtil = async ({ req }) => {
   };
 };
 
-module.exports.validateAddNewEmployeeUtil = async ({ req }) => {
-  const validateNameObj = await this.validateAddNewEmployeeNameUtil({ req });
+module.exports.validateAddNewCustomerUtil = async ({ req }) => {
+  const validateNameObj = await this.validateAddNewCustomerNameUtil({ req });
   if (validateNameObj?.status === "error") {
     return validateNameObj;
   }
-  const validatePreferredNameObj =
-    await this.validateAddNewEmployeePreferredNameUtil({
-      req,
-    });
-  if (validatePreferredNameObj?.status === "error") {
-    return validatePreferredNameObj;
+  const validateUserNameObj = await this.validateAddNewCustomerUserNameUtil({
+    req,
+  });
+  if (validateUserNameObj?.status === "error") {
+    return validateUserNameObj;
   }
-  const validateEmailObj = await this.validateAddNewEmployeeEmailUtil({ req });
+  const validateEmailObj = await this.validateAddNewCustomerEmailUtil({ req });
   if (validateEmailObj?.status === "error") {
     return validateEmailObj;
   }
-  const validatePasswordObj = await this.validateAddNewEmployeePasswordUtil({
+  const validatePasswordObj = await this.validateAddNewCustomerPasswordUtil({
     req,
   });
   if (validatePasswordObj?.status === "error") {
     return validatePasswordObj;
   }
-  const validateAddressObj = await this.validateAddNewEmployeeAddressUtil({
+  const validateAddressObj = await this.validateAddNewCustomerAddressUtil({
     req,
   });
   if (validateAddressObj?.status === "error") {
@@ -722,13 +550,6 @@ module.exports.validateAddNewEmployeeUtil = async ({ req }) => {
       data: {},
     };
   }
-  if (!req?.body?.departmentID || req.body.departmentID === "") {
-    return {
-      status: "error",
-      message: "Department is required.",
-      data: {},
-    };
-  }
   if (!req?.body?.genderID || req.body.genderID === "") {
     return {
       status: "error",
@@ -736,45 +557,31 @@ module.exports.validateAddNewEmployeeUtil = async ({ req }) => {
       data: {},
     };
   }
-  if (!req?.body?.employeeRoleID || req.body.employeeRoleID === "") {
-    return {
-      status: "error",
-      message: "Employee role is required.",
-      data: {},
-    };
-  }
-  if (!req?.body?.statusID || req.body.statusID === "") {
-    return {
-      status: "error",
-      message: "Employee status is required.",
-      data: {},
-    };
-  }
   if (!req?.body?.dateOfBirth || req.body.dateOfBirth === "") {
     return {
       status: "error",
-      message: "Employee date of birth is required.",
+      message: `Customer's date of birth is required.`,
+      data: {},
+    };
+  }
+  if (!req?.body?.monthlyIncome || req.body.monthlyIncome === "") {
+    return {
+      status: "error",
+      message: `Monthly income is required.`,
+      data: {},
+    };
+  }
+  if (isNaN(req.body.monthlyIncome)) {
+    return {
+      status: "error",
+      message: `Monthly income must be number value.`,
       data: {},
     };
   }
   if (!CommonUtility.isValidDate({ date: req.body.dateOfBirth })) {
     return {
       status: "error",
-      message: "Employee date of birth is invalid.",
-      data: {},
-    };
-  }
-  if (!req?.body?.dateOfJoining || req.body.dateOfJoining === "") {
-    return {
-      status: "error",
-      message: "Employee joining date is required.",
-      data: {},
-    };
-  }
-  if (!CommonUtility.isValidDate({ date: req.body.dateOfJoining })) {
-    return {
-      status: "error",
-      message: "Employee joining date is invalid.",
+      message: `Customer's date of birth is invalid.`,
       data: {},
     };
   }
@@ -789,24 +596,26 @@ module.exports.validateAddNewEmployeeUtil = async ({ req }) => {
   };
 };
 
-module.exports.getNewEmployeeDataFilledSchema = ({
+module.exports.getNewCustomerDataFilledSchema = ({
   req,
-  employeeID,
-  employeeCode,
-  employeeNumber,
+  customerID,
+  customerCode,
+  customerNumber,
   uploadedFileData,
 }) => {
-  const employee = new EmployeesSchema({
-    id: employeeID,
-    employeeCode: employeeCode,
-    employeeNumber: employeeNumber,
+  const monthlyIncome = req.body.monthlyIncome;
+  const annualIncome = monthlyIncome * 12;
+  const customer = new CustomersSchema({
+    id: customerID,
+    customerNumber: customerNumber,
     email: req.body.email,
+    username: req.body.username,
+    customerCode: customerCode,
     password: req.body.password,
     name: {
       firstname: req.body.firstname,
       lastname: req.body.lastname,
     },
-    preferredName: req.body.preferredName,
     address: {
       address: req.body.address,
       street: req.body.street,
@@ -817,31 +626,31 @@ module.exports.getNewEmployeeDataFilledSchema = ({
       pincode: req.body.pincode,
     },
     phone: req.body.phone,
-    departmentID: req.body.departmentID,
+    isActive: req?.body?.isActive ?? false,
     genderID: req.body.genderID,
-    employeeRoleID: req.body.employeeRoleID,
-    statusID: req.body.statusID,
+    incomeDetails: {
+      monthlyIncome: monthlyIncome,
+      annualIncome: annualIncome,
+    },
     imageData: uploadedFileData,
     dateOfBirth: req.body.dateOfBirth,
-    dateOfJoining: req.body.dateOfJoining,
-    dateOfLeaving: "",
-    reasonOfLeaving: "",
+    dateOfRegistration: new Date(),
     dateAdded: new Date(),
     dateModified: new Date(),
   });
 
-  return employee;
+  return customer;
 };
 
-module.exports.validateUpdateEmployeeAddressUtil = async ({ req }) => {
+module.exports.validateUpdateCustomerAddressUtil = async ({ req }) => {
   if (!req?.body?.id || req.body.id === "") {
     return {
       status: "error",
-      message: `Employee id is required.`,
+      message: `Customer id is required.`,
       data: {},
     };
   }
-  const validateAddressObj = await this.validateAddNewEmployeeAddressUtil({
+  const validateAddressObj = await this.validateAddNewCustomerAddressUtil({
     req,
   });
   if (validateAddressObj?.status === "error") {

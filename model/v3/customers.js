@@ -4,102 +4,106 @@ const fileUploaderSchema = require("./fileUploader");
 
 const customersSchema = new schema({
   id: {
-    type: String,
+    type: schema.Types.String,
+    required: true,
+  },
+  customerNumber: {
+    type: Number,
     required: true,
   },
   email: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
   username: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
   customerCode: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
   password: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
   name: {
     firstname: {
-      type: String,
+      type: schema.Types.String,
       required: true,
     },
     lastname: {
-      type: String,
+      type: schema.Types.String,
       required: true,
     },
   },
   address: {
     address: {
-      type: String,
+      type: schema.Types.String,
       required: true,
     },
     street: {
-      type: String,
+      type: schema.Types.String,
       required: true,
     },
     landmark: {
-      type: String,
+      type: schema.Types.String,
       required: true,
     },
     countryID: {
-      type: String,
+      type: schema.Types.String,
       required: true,
     },
     cityID: {
-      type: String,
+      type: schema.Types.String,
       required: true,
     },
     stateID: {
-      type: String,
+      type: schema.Types.String,
       required: true,
     },
-    zipcode: {
-      type: String,
+    pincode: {
+      type: schema.Types.String,
       required: true,
     },
   },
   phone: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
   isActive: {
-    type: Boolean,
+    type: schema.Types.Boolean,
     required: true,
   },
   genderID: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
   incomeDetails: {
     monthlyIncome: {
-      type: String,
+      type: schema.Types.Number,
       required: true,
     },
     annualIncome: {
-      type: String,
+      type: schema.Types.Number,
       required: true,
     },
   },
   imageData: fileUploaderSchema.schema,
   dateOfBirth: {
-    type: Date,
+    type: schema.Types.Date,
     required: true,
   },
-  dateOfJoining: {
-    type: Date,
+  dateOfRegistration: {
+    type: schema.Types.Date,
     required: false,
   },
   dateAdded: {
-    type: Date,
+    type: schema.Types.Date,
     required: true,
   },
   dateModified: {
-    type: Date,
+    type: schema.Types.Date,
     required: true,
   },
 });

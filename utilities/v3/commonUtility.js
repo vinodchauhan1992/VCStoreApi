@@ -8,6 +8,10 @@ const CommonApisUtility = require("./commonApisUtility");
 const ConstantsUtility = require("./constantsUtility");
 const EmployeesLoginSchema = require("../../model/v3/employeesLogin");
 const AppIdsUtility = require("./appIdsUtility");
+const CountriesSchema = require("../../model/v3/countries");
+const StatesSchema = require("../../model/v3/states");
+const CitiesSchema = require("../../model/v3/cities");
+const GendersSchema = require("../../model/v3/genders");
 
 module.exports.getTimestamp = () => {
   const timestamp = new Date().getTime();
@@ -226,6 +230,21 @@ module.exports.isValidOnlyCharacters = ({ text }) => {
   return false;
 };
 
+module.exports.validCharactersForUsername = ({ text }) => {
+  const validationRegex = /^[a-z0-9_\.]+$/;
+  if (text && text !== "") {
+    return validationRegex.test(text) ? true : false;
+  }
+  return false;
+};
+
+module.exports.validBooleanValue = ({ value }) => {
+  if (typeof value === "boolean") {
+    return true;
+  }
+  return false;
+};
+
 module.exports.isValidDate = ({ date }) => {
   if (
     date &&
@@ -402,4 +421,87 @@ module.exports.capitalizeLetterOfEachWord = ({ str }) => {
 
   // Join the modified array of words back into a string
   return str.join(" ");
+};
+
+module.exports.getCountryDetailsByCountryId = async ({ countryID }) => {
+  const foundCountryObject = await CommonApisUtility.getDataByIdFromSchemaUtil({
+    schema: CountriesSchema,
+    schemaName: "Country",
+    dataID: countryID,
+  });
+  if (
+    foundCountryObject.status === "success" &&
+    Object.keys(foundCountryObject?.data).length > 0
+  ) {
+    return foundCountryObject;
+  }
+  return {
+    status: foundCountryObject?.status,
+    message: foundCountryObject?.message,
+    data: {
+      countryID: countryID,
+    },
+  };
+};
+
+module.exports.getStateDetailsByStateId = async ({ stateID }) => {
+  const foundStateObject = await CommonApisUtility.getDataByIdFromSchemaUtil({
+    schema: StatesSchema,
+    schemaName: "State",
+    dataID: stateID,
+  });
+  if (
+    foundStateObject.status === "success" &&
+    Object.keys(foundStateObject?.data).length > 0
+  ) {
+    return foundStateObject;
+  }
+  return {
+    status: foundStateObject?.status,
+    message: foundStateObject?.message,
+    data: {
+      stateID: stateID,
+    },
+  };
+};
+
+module.exports.getCityDetailsByCityId = async ({ cityID }) => {
+  const foundCityObject = await CommonApisUtility.getDataByIdFromSchemaUtil({
+    schema: CitiesSchema,
+    schemaName: "City",
+    dataID: cityID,
+  });
+  if (
+    foundCityObject.status === "success" &&
+    Object.keys(foundCityObject?.data).length > 0
+  ) {
+    return foundCityObject;
+  }
+  return {
+    status: foundCityObject?.status,
+    message: foundCityObject?.message,
+    data: {
+      cityID: cityID,
+    },
+  };
+};
+
+module.exports.getGenderRelatedDetailsByGenderId = async ({ genderID }) => {
+  const foundGenderObject = await CommonApisUtility.getDataByIdFromSchemaUtil({
+    schema: GendersSchema,
+    schemaName: "Gender",
+    dataID: genderID,
+  });
+  if (
+    foundGenderObject?.status === "success" &&
+    Object.keys(foundGenderObject?.data).length > 0
+  ) {
+    return foundGenderObject;
+  }
+  return {
+    ...foundGenderObject,
+    data: {
+      genderID: genderID && genderID !== "" ? genderID : "",
+    },
+  };
 };

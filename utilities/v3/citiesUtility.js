@@ -1,17 +1,67 @@
 const Cities = require("../../model/v3/cities");
+const StatesSchema = require("../../model/v3/states");
 const CommonUtility = require("./commonUtility");
+const StatesUtility = require("./statesUtility");
+const CommonApisUtility = require("./commonApisUtility");
+
+module.exports.getSingleCityWithAllDetails = async ({ cityData }) => {
+  const stateDetailsObject = await CommonApisUtility.getDataByIdFromSchemaUtil({
+    schema: StatesSchema,
+    schemaName: "State",
+    dataID: cityData?.stateID,
+  });
+  const fullStatesDetailsData =
+    await StatesUtility.getSingleCountryWithAllDetails({
+      stateData: stateDetailsObject?.data,
+    });
+  return {
+    id: cityData?.id,
+    title: cityData?.title,
+    code: cityData?.code,
+    countryDetails:
+      fullStatesDetailsData?.countryDetails &&
+      Object.keys(fullStatesDetailsData.countryDetails).length > 0
+        ? fullStatesDetailsData.countryDetails
+        : {
+            id: cityData?.countryID,
+          },
+    stateDetails: {
+      id: fullStatesDetailsData?.id ?? cityData?.stateID,
+      title: fullStatesDetailsData?.title,
+      code: fullStatesDetailsData?.code,
+      dateAdded: fullStatesDetailsData?.dateAdded,
+      dateModified: fullStatesDetailsData?.dateModified,
+    },
+    dateAdded: cityData?.dateAdded,
+    dateModified: cityData?.dateModified,
+  };
+};
+
+module.exports.getAllCitiesWithAllDetails = async ({ allCities }) => {
+  return Promise.all(
+    allCities?.map(async (cityData) => {
+      const cityDetails = await this.getSingleCityWithAllDetails({
+        cityData: cityData,
+      });
+      return cityDetails;
+    })
+  );
+};
 
 module.exports.getCityByCityTitle = async ({ cityTitle }) => {
   return await Cities.findOne({
     title: cityTitle,
   })
     .select(["-_id"])
-    .then((cityData) => {
+    .then(async (cityData) => {
       if (cityData && Object.keys(cityData).length > 0) {
+        const fullDetailsData = await this.getSingleCityWithAllDetails({
+          cityData: cityData,
+        });
         return {
           status: "success",
           message: `City with city title ${cityTitle} fetched successfully.`,
-          data: CommonUtility.sortObject(cityData),
+          data: CommonUtility.sortObject(fullDetailsData),
         };
       } else {
         return {
@@ -53,12 +103,15 @@ module.exports.addNewCityUtil = async ({ req, res }) => {
 
   newCitySchema
     .save()
-    .then((respondedCity) => {
+    .then(async (respondedCity) => {
       if (respondedCity && Object.keys(respondedCity).length > 0) {
+        const fullDetailsData = await this.getSingleCityWithAllDetails({
+          cityData: respondedCity,
+        });
         res.json({
           status: "success",
           message: `New city is added successfully.`,
-          data: CommonUtility.sortObject(respondedCity),
+          data: CommonUtility.sortObject(fullDetailsData),
         });
       } else {
         res.json({
@@ -84,12 +137,15 @@ module.exports.getAllCitiesUtil = async ({ req }) => {
     .select(["-_id"])
     .limit(limit)
     .sort({ id: sort })
-    .then((allCities) => {
+    .then(async (allCities) => {
       if (allCities && allCities.length > 0) {
+        const fullDetailsData = await this.getAllCitiesWithAllDetails({
+          allCities: allCities,
+        });
         return {
           status: "success",
           message: "Cities fetched successfully.",
-          data: CommonUtility.sortObjectsOfArray(allCities),
+          data: CommonUtility.sortObjectsOfArray(fullDetailsData),
         };
       } else {
         return {
@@ -114,12 +170,15 @@ module.exports.getCityByIdUtil = async ({ cityID }) => {
     id: cityID,
   })
     .select(["-_id"])
-    .then((cityData) => {
+    .then(async (cityData) => {
       if (cityData && Object.keys(cityData).length > 0) {
+        const fullDetailsData = await this.getSingleCityWithAllDetails({
+          cityData: cityData,
+        });
         return {
           status: "success",
           message: `City with city id ${cityID} fetched successfully.`,
-          data: CommonUtility.sortObject(cityData),
+          data: CommonUtility.sortObject(fullDetailsData),
         };
       } else {
         return {

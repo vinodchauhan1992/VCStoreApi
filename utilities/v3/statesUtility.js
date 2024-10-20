@@ -1,17 +1,50 @@
 const States = require("../../model/v3/states");
+const CountriesSchema = require("../../model/v3/countries");
 const CommonUtility = require("./commonUtility");
+const CommonApisUtility = require("./commonApisUtility");
+
+module.exports.getSingleCountryWithAllDetails = async ({ stateData }) => {
+  const countryDetailsObject =
+    await CommonApisUtility.getDataByIdFromSchemaUtil({
+      schema: CountriesSchema,
+      schemaName: "Country",
+      dataID: stateData?.countryID,
+    });
+  return {
+    id: stateData?.id,
+    title: stateData?.title,
+    code: stateData?.code,
+    countryDetails: countryDetailsObject?.data ?? { id: stateData?.countryID },
+    dateAdded: stateData?.dateAdded,
+    dateModified: stateData?.dateModified,
+  };
+};
+
+module.exports.getAllCountriesWithAllDetails = async ({ allStates }) => {
+  return Promise.all(
+    allStates?.map(async (stateData) => {
+      const stateDetails = await this.getSingleCountryWithAllDetails({
+        stateData: stateData,
+      });
+      return stateDetails;
+    })
+  );
+};
 
 module.exports.getStateByStateTitle = async ({ stateTitle }) => {
   return await States.findOne({
     title: stateTitle,
   })
     .select(["-_id"])
-    .then((stateData) => {
+    .then(async (stateData) => {
       if (stateData && Object.keys(stateData).length > 0) {
+        const fullDetailsData = await this.getSingleCountryWithAllDetails({
+          stateData: stateData,
+        });
         return {
           status: "success",
           message: `State with state title ${stateTitle} fetched successfully.`,
-          data: CommonUtility.sortObject(stateData),
+          data: CommonUtility.sortObject(fullDetailsData),
         };
       } else {
         return {
@@ -51,12 +84,15 @@ module.exports.addNewStateUtil = async ({ req, res }) => {
 
   newStateSchema
     .save()
-    .then((respondedState) => {
+    .then(async (respondedState) => {
       if (respondedState && Object.keys(respondedState).length > 0) {
+        const fullDetailsData = await this.getSingleCountryWithAllDetails({
+          stateData: respondedState,
+        });
         res.json({
           status: "success",
           message: `New state is added successfully.`,
-          data: CommonUtility.sortObject(respondedState),
+          data: CommonUtility.sortObject(fullDetailsData),
         });
       } else {
         res.json({
@@ -83,12 +119,15 @@ module.exports.getAllStatesUtil = async ({ req }) => {
     .select(["-_id"])
     .limit(limit)
     .sort({ id: sort })
-    .then((allStates) => {
+    .then(async (allStates) => {
       if (allStates && allStates.length > 0) {
+        const fullDetailsData = await this.getAllCountriesWithAllDetails({
+          allStates: allStates,
+        });
         return {
           status: "success",
           message: "States fetched successfully.",
-          data: CommonUtility.sortObjectsOfArray(allStates),
+          data: CommonUtility.sortObjectsOfArray(fullDetailsData),
         };
       } else {
         return {
@@ -113,12 +152,15 @@ module.exports.getStateByIdUtil = async ({ stateID }) => {
     id: stateID,
   })
     .select(["-_id"])
-    .then((stateData) => {
+    .then(async (stateData) => {
       if (stateData && Object.keys(stateData).length > 0) {
+        const fullDetailsData = await this.getSingleCountryWithAllDetails({
+          stateData: stateData,
+        });
         return {
           status: "success",
           message: `State with state id ${stateID} fetched successfully.`,
-          data: CommonUtility.sortObject(stateData),
+          data: CommonUtility.sortObject(fullDetailsData),
         };
       } else {
         return {
@@ -219,7 +261,7 @@ module.exports.getStateByCountryIdUtil = async ({
   const dataArray = allStatesRespDataObject?.data ?? [];
   const newStatesArray = [];
   dataArray.map((dataObject) => {
-    if (dataObject?.countryID === countryID) {
+    if (dataObject?.countryDetails?.id === countryID) {
       newStatesArray.push(CommonUtility.sortObject(dataObject));
     }
   });
@@ -232,7 +274,7 @@ module.exports.getStateByCountryIdUtil = async ({
   }
   return {
     status: "success",
-    message: `States by country id ${countryID} not fetched successfully`,
+    message: `States by country id ${countryID} not fetched`,
     data: [],
   };
 };
