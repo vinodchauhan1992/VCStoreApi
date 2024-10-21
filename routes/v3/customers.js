@@ -23,5 +23,9 @@ router.post("/updateCustomerPhone", customers.updateCustomerPhone);
 router.post("/updateCustomerGender", customers.updateCustomerGender);
 router.post("/updateCustomerStatus", customers.updateCustomerStatus);
 router.post("/updateCustomerDob", customers.updateCustomerDob);
+router.post(
+  "/updateCustomerMonthlyIncome",
+  customers.updateCustomerMonthlyIncome
+);
 
 module.exports = router;

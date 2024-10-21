@@ -808,3 +808,57 @@ module.exports.updateCustomerDobUtil = async ({ req }) => {
     customerID: customerID,
   });
 };
+
+module.exports.updateCustomerMonthlyIncomeUtil = async ({ req }) => {
+  if (!req?.body?.id || req.body.id === "") {
+    return {
+      status: "error",
+      message: `Customer id is required.`,
+      data: {},
+    };
+  }
+  if (!req?.body?.monthlyIncome || req.body.monthlyIncome === "") {
+    return {
+      status: "error",
+      message: `Monthly income is required.`,
+      data: {},
+    };
+  }
+  if (isNaN(req.body.monthlyIncome)) {
+    return {
+      status: "error",
+      message: `Monthly income must be number value.`,
+      data: {},
+    };
+  }
+
+  const customerID = req.body.id;
+  const monthlyIncome = Number(req.body.monthlyIncome);
+  const annualIncome = monthlyIncome * 12;
+
+  const foundCustomerByIdObj = await this.getCustomerDataByIdFromTableUtil({
+    customerID: customerID,
+  });
+  if (foundCustomerByIdObj?.status === "error") {
+    return foundCustomerByIdObj;
+  }
+
+  const newCustomerDob = {
+    id: customerID,
+    incomeDetails: {
+      monthlyIncome: monthlyIncome,
+      annualIncome: annualIncome,
+    },
+    dateModified: new Date(),
+  };
+
+  const updatedCustomerDobSet = {
+    $set: newCustomerDob,
+  };
+
+  return await this.updateDataInCustomerTableUtil({
+    newDataObject: newCustomerDob,
+    updatedDataSet: updatedCustomerDobSet,
+    customerID: customerID,
+  });
+};

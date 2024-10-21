@@ -12,6 +12,7 @@ module.exports.uploadFileToFirebaseStorage = async ({
   parentDocumentID,
   parentDocumentName,
   imageBasePath,
+  allowedSizeInMb = 2,
 }) => {
   if (!file) {
     return {
@@ -34,13 +35,18 @@ module.exports.uploadFileToFirebaseStorage = async ({
       fileData: {},
     };
   }
-  if (!CommonUtility.isValidAllowedFileSize(file.size)) {
+  if (
+    !CommonUtility.isValidAllowedFileSize({
+      fileSizeInBytes: file.size,
+      allowedSizeInMb: allowedSizeInMb,
+    })
+  ) {
     const { fileSize, unit } = CommonUtility.getFileSizeInKBFromBytes(
       file.size
     );
     return {
       isSucceeded: false,
-      message: `File size cannot be more than 2mb. Your sent file size is ${fileSize}${unit}`,
+      message: `Your sent file size is ${fileSize}${unit}. Which is not allowed size.`,
       fileData: {},
     };
   }
@@ -102,6 +108,7 @@ module.exports.updateUploadedFileInFirebaseStorage = async ({
   fileFolderPath,
   parentDocumentID,
   parentDocumentName,
+  allowedSizeInMb = 2,
 }) => {
   if (!file) {
     return {
@@ -124,13 +131,18 @@ module.exports.updateUploadedFileInFirebaseStorage = async ({
       fileData: {},
     };
   }
-  if (!CommonUtility.isValidAllowedFileSize(file.size)) {
+  if (
+    !CommonUtility.isValidAllowedFileSize({
+      fileSizeInBytes: file.size,
+      allowedSizeInMb: allowedSizeInMb,
+    })
+  ) {
     const { fileSize, unit } = CommonUtility.getFileSizeInKBFromBytes(
       file.size
     );
     return {
       isSucceeded: false,
-      message: `File size cannot be more than 2mb. Your sent file size is ${fileSize}${unit}`,
+      message: `Your sent file size is ${fileSize}${unit}. Which is not allowed size.`,
       fileData: {},
     };
   }

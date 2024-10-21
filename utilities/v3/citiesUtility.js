@@ -279,7 +279,7 @@ module.exports.getCitiesByStateIdUtil = async ({
   const dataArray = allCitiesRespDataObject?.data ?? [];
   const newCitiesArray = [];
   dataArray.map((dataObject) => {
-    if (dataObject?.stateID === stateID) {
+    if (dataObject?.stateDetails?.id === stateID) {
       newCitiesArray.push(CommonUtility.sortObject(dataObject));
     }
   });
@@ -292,7 +292,7 @@ module.exports.getCitiesByStateIdUtil = async ({
   }
   return {
     status: "success",
-    message: `Cities by state id ${stateID} not fetched successfully`,
+    message: `Cities by state id ${stateID} not fetched`,
     data: [],
   };
 };

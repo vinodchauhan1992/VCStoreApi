@@ -2,20 +2,25 @@ const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 const fileUploaderSchema = require("./fileUploader");
 
-const categoriesSchema = new schema({
+const clientBannersSchema = new schema({
   id: {
     type: schema.Types.String,
     required: true,
   },
-  categoryNumber: {
+  clientBannerNumber: {
     type: schema.Types.Number,
     required: true,
   },
-  title: {
+  clientBannerCode: {
     type: schema.Types.String,
     required: true,
   },
-  code: {
+  link: {
+    type: schema.Types.String,
+    required: false,
+  },
+  imageData: fileUploaderSchema.schema,
+  title: {
     type: schema.Types.String,
     required: true,
   },
@@ -23,7 +28,6 @@ const categoriesSchema = new schema({
     type: schema.Types.String,
     required: true,
   },
-  imageData: fileUploaderSchema.schema,
   dateAdded: {
     type: schema.Types.Date,
     required: true,
@@ -34,4 +38,4 @@ const categoriesSchema = new schema({
   },
 });
 
-module.exports = mongoose.model("categories_table_v3", categoriesSchema);
+module.exports = mongoose.model("client_banners_table_v3", clientBannersSchema);

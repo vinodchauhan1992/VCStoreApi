@@ -63,9 +63,12 @@ module.exports.getFileSizeInKBFromBytes = (fileSizeInBytes) => {
   return { fileSize: fileSize, unit: unit };
 };
 
-module.exports.isValidAllowedFileSize = (fileSizeInBytes) => {
+module.exports.isValidAllowedFileSize = ({
+  fileSizeInBytes,
+  allowedSizeInMb = 2,
+}) => {
   const { fileSize, unit } = this.getFileSizeInKBFromBytes(fileSizeInBytes);
-  if (fileSize <= 0 || (fileSize > 2 && unit === "mb")) {
+  if (fileSize <= 0 || (fileSize > allowedSizeInMb && unit === "mb")) {
     return false;
   }
   return true;

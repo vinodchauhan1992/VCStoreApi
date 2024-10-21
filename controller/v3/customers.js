@@ -112,3 +112,11 @@ module.exports.updateCustomerDob = async (req, res) => {
   });
   res.json(foundCustomerObject);
 };
+
+module.exports.updateCustomerMonthlyIncome = async (req, res) => {
+  const foundCustomerObject =
+    await CustomersUtility.updateCustomerMonthlyIncomeUtil({
+      req,
+    });
+  res.json(foundCustomerObject);
+};

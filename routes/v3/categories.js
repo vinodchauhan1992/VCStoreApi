@@ -7,8 +7,8 @@ const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).single("file");
 
-router.post("/getAllCategories", categories.getAllProductCategories);
-router.post("/categoryByID", categories.getProductCategoryById);
+router.post("/allProductCategories", categories.getAllProductCategories);
+router.post("/productCategoryByID", categories.getProductCategoryById);
 router.post("/addProductCategory", upload, categories.addProductCategory);
 router.post("/deleteProductCategory", categories.deleteProductCategory);
 router.post("/updateProductCategory", upload, categories.updateProductCategory);

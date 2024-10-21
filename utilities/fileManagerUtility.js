@@ -34,7 +34,7 @@ module.exports.uploadFileToFirebaseStorage = async ({
       fileData: {},
     };
   }
-  if (!CommonUtility.isValidAllowedFileSize(file.size)) {
+  if (!CommonUtility.isValidAllowedFileSize({ fileSizeInBytes: file.size })) {
     const { fileSize, unit } = CommonUtility.getFileSizeInKBFromBytes(
       file.size
     );
@@ -120,7 +120,7 @@ module.exports.updateUploadedFileInFirebaseStorage = async ({
       fileData: {},
     };
   }
-  if (!CommonUtility.isValidAllowedFileSize(file.size)) {
+  if (!CommonUtility.isValidAllowedFileSize({ fileSizeInBytes: file.size })) {
     const { fileSize, unit } = CommonUtility.getFileSizeInKBFromBytes(
       file.size
     );
