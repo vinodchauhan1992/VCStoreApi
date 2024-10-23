@@ -7,37 +7,71 @@ const productsSchema = new schema({
     type: String,
     required: true,
   },
+  sku: {
+    type: String,
+    required: true,
+  },
   title: {
     type: String,
     required: true,
   },
-  description: String,
-  categoryDetails: {
-    categoryTitle: String,
-    categoryCode: String,
-    categoryID: String,
-  },
-  brandDetails: {
-    brandTitle: String,
-    brandCode: String,
-    brandID: String,
-  },
-  isActive: {
-    type: Boolean,
+  details: {
+    type: String,
     required: true,
   },
-  rating: {
-    rate: Number,
-    count: Number,
+  shortDescription: {
+    type: String,
+    required: true,
+  },
+  shippingReturnDetails: {
+    type: String,
+    required: true,
+  },
+  highlights: {
+    type: String,
+    required: true,
+  },
+  colorID: {
+    type: String,
+    required: true,
+  },
+  categoryID: {
+    type: String,
+    required: true,
+  },
+  brandID: {
+    type: String,
+    required: true,
   },
   priceDetails: {
-    purchasePrice: Number,
-    sellingPrice: Number,
-    profitMargin: Number,
-    maxDiscountPercentage: Number,
-    maxDiscountValue: Number,
-    profitAfterMaxDiscount: Number,
-    isProfit: Boolean,
+    purchasePrice: {
+      type: Number,
+      required: true,
+    },
+    sellingPrice: {
+      type: Number,
+      required: true,
+    },
+    profitMargin: {
+      type: Number,
+      required: true,
+    },
+    maxDiscountPercentage: {
+      type: Number,
+      required: true,
+    },
+    maxDiscountValue: {
+      type: Number,
+      required: true,
+    },
+    profitAfterMaxDiscount: {
+      type: Number,
+      required: true,
+    },
+    isProfit: {
+      type: Boolean,
+      required: true,
+    },
   },
   imageData: fileUploaderSchema.schema,
   dateAdded: {

@@ -4,7 +4,25 @@ const ProductUtility = require("../../utilities/v3/productUtility");
 const CategoryUtility = require("../../utilities/v3/categoryUtility");
 const BrandsUtility = require("../../utilities/v3/brandsUtility");
 
-var dataObject = { status: "success", message: "", data: [] };
+// module.exports.getAllProducts = async (req, res) => {};
+
+// module.exports.getProduct = async (req, res) => {};
+
+// module.exports.getProductsInCategory = async (req, res) => {};
+
+// module.exports.addProduct = async (req, res) => {};
+
+// module.exports.updateProductBasicDetails = (req, res) => {};
+
+// module.exports.deleteProduct = async (req, res) => {};
+
+// module.exports.updateCategoryOfProduct = (req, res) => {};
+
+// module.exports.updateBrandOfProduct = (req, res) => {};
+
+// module.exports.updateProductStatus = (req, res) => {};
+
+// module.exports.updateProductPriceDetails = (req, res) => {};
 
 module.exports.getAllProducts = async (req, res) => {
   try {
@@ -403,55 +421,9 @@ module.exports.updateProductStatus = (req, res) => {
 };
 
 module.exports.updateProductPriceDetails = (req, res) => {
-  if (typeof req.body == undefined || req.body.id == null) {
-    dataObject.status = "error";
-    dataObject.message = "something went wrong! check your sent data.";
-    res.json(dataObject);
-  } else {
-    res.json({
-      id: parseInt(req.body.id),
-      title: req.body.title,
-      price: req.body.price,
-      description: req.body.description,
-      image: req.body.image,
-      categoryTitle: req.body.categoryTitle,
-      categoryCode: req.body.categoryCode,
-      categoryID: req.body.categoryID,
-      brand: req.body.brand,
-      rating: {
-        rate: req.body.rate,
-        count: req.body.count,
-      },
-      dateModified: new Date(),
-      isActive: req.body.isActive,
-      status: req.body.status,
-    });
-  }
-};
-
-module.exports.updateProductRating = (req, res) => {
-  if (typeof req.body == undefined || req.body.id == null) {
-    dataObject.status = "error";
-    dataObject.message = "something went wrong! check your sent data.";
-    res.json(dataObject);
-  } else {
-    res.json({
-      id: parseInt(req.body.id),
-      title: req.body.title,
-      price: req.body.price,
-      description: req.body.description,
-      image: req.body.image,
-      categoryTitle: req.body.categoryTitle,
-      categoryCode: req.body.categoryCode,
-      categoryID: req.body.categoryID,
-      brand: req.body.brand,
-      rating: {
-        rate: req.body.rate,
-        count: req.body.count,
-      },
-      dateModified: new Date(),
-      isActive: req.body.isActive,
-      status: req.body.status,
-    });
-  }
+  res.json({
+    status: "success",
+    message: `updateProductPriceDetails`,
+    data: {},
+  });
 };

@@ -4,15 +4,19 @@ module.exports.getAllDataFromSchemaUtil = async ({
   req,
   schema,
   schemaName,
+  arrSortByKey,
 }) => {
   const limit = req?.body?.limit ? Number(req.body.limit) : 0;
   const sort = req.body.sort == "desc" ? -1 : 1;
+
+  const updatedArrSortByKey =
+    arrSortByKey && arrSortByKey !== "" ? arrSortByKey : "id";
 
   return await schema
     .find()
     .select(["-_id"])
     .limit(limit)
-    .sort({ id: sort })
+    .sort({ [updatedArrSortByKey]: sort })
     .then((allData) => {
       if (allData && allData.length > 0) {
         return {
@@ -77,10 +81,12 @@ module.exports.getDataByTitleFromSchemaUtil = async ({
   schema,
   schemaName,
   dataTitle,
+  keyname,
 }) => {
+  const updatedKeyname = keyname && keyname !== "" ? keyname : "title";
   return await schema
     .findOne({
-      title: dataTitle,
+      [updatedKeyname]: dataTitle,
     })
     .select(["-_id"])
     .then((dataByTitle) => {

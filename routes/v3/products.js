@@ -21,6 +21,5 @@ router.post("/updateCategoryOfProduct", products.updateCategoryOfProduct);
 router.post("/updateBrandOfProduct", products.updateBrandOfProduct);
 router.post("/updateProductStatus", products.updateProductStatus);
 router.post("/updateProductPriceDetails", products.updateProductPriceDetails);
-router.post("/updateProductRating", products.updateProductRating);
 
 module.exports = router;

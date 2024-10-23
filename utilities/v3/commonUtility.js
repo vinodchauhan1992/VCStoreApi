@@ -417,7 +417,7 @@ module.exports.capitalizeLetterOfEachWord = ({ str }) => {
   str = str.split(" ");
 
   // Iterate through each word in the array
-  for (var i = 0, x = str.length; i < x; i++) {
+  for (let i = 0, x = str.length; i < x; i++) {
     // Capitalize the first letter of each word and concatenate it with the rest of the word
     str[i] = str[i][0].toUpperCase() + str[i].substr(1);
   }
