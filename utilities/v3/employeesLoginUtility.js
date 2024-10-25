@@ -276,7 +276,7 @@ module.exports.checkIfEmployeeIsAlreadyLoggedInByEmpCodeUtil = async ({
       status: "error",
       message:
         "You are already logged in somewhere. Please logout first from the device you have last loggedin",
-      data: {},
+      data: foundObject,
     };
   }
   return {

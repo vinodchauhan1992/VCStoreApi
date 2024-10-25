@@ -4,82 +4,96 @@ const fileUploaderSchema = require("./fileUploader");
 
 const productsSchema = new schema({
   id: {
-    type: String,
+    type: schema.Types.String,
+    required: true,
+  },
+  productNumber: {
+    type: schema.Types.Number,
     required: true,
   },
   sku: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
   title: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
-  details: {
-    type: String,
-    required: true,
-  },
-  shortDescription: {
-    type: String,
-    required: true,
-  },
-  shippingReturnDetails: {
-    type: String,
-    required: true,
-  },
-  highlights: {
-    type: String,
-    required: true,
+  description: {
+    details: {
+      type: schema.Types.String,
+      required: true,
+    },
+    shortDescription: {
+      type: schema.Types.String,
+      required: true,
+    },
+    shippingReturnDetails: {
+      type: schema.Types.String,
+      required: true,
+    },
+    highlights: {
+      type: schema.Types.String,
+      required: true,
+    },
   },
   colorID: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
   categoryID: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
   brandID: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
   priceDetails: {
     purchasePrice: {
-      type: Number,
+      type: schema.Types.Number,
       required: true,
     },
     sellingPrice: {
-      type: Number,
+      type: schema.Types.Number,
       required: true,
     },
     profitMargin: {
-      type: Number,
+      type: schema.Types.Number,
       required: true,
     },
     maxDiscountPercentage: {
-      type: Number,
+      type: schema.Types.Number,
       required: true,
     },
     maxDiscountValue: {
-      type: Number,
+      type: schema.Types.Number,
       required: true,
     },
     profitAfterMaxDiscount: {
-      type: Number,
+      type: schema.Types.Number,
+      required: true,
+    },
+    discountedPrice: {
+      type: schema.Types.Number,
       required: true,
     },
     isProfit: {
-      type: Boolean,
+      type: schema.Types.Boolean,
       required: true,
     },
   },
+  isFreeShipping: {
+    type: schema.Types.Boolean,
+    required: true,
+  },
   imageData: fileUploaderSchema.schema,
   dateAdded: {
-    type: Date,
+    type: schema.Types.Date,
     required: true,
   },
   dateModified: {
-    type: Date,
+    type: schema.Types.Date,
     required: true,
   },
 });

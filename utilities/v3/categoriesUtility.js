@@ -27,6 +27,7 @@ module.exports.getAllProductCategoriesUtil = async ({ req }) => {
     req: req,
     schema: CategoriesSchema,
     schemaName: "Categories",
+    arrSortByKey: "categoryNumber",
   });
 };
 
@@ -76,13 +77,6 @@ module.exports.getNewProductCategoryNumberUtil = async ({ req }) => {
 };
 
 module.exports.addProductCategoryUtil = async ({ req }) => {
-  if (!req?.file) {
-    return {
-      status: "error",
-      message: "Category image is required.",
-      data: {},
-    };
-  }
   if (!req?.body?.title || req.body.title === "") {
     return {
       status: "error",
@@ -164,11 +158,10 @@ module.exports.addProductCategoryUtil = async ({ req }) => {
       data: uploadedFileData,
     };
   }
-  return {
-    status: "error",
-    message: "Category image is not uploaded.",
-    data: {},
-  };
+  return await CommonApisUtility.addNewDataToSchemaUtil({
+    newSchema: newCategorySchema,
+    schemaName: "Category",
+  });
 };
 
 module.exports.deleteUploadedCategoryImageToFS = async ({ fileUrl }) => {
@@ -314,6 +307,18 @@ module.exports.updateProductCategoryUtil = async ({ req }) => {
   let description = req?.body?.description ? req.body.description : "";
   const dateModified = new Date();
 
+  if (
+    (!req?.file || req.file === "") &&
+    (!title || title === "") &&
+    (!description || description === "")
+  ) {
+    return {
+      status: "error",
+      message: `Category with category id ${categoryID} not updated. Nothing new passed to update.`,
+      data: {},
+    };
+  }
+
   const foundDataByIdObj = await this.getProductCategoryByIdUtil({
     req: req,
   });
@@ -326,28 +331,28 @@ module.exports.updateProductCategoryUtil = async ({ req }) => {
   ) {
     return {
       status: "error",
-      message: "Category not found.",
+      message: `Category with category id ${categoryID} not found.`,
       data: {},
     };
   }
 
-  const foundImgUrl = foundDataByIdObj?.data?.imageData?.imageUrl;
+  // const foundImgUrl = foundDataByIdObj?.data?.imageData?.imageUrl;
 
-  if (
-    foundDataByIdObj?.status === "success" &&
-    (!foundImgUrl || foundImgUrl === "")
-  ) {
-    if (!req?.file) {
-      return {
-        status: "error",
-        message: "Category image is required.",
-        data: {},
-      };
-    }
-  }
+  // if (
+  //   foundDataByIdObj?.status === "success" &&
+  //   (!foundImgUrl || foundImgUrl === "")
+  // ) {
+  //   if (!req?.file) {
+  //     return {
+  //       status: "error",
+  //       message: "Category image is required.",
+  //       data: {},
+  //     };
+  //   }
+  // }
 
   let updatedPhotoObj = {
-    data: foundDataByIdObj.data.imageData,
+    data: foundDataByIdObj?.data?.imageData ?? null,
   };
   if (req.file) {
     const file = req.file;

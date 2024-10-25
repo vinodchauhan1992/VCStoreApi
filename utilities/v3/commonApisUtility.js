@@ -7,7 +7,7 @@ module.exports.getAllDataFromSchemaUtil = async ({
   arrSortByKey,
 }) => {
   const limit = req?.body?.limit ? Number(req.body.limit) : 0;
-  const sort = req.body.sort == "desc" ? -1 : 1;
+  const sort = req?.body?.sort == "desc" ? -1 : 1;
 
   const updatedArrSortByKey =
     arrSortByKey && arrSortByKey !== "" ? arrSortByKey : "id";
@@ -536,6 +536,42 @@ module.exports.getDataByUsernameFromSchemaUtil = async ({
         status: "error",
         message: `There is an error occurred in getDataByUsernameFromSchemaUtil function while fetching ${schemaName} data by username ${username}. ${err.message}`,
         data: {},
+      };
+    });
+};
+
+module.exports.getDataArrayByTitleFromSchemaUtil = async ({
+  schema,
+  schemaName,
+  dataTitle,
+  keyname,
+}) => {
+  const updatedKeyname = keyname && keyname !== "" ? keyname : "title";
+  return await schema
+    .find({
+      [updatedKeyname]: dataTitle,
+    })
+    .select(["-_id"])
+    .then((dataArrByTitle) => {
+      if (dataArrByTitle && dataArrByTitle.length > 0) {
+        return {
+          status: "success",
+          message: `${schemaName} with ${schemaName?.toLowerCase()} title ${dataTitle} fetched successfully.`,
+          data: CommonUtility.sortObjectsOfArray(dataArrByTitle),
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There is no ${schemaName?.toLowerCase()} exists with ${schemaName?.toLowerCase()} title ${dataTitle}.`,
+          data: [],
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in getDataArrayByTitleFromSchemaUtil function while fetching ${schemaName} data by title ${dataTitle}. ${err.message}`,
+        data: [],
       };
     });
 };

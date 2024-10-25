@@ -6,6 +6,20 @@ const ConstantsUtility = require("./constantsUtility");
 const EmployeesLoginUtility = require("./employeesLoginUtility");
 const AppIdsUtility = require("./appIdsUtility");
 
+module.exports.employeeLogoutUtil = async ({ req }) => {
+  const jwttoken = req?.headers?.jwttoken ?? null;
+  if (!jwttoken || jwttoken === "") {
+    return {
+      status: "error",
+      message: `Jwt token is required to logout`,
+      data: {},
+    };
+  }
+  return await EmployeesLoginUtility.updateEmployeeLoginLogoutEntryUtil({
+    jwtToken: jwttoken,
+  });
+};
+
 module.exports.employeeLoginUtil = async ({ req }) => {
   if (!req?.body?.employeeCode || req.body.employeeCode === "") {
     return {
@@ -60,7 +74,13 @@ module.exports.employeeLoginUtil = async ({ req }) => {
       req,
     });
   if (foundLoginObj?.status === "error") {
-    return foundLoginObj;
+    await this.employeeLogoutUtil({
+      req: {
+        headers: {
+          jwttoken: foundLoginObj?.data?.jwtToken,
+        },
+      },
+    });
   }
 
   return await EmployeesSchema.findOne({
@@ -208,18 +228,4 @@ module.exports.customerLoginUtil = async ({ req }) => {
         data: {},
       };
     });
-};
-
-module.exports.employeeLogoutUtil = async ({ req }) => {
-  const jwttoken = req?.headers?.jwttoken ?? null;
-  if (!jwttoken || jwttoken === "") {
-    return {
-      status: "error",
-      message: `Jwt token is required to logout`,
-      data: {},
-    };
-  }
-  return await EmployeesLoginUtility.updateEmployeeLoginLogoutEntryUtil({
-    jwtToken: jwttoken,
-  });
 };

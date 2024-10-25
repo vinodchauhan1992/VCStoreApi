@@ -3,35 +3,35 @@ const schema = mongoose.Schema;
 
 const stocksSchema = new schema({
   id: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
-  productId: {
-    type: String,
+  stockNumber: {
+    type: schema.Types.Number,
     required: true,
   },
-  brandId: {
-    type: String,
+  code: {
+    type: schema.Types.String,
     required: true,
   },
-  totalQuantities: {
-    type: Number,
-    required: true,
-  },
-  quantityRecieved: {
-    type: Number,
+  productID: {
+    type: schema.Types.String,
     required: true,
   },
   quantityAvailable: {
-    type: Number,
+    type: schema.Types.Number,
+    required: true,
+  },
+  quantitySold: {
+    type: schema.Types.Number,
     required: true,
   },
   dateAdded: {
-    type: Date,
+    type: schema.Types.Date,
     required: true,
   },
   dateModified: {
-    type: Date,
+    type: schema.Types.Date,
     required: true,
   },
 });

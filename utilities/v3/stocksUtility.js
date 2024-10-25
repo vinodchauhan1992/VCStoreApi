@@ -1,291 +1,247 @@
-const Stocks = require("../../model/v3/stocks");
+const StocksSchema = require("../../model/v3/stocks");
 const CommonUtility = require("./commonUtility");
+const CommonApisUtility = require("./commonApisUtility");
 
-module.exports.getAllProductStocksWithDetails = async ({
-  allProductStocks,
-}) => {
-  return Promise.all(
-    allProductStocks?.map(async (productStockData) => {
-      const foundProductObject =
-        await CommonUtility.getProductDetailsByProductId({
-          productId: productStockData.productId,
-        });
-      return {
-        stockDetails: productStockData,
-        productDetails: foundProductObject?.data ? foundProductObject.data : {},
-      };
-    })
-  );
-};
-
-module.exports.getSingleProductStockWithDetails = async ({ productStock }) => {
-  const foundProductObject = await CommonUtility.getProductDetailsByProductId({
-    productId: productStock.productId,
+module.exports.getAllProductStocksUtil = async ({ req }) => {
+  return await CommonApisUtility.getAllDataFromSchemaUtil({
+    req: req,
+    schema: StocksSchema,
+    schemaName: "Stocks",
+    arrSortByKey: "stockNumber",
   });
-  return {
-    stockDetails: productStock,
-    productDetails: foundProductObject?.data ? foundProductObject.data : {},
-  };
 };
 
-module.exports.getAllProductStocksData = async ({ req }) => {
-  const limit = req?.body?.limit ? Number(req.body.limit) : 0;
-  const sort = req?.body?.sort == "desc" ? -1 : 1;
-
-  return await Stocks.find()
-    .select(["-_id"])
-    .limit(limit)
-    .sort({ id: sort })
-    .then(async (allProductStocks) => {
-      if (allProductStocks && allProductStocks.length > 0) {
-        const returnedData = await this.getAllProductStocksWithDetails({
-          allProductStocks: CommonUtility.sortObjectsOfArray(allProductStocks),
-        });
-
-        return {
-          status: "success",
-          message: "Product stocks fetched successfully.",
-          data: returnedData,
-        };
-      } else {
-        return {
-          status: "success",
-          message:
-            "Product stocks fetched successfully. But product stocks doesn't have any data.",
-          data: [],
-        };
-      }
-    })
-    .catch((err) => {
-      return {
-        status: "error",
-        message: `There is an error occurred. ${err}`,
-        data: [],
-      };
-    });
-};
-
-module.exports.getProductStockDataByStockId = async ({ stockID }) => {
-  return await Stocks.findOne({
-    id: stockID,
-  })
-    .select(["-_id"])
-    .then(async (productStock) => {
-      if (productStock && Object.keys(productStock).length > 0) {
-        const returnedData = await this.getSingleProductStockWithDetails({
-          productStock: CommonUtility.sortObject(productStock),
-        });
-        return {
-          status: "success",
-          message: `Product stock with stockID ${stockID} fetched successfully.`,
-          data: returnedData,
-        };
-      } else {
-        return {
-          status: "error",
-          message: `There is no product stock exists with stockID ${stockID}.`,
-          data: {},
-        };
-      }
-    })
-    .catch((err) => {
-      return {
-        status: "error",
-        message: `There is an error occurred. ${err}`,
-        data: {},
-      };
-    });
-};
-
-module.exports.getProductStockDataByProductIdUtil = async ({ productID }) => {
-  return await Stocks.findOne({
-    productId: productID,
-  })
-    .select(["-_id"])
-    .then(async (productStock) => {
-      if (productStock && Object.keys(productStock).length > 0) {
-        const returnedData = await this.getSingleProductStockWithDetails({
-          productStock: CommonUtility.sortObject(productStock),
-        });
-        return {
-          status: "success",
-          message: `Product stock with productID ${productID} fetched successfully.`,
-          data: returnedData,
-        };
-      } else {
-        return {
-          status: "error",
-          message: `There is no product stock exists with productID ${productID}.`,
-          data: {},
-        };
-      }
-    })
-    .catch((err) => {
-      return {
-        status: "error",
-        message: `There is an error occurred. ${err}`,
-        data: {},
-      };
-    });
-};
-
-module.exports.getProductStockDataByBrandIdUtil = async ({ brandID }) => {
-  return await Stocks.findOne({
-    brandId: brandID,
-  })
-    .select(["-_id"])
-    .then(async (productStock) => {
-      if (productStock && Object.keys(productStock).length > 0) {
-        const returnedData = await this.getSingleProductStockWithDetails({
-          productStock: CommonUtility.sortObject(productStock),
-        });
-        return {
-          status: "success",
-          message: `Product stock with brandId ${brandID} fetched successfully.`,
-          data: returnedData,
-        };
-      } else {
-        return {
-          status: "error",
-          message: `There is no product stock exists with brandId ${brandID}.`,
-          data: {},
-        };
-      }
-    })
-    .catch((err) => {
-      return {
-        status: "error",
-        message: `There is an error occurred. ${err}`,
-        data: {},
-      };
-    });
-};
-
-module.exports.addNewProductStockUtil = async ({ productStockSchema, res }) => {
-  const stockDataByProductId = await this.getProductStockDataByProductIdUtil({
-    productID: productStockSchema.productId,
-  });
-
-  if (
-    stockDataByProductId.status === "success" &&
-    stockDataByProductId?.data?.brandId === productStockSchema?.brandId
-  ) {
-    res.json({
+module.exports.getProductStockByStockIdUtil = async ({ req }) => {
+  if (!req?.body?.id || req.body.id === "") {
+    return {
       status: "error",
-      message: `Product stock data is not added. Product stock already exists with productId ${stockDataByProductId.data.productId} and brandId ${stockDataByProductId.data.brandId}`,
-      data: stockDataByProductId?.data ?? {},
-    });
-    return;
+      message: `Stock id is required.`,
+      data: {},
+    };
   }
 
-  productStockSchema
-    .save()
-    .then(async (respondedProductStockObject) => {
-      if (
-        respondedProductStockObject &&
-        Object.keys(respondedProductStockObject).length > 0
-      ) {
-        const returnedData = await this.getSingleProductStockWithDetails({
-          productStock: CommonUtility.sortObject(respondedProductStockObject),
-        });
-        res.json({
-          status: "success",
-          message: `New product stock data is added successfully.`,
-          data: returnedData,
-        });
-      } else {
-        res.json({
-          status: "error",
-          message: `Product stock data is not added due to unknown error.`,
-          data: {},
-        });
-      }
-    })
-    .catch((error) => {
-      res.json({
-        status: "error",
-        message: `There is an error occurred. ${error.message}`,
-        data: {},
-      });
-    });
+  const stockID = req.body.id;
+  return await CommonApisUtility.getDataByIdFromSchemaUtil({
+    schema: StocksSchema,
+    schemaName: "Stock",
+    dataID: stockID,
+  });
 };
 
-module.exports.deleteProductStockUtil = async ({ stockID, res }) => {
-  return await Stocks.deleteOne({
-    id: stockID,
-  })
-    .select(["-_id"])
-    .then(async (result) => {
-      if (result && result.deletedCount === 1) {
-        res.json({
-          status: "success",
-          message: `Product stock with stock id ${stockID} is deleted successfully.`,
-          data: {},
-        });
-      } else {
-        res.json({
-          status: "error",
-          message: `Product stock with stock id ${stockID} is not deleted.`,
-          data: {},
-        });
-      }
-    })
-    .catch((err) => {
-      res.json({
-        status: "error",
-        message: `There is an error occurred. ${err.message}`,
-        data: {},
-      });
-    });
+module.exports.getProductStockByProductIdUtil = async ({ req }) => {
+  if (!req?.body?.productID || req.body.productID === "") {
+    return {
+      status: "error",
+      message: `Product id is required.`,
+      data: {},
+    };
+  }
+
+  const productID = req.body.productID;
+  const stockByIDObj = await CommonApisUtility.getDataByIdFromSchemaUtil({
+    schema: StocksSchema,
+    schemaName: "Stock",
+    dataID: productID,
+    keyname: "productID",
+  });
+
+  if (stockByIDObj?.status === "error") {
+    return {
+      ...stockByIDObj,
+      message: `Stock with product id ${productID} not found.`,
+    };
+  }
+  return {
+    ...stockByIDObj,
+    message: `Stock with product id ${productID} found successfully.`,
+  };
 };
 
-module.exports.updateProductStockUtil = async ({
-  req,
-  res,
-  alreadyAddedTotalQuantities,
-}) => {
-  const stockId = req.body.stockID;
-  const quantityRecieved = req.body.quantityRecieved;
+module.exports.getNewStockNumberUtil = async ({ req }) => {
+  const allProductStocksObj = await this.getAllProductStocksUtil({ req });
+  const dataArr = allProductStocksObj?.data ?? [];
+
+  let currentMaxStockNumber = 0;
+
+  if (dataArr && dataArr.length > 0) {
+    const stockNumbersArr = [];
+    dataArr.map((stockData) => {
+      stockNumbersArr.push(stockData.stockNumber);
+    });
+    const maxStockNumber = stockNumbersArr.reduce(function (prev, current) {
+      return prev && prev > current ? prev : current;
+    });
+    if (maxStockNumber) {
+      currentMaxStockNumber = maxStockNumber ?? 0;
+    }
+  }
+  const newStockNumber = currentMaxStockNumber + 1;
+  return newStockNumber;
+};
+
+module.exports.addNewProductStockUtil = async ({ req }) => {
+  if (!req?.body?.productID || req.body.productID === "") {
+    return {
+      status: "error",
+      message: `Product id is required.`,
+      data: {},
+    };
+  }
+  if (
+    req?.body?.quantityAvailable === undefined ||
+    req.body.quantityAvailable === null ||
+    req.body.quantityAvailable === ""
+  ) {
+    return {
+      status: "error",
+      message: `Available quantity is required.`,
+      data: {},
+    };
+  }
+  if (isNaN(req.body.quantityAvailable)) {
+    return {
+      status: "error",
+      message: `Available quantity must be a number.`,
+      data: {},
+    };
+  }
+
+  const newStockNumber = await this.getNewStockNumberUtil({ req });
+
+  const stockID = CommonUtility.getUniqueID();
+  const productID = req.body.productID;
+  const paddedNewStockNumber = String(newStockNumber).padStart(9, "0");
+  const stockCode = `Stock${paddedNewStockNumber}`;
   const quantityAvailable = req.body.quantityAvailable;
-  const totalQuantities =
-    alreadyAddedTotalQuantities + req.body.quantityRecieved;
+  const quantitySold = 0;
+  const dateAdded = new Date();
+  const dateModified = new Date();
 
-  const newProductStock = {
-    id: stockId,
-    totalQuantities: totalQuantities,
-    quantityRecieved: quantityRecieved,
+  const foundStockByProductIDObj = await this.getProductStockByProductIdUtil({
+    req: req,
+  });
+
+  if (foundStockByProductIDObj?.status === "success") {
+    return {
+      status: "error",
+      message: `Product stock with product id ${productID} is already exists. Please update the existing one.`,
+      data: {},
+    };
+  }
+
+  const newProductStockSchema = new StocksSchema({
+    id: stockID,
+    stockNumber: newStockNumber,
+    code: stockCode,
+    productID: productID,
     quantityAvailable: quantityAvailable,
-    dateModified: new Date(),
+    quantitySold: quantitySold,
+    dateAdded: dateAdded,
+    dateModified: dateModified,
+  });
+
+  return await CommonApisUtility.addNewDataToSchemaUtil({
+    newSchema: newProductStockSchema,
+    schemaName: "Stock",
+  });
+};
+
+module.exports.deleteProductStockUtil = async ({ req }) => {
+  if (!req?.body?.id || req.body.id === "") {
+    return {
+      status: "error",
+      message: `Stock id is required.`,
+      data: {},
+    };
+  }
+
+  const stockID = req.body.id;
+
+  const foundStockByStockIDObj = await this.getProductStockByStockIdUtil({
+    req: req,
+  });
+
+  if (foundStockByStockIDObj?.status === "error") {
+    return foundStockByStockIDObj;
+  }
+
+  return await CommonApisUtility.deleteDataByIdFromSchemaUtil({
+    schema: StocksSchema,
+    schemaName: "Stock",
+    dataID: stockID,
+  });
+};
+
+module.exports.updateDataInProductStockTableUtil = async ({
+  newDataObject,
+  updatedDataSet,
+  stockID,
+}) => {
+  return await CommonApisUtility.updateDataInSchemaUtil({
+    schema: StocksSchema,
+    newDataObject: newDataObject,
+    updatedDataSet: updatedDataSet,
+    schemaName: "Stock",
+    dataID: stockID,
+  });
+};
+
+module.exports.updateProductStockUtil = async ({ req }) => {
+  if (!req?.body?.id || req.body.id === "") {
+    return {
+      status: "error",
+      message: `Stock id is required.`,
+      data: {},
+    };
+  }
+  if (
+    req?.body?.quantityAvailable === undefined ||
+    req.body.quantityAvailable === null ||
+    req.body.quantityAvailable === ""
+  ) {
+    return {
+      status: "error",
+      message: `Available quantity is required.`,
+      data: {},
+    };
+  }
+  if (isNaN(req.body.quantityAvailable)) {
+    return {
+      status: "error",
+      message: `Available quantity must be a number.`,
+      data: {},
+    };
+  }
+
+  const stockID = req.body.id;
+
+  const foundStockByStockIDObj = await this.getProductStockByStockIdUtil({
+    req: req,
+  });
+
+  if (foundStockByStockIDObj?.status === "error") {
+    return foundStockByStockIDObj;
+  }
+
+  const quantityAvailable = foundStockByStockIDObj?.data?.quantityAvailable
+    ? Number(foundStockByStockIDObj.data.quantityAvailable) +
+      Number(req.body.quantityAvailable)
+    : req.body.quantityAvailable;
+  const dateModified = new Date();
+
+  const newStock = {
+    id: stockID,
+    quantityAvailable: quantityAvailable,
+    dateModified: dateModified,
   };
 
-  const updatedProductStockSet = {
-    $set: newProductStock,
+  const updatedStockSet = {
+    $set: newStock,
   };
 
-  Stocks.updateOne({ id: stockId }, updatedProductStockSet)
-    .then((respondedProductStockObject) => {
-      if (
-        respondedProductStockObject &&
-        Object.keys(respondedProductStockObject).length > 0
-      ) {
-        res.json({
-          status: "success",
-          message: `Product stock is updated successfully.`,
-          data: newProductStock,
-        });
-      } else {
-        res.json({
-          status: "error",
-          message: `Product stock is not updated due to unknown error.`,
-          data: {},
-        });
-      }
-    })
-    .catch((err) => {
-      res.json({
-        status: "error",
-        message: `There is an error occurred. ${err.message}`,
-        data: {},
-      });
-    });
+  return await this.updateDataInProductStockTableUtil({
+    newDataObject: newStock,
+    updatedDataSet: updatedStockSet,
+    stockID: stockID,
+  });
 };

@@ -8,18 +8,16 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).single("file");
 
 router.post("/allProducts", products.getAllProducts);
-router.post("/productByCategoryID", products.getProductsInCategory);
-router.post("/productByID", products.getProduct);
-router.post("/addProduct", upload, products.addProduct);
-router.post(
-  "/updateProductBasicDetails",
-  upload,
-  products.updateProductBasicDetails
-);
+router.post("/productByProductID", products.getProductByProductID);
+router.post("/productsByProductTitle", products.getProductsByProductTitle);
+router.post("/productsByCategoryID", products.getProductsByCategoryID);
+router.post("/addNewProduct", upload, products.addNewProduct);
 router.post("/deleteProduct", products.deleteProduct);
-router.post("/updateCategoryOfProduct", products.updateCategoryOfProduct);
-router.post("/updateBrandOfProduct", products.updateBrandOfProduct);
-router.post("/updateProductStatus", products.updateProductStatus);
+router.post("/updateProductPhoto", upload, products.updateProductPhoto);
 router.post("/updateProductPriceDetails", products.updateProductPriceDetails);
+router.post(
+  "/updateProductDescriptionDetails",
+  products.updateProductDescriptionDetails
+);
 
 module.exports = router;
