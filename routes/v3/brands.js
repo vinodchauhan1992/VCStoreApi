@@ -7,10 +7,11 @@ const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).single("file");
 
-router.post("/allProductBrands", brands.getAllProductBrands);
-router.post("/productBrandByBrandId", brands.getProductBrandByBrandId);
-router.post("/addProductBrand", upload, brands.addProductBrand);
-router.post("/deleteProductBrand", brands.deleteProductBrand);
-router.post("/updateProductBrand", upload, brands.updateProductBrand);
+router.post("/allBrands", brands.getAllBrands);
+router.post("/brandByID", brands.getBrandByID);
+router.post("/brandByTitle", brands.getBrandByTitle);
+router.post("/addNewBrand", upload, brands.addNewBrand);
+router.post("/deleteBrand", brands.deleteBrand);
+router.post("/updateBrand", upload, brands.updateBrand);
 
 module.exports = router;

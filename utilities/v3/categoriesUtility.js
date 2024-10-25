@@ -336,21 +336,6 @@ module.exports.updateProductCategoryUtil = async ({ req }) => {
     };
   }
 
-  // const foundImgUrl = foundDataByIdObj?.data?.imageData?.imageUrl;
-
-  // if (
-  //   foundDataByIdObj?.status === "success" &&
-  //   (!foundImgUrl || foundImgUrl === "")
-  // ) {
-  //   if (!req?.file) {
-  //     return {
-  //       status: "error",
-  //       message: "Category image is required.",
-  //       data: {},
-  //     };
-  //   }
-  // }
-
   let updatedPhotoObj = {
     data: foundDataByIdObj?.data?.imageData ?? null,
   };

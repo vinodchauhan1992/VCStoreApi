@@ -4,32 +4,28 @@ const fileUploaderSchema = require("./fileUploader");
 
 const brandsSchema = new schema({
   id: {
-    type: String,
+    type: schema.Types.String,
+    required: true,
+  },
+  brandNumber: {
+    type: schema.Types.Number,
     required: true,
   },
   title: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
   code: {
-    type: String,
+    type: schema.Types.String,
     required: true,
   },
-  description: {
-    type: String,
-    required: true,
-  },
-  brandLogo: fileUploaderSchema.schema,
-  isActive: {
-    type: Boolean,
-    required: true,
-  },
+  imageData: fileUploaderSchema.schema,
   dateAdded: {
-    type: Date,
+    type: schema.Types.Date,
     required: true,
   },
   dateModified: {
-    type: Date,
+    type: schema.Types.Date,
     required: true,
   },
 });
