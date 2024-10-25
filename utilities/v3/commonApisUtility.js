@@ -575,3 +575,83 @@ module.exports.getDataArrayByTitleFromSchemaUtil = async ({
       };
     });
 };
+
+module.exports.getDataByDualKeysFromSchemaUtil = async ({
+  schema,
+  schemaName,
+  key1Value,
+  key2Value,
+  key1Name,
+  key2Name,
+}) => {
+  const updatedKey1Name = key1Name && key1Name ? key1Name : "customerID";
+  const updatedKey2Name = key2Name && key2Name ? key2Name : "productID";
+  return await schema
+    .findOne({
+      [updatedKey1Name]: key1Value,
+      [updatedKey2Name]: key2Value,
+    })
+    .select(["-_id"])
+    .then((dataByDualKeys) => {
+      if (dataByDualKeys && Object.keys(dataByDualKeys).length > 0) {
+        return {
+          status: "success",
+          message: `${schemaName} with ${schemaName?.toLowerCase()} ${updatedKey1Name} ${key1Value} and ${updatedKey2Name} ${key1Value} fetched successfully.`,
+          data: CommonUtility.sortObject(dataByDualKeys),
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There is no ${schemaName?.toLowerCase()} exists with ${schemaName?.toLowerCase()} ${updatedKey1Name} ${key1Value} and ${updatedKey2Name} ${key1Value}.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in getDataByDualKeysFromSchemaUtil function while fetching ${schemaName} data by ${updatedKey1Name} ${key1Value} and ${updatedKey2Name} ${key1Value}. ${err.message}`,
+        data: {},
+      };
+    });
+};
+
+module.exports.getDataArrayByDualKeysFromSchemaUtil = async ({
+  schema,
+  schemaName,
+  key1Value,
+  key2Value,
+  key1Name,
+  key2Name,
+}) => {
+  const updatedKey1Name = key1Name && key1Name ? key1Name : "customerID";
+  const updatedKey2Name = key2Name && key2Name ? key2Name : "productID";
+  return await schema
+    .findOne({
+      [updatedKey1Name]: key1Value,
+      [updatedKey2Name]: key2Value,
+    })
+    .select(["-_id"])
+    .then((dataArrayByDualKeys) => {
+      if (dataArrayByDualKeys && dataArrayByDualKeys.length > 0) {
+        return {
+          status: "success",
+          message: `${schemaName} with ${schemaName?.toLowerCase()} ${updatedKey1Name} ${key1Value} and ${updatedKey2Name} ${key1Value} fetched successfully.`,
+          data: CommonUtility.sortObjectsOfArray(dataArrayByDualKeys),
+        };
+      } else {
+        return {
+          status: "error",
+          message: `There is no ${schemaName?.toLowerCase()} exists with ${schemaName?.toLowerCase()} ${updatedKey1Name} ${key1Value} and ${updatedKey2Name} ${key1Value}.`,
+          data: {},
+        };
+      }
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in getDataArrayByDualKeysFromSchemaUtil function while fetching ${schemaName} data by ${updatedKey1Name} ${key1Value} and ${updatedKey2Name} ${key1Value}. ${err.message}`,
+        data: {},
+      };
+    });
+};

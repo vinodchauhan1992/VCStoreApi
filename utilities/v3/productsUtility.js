@@ -7,6 +7,7 @@ const CommonApisUtility = require("./commonApisUtility");
 const CommonUtility = require("./commonUtility");
 const ProductsValidationsUtility = require("./productsValidationsUtility");
 const StocksUtility = require("./stocksUtility");
+const RatingsUtility = require("./ratingsUtility");
 const {
   uploadFileToFirebaseStorage,
   deleteUploadedFileInFirebaseStorage,
@@ -100,6 +101,29 @@ module.exports.getProductStockByProductIDUtil = async ({ productID }) => {
   };
 };
 
+module.exports.getRatingsByProductIDUtil = async ({ productID }) => {
+  const foundObj = await RatingsUtility.getRatingsByProductIDUtil({
+    req: {
+      body: {
+        productID: productID,
+      },
+    },
+  });
+
+  if (
+    foundObj?.status === "success" &&
+    foundObj?.data &&
+    Object.keys(foundObj.data).length > 0
+  ) {
+    return foundObj;
+  }
+
+  return {
+    ...foundObj,
+    data: [],
+  };
+};
+
 module.exports.getSingleProductWithAllDetailsUtil = async ({ productData }) => {
   const categoryByIdObject = await this.getProductCategoryByIDUtil({
     categoryID: productData?.categoryID,
@@ -111,6 +135,9 @@ module.exports.getSingleProductWithAllDetailsUtil = async ({ productData }) => {
     colorID: productData?.colorID,
   });
   const stockByProductIdObject = await this.getProductStockByProductIDUtil({
+    productID: productData?.id,
+  });
+  const ratingsReviewsByProductIdObject = await this.getRatingsByProductIDUtil({
     productID: productData?.id,
   });
   return {
@@ -128,7 +155,7 @@ module.exports.getSingleProductWithAllDetailsUtil = async ({ productData }) => {
     colorDetails: productColorByIdObject.data,
     categoryDetails: categoryByIdObject.data,
     brandDetails: brandByIdObject.data,
-    ratingsReviewsDetails: [],
+    ratingsReviewsDetails: ratingsReviewsByProductIdObject.data,
     questionsAnswersDetails: [],
     stockDetails: stockByProductIdObject.data,
     averageRating: {
