@@ -168,7 +168,7 @@ module.exports.customerLoginUtil = async ({ req }) => {
       data: {},
     };
   }
-  const appID = req.body.app_id;
+  const appID = req.headers.app_id;
   const foundAppIdObj = await AppIdsUtility.getAppIdByAppIdUtil({
     req: { body: { id: appID } },
   });

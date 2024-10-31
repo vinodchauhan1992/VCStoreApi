@@ -71,6 +71,8 @@ const attendancesV3 = require("./routes/v3/attendances");
 const clientBannersV3 = require("./routes/v3/clientBanners");
 const productColorsV3 = require("./routes/v3/productColors");
 const ratingsV3 = require("./routes/v3/ratings");
+const wishlistsV3 = require("./routes/v3/wishlists");
+const cartsV3 = require("./routes/v3/carts");
 
 //middleware
 app.use(cors());
@@ -142,6 +144,8 @@ app.use("/v3/attendances", attendancesV3);
 app.use("/v3/clientBanners", clientBannersV3);
 app.use("/v3/productColors", productColorsV3);
 app.use("/v3/ratings", ratingsV3);
+app.use("/v3/wishlists", wishlistsV3);
+app.use("/v3/carts", cartsV3);
 
 //mongoose
 mongoose.set("useFindAndModify", false);

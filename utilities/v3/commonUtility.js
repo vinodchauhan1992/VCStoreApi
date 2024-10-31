@@ -12,6 +12,8 @@ const CountriesSchema = require("../../model/v3/countries");
 const StatesSchema = require("../../model/v3/states");
 const CitiesSchema = require("../../model/v3/cities");
 const GendersSchema = require("../../model/v3/genders");
+const CustomersUtility = require("./customersUtility");
+const ProductsUtility = require("./productsUtility");
 
 module.exports.getTimestamp = () => {
   const timestamp = new Date().getTime();
@@ -506,5 +508,51 @@ module.exports.getGenderRelatedDetailsByGenderId = async ({ genderID }) => {
     data: {
       genderID: genderID && genderID !== "" ? genderID : "",
     },
+  };
+};
+
+module.exports.getCustomerByIDForCommonUtil = async ({ customerID }) => {
+  const foundObj = await CustomersUtility.getCustomerByIDUtil({
+    req: {
+      body: {
+        id: customerID,
+      },
+    },
+  });
+
+  if (
+    foundObj?.status === "success" &&
+    foundObj?.data &&
+    Object.keys(foundObj.data).length > 0
+  ) {
+    return foundObj;
+  }
+
+  return {
+    ...foundObj,
+    data: { id: customerID },
+  };
+};
+
+module.exports.getProductByIDForCommonUtil = async ({ productID }) => {
+  const foundObj = await ProductsUtility.getProductByProductIDUtil({
+    req: {
+      body: {
+        id: productID,
+      },
+    },
+  });
+
+  if (
+    foundObj?.status === "success" &&
+    foundObj?.data &&
+    Object.keys(foundObj.data).length > 0
+  ) {
+    return foundObj;
+  }
+
+  return {
+    ...foundObj,
+    data: { id: productID },
   };
 };

@@ -1,4 +1,5 @@
 const ProductsSchema = require("../../model/v3/products");
+const WishlistsSchema = require("../../model/v3/wishlists");
 const CategoriesSchema = require("../../model/v3/categories");
 const StocksSchema = require("../../model/v3/stocks");
 const BrandsSchema = require("../../model/v3/brands");
@@ -113,7 +114,45 @@ module.exports.getRatingsByProductIDUtil = async ({ productID }) => {
   if (
     foundObj?.status === "success" &&
     foundObj?.data &&
-    Object.keys(foundObj.data).length > 0
+    foundObj.data.length > 0
+  ) {
+    return foundObj;
+  }
+
+  return {
+    ...foundObj,
+    data: [],
+  };
+};
+
+module.exports.getAverageRatingFromRatingsReviewsArrUtil = async ({
+  ratingsReviewsArr,
+}) => {
+  let maxRating = 5;
+  let rating = 0;
+  ratingsReviewsArr.map((ratingsReviewData) => {
+    const reviewRatings = ratingsReviewData.ratings;
+    if (reviewRatings.maxRating > maxRating) {
+      maxRating = reviewRatings.maxRating;
+    }
+    rating = rating + reviewRatings.rating;
+  });
+  const averageRating = rating / ratingsReviewsArr.length;
+  return { maxRating: maxRating, averageRating: averageRating };
+};
+
+module.exports.getWishlistsByProductIDUtil = async ({ productID }) => {
+  const foundObj = await CommonApisUtility.getDataArrayByIdFromSchemaUtil({
+    schema: WishlistsSchema,
+    schemaName: "Wishlists",
+    dataID: productID,
+    keyname: "productID",
+  });
+
+  if (
+    foundObj?.status === "success" &&
+    foundObj?.data &&
+    foundObj.data.length > 0
   ) {
     return foundObj;
   }
@@ -140,6 +179,13 @@ module.exports.getSingleProductWithAllDetailsUtil = async ({ productData }) => {
   const ratingsReviewsByProductIdObject = await this.getRatingsByProductIDUtil({
     productID: productData?.id,
   });
+  const averageRatingsObj =
+    await this.getAverageRatingFromRatingsReviewsArrUtil({
+      ratingsReviewsArr: ratingsReviewsByProductIdObject?.data ?? [],
+    });
+  const wishlistsByProductIdObject = await this.getWishlistsByProductIDUtil({
+    productID: productData?.id,
+  });
   return {
     id: productData?.id ?? "",
     productNumber: productData?.productNumber ?? 1,
@@ -157,10 +203,11 @@ module.exports.getSingleProductWithAllDetailsUtil = async ({ productData }) => {
     brandDetails: brandByIdObject.data,
     ratingsReviewsDetails: ratingsReviewsByProductIdObject.data,
     questionsAnswersDetails: [],
+    wishlistsDetails: wishlistsByProductIdObject.data,
     stockDetails: stockByProductIdObject.data,
     averageRating: {
-      maxRating: 5,
-      rating: 0,
+      maxRating: averageRatingsObj.maxRating,
+      rating: averageRatingsObj.averageRating,
     },
     priceDetails: {
       purchasePrice: productData?.priceDetails?.purchasePrice ?? 0,
