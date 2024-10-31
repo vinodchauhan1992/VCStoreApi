@@ -359,6 +359,20 @@ module.exports.addNewCartUtil = async ({ req }) => {
       data: {},
     };
   }
+  if (req?.body?.productCount === undefined || req.body.productCount === "") {
+    return {
+      status: "error",
+      message: `Product count is required.`,
+      data: {},
+    };
+  }
+  if (isNaN(req.body.productCount)) {
+    return {
+      status: "error",
+      message: `Product count must be a number.`,
+      data: {},
+    };
+  }
 
   const newCartNumber = await this.getNewCartNumberUtil({
     req,
@@ -368,6 +382,7 @@ module.exports.addNewCartUtil = async ({ req }) => {
   const cartID = CommonUtility.getUniqueID();
   const customerID = req.body.customerID;
   const productID = req.body.productID;
+  const productCount = req.body.productCount;
   const dateAdded = new Date();
   const dateModified = new Date();
 
@@ -419,7 +434,7 @@ module.exports.addNewCartUtil = async ({ req }) => {
     products: [
       {
         productID: productID,
-        count: 1,
+        count: Number(productCount),
       },
     ],
     dateAdded: dateAdded,
