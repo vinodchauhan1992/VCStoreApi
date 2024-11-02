@@ -90,10 +90,37 @@ module.exports.getOrderByOrderCodeUtil = async ({ req }) => {
 };
 
 module.exports.getOrdersByCustomerIDUtil = async ({ req }) => {
+  if (!req?.body?.customerID || req.body.customerID === "") {
+    return {
+      status: "error",
+      message: `Customer id is required.`,
+      data: {},
+    };
+  }
+
+  const customerID = req.body.customerID;
+  const foundOrdersObj = await CommonApisUtility.getDataArrayByIdFromSchemaUtil(
+    {
+      req: req,
+      schema: OrdersSchema,
+      schemaName: "Orders",
+      dataID: customerID,
+      keyname: "customerID",
+    }
+  );
+
+  if (foundOrdersObj?.status === "error") {
+    return foundOrdersObj;
+  }
+
+  const fullDetailsObj =
+    await OrdersValidationsUtility.getAllOrdersWithFullDetails({
+      allOrders: foundOrdersObj?.data ?? [],
+    });
+
   return {
-    status: "error",
-    message: `getOrdersByCustomerIDUtil`,
-    data: {},
+    ...foundOrdersObj,
+    data: fullDetailsObj,
   };
 };
 
