@@ -5,6 +5,7 @@ const EmployeesValidationsUtility = require("./employeesValidationsUtility");
 const ConstantsUtility = require("./constantsUtility");
 const EmployeesLoginUtility = require("./employeesLoginUtility");
 const AppIdsUtility = require("./appIdsUtility");
+const CustomersValidationsUtility = require("./customersValidationsUtility");
 
 module.exports.employeeLogoutUtil = async ({ req }) => {
   const jwttoken = req?.headers?.jwttoken ?? null;
@@ -201,15 +202,19 @@ module.exports.customerLoginUtil = async ({ req }) => {
   })
     .then(async (customerData) => {
       if (customerData && Object.keys(customerData).length > 0) {
+        const fullDetailsObj =
+          await CustomersValidationsUtility.getSingleCustomerWithAllDetails({
+            customerData: CommonUtility.sortObject(customerData),
+          });
         const jwtToken = CommonUtility.generateJwtToken({
-          uniqueID: customerData?.id ?? "",
-          uniqueCode: customerData?.username ?? "",
+          uniqueID: fullDetailsObj?.id ?? "",
+          uniqueCode: fullDetailsObj?.username ?? "",
         });
         return {
           status: "success",
           message: "You are successfully logged in.",
           data: {
-            customer: customerData,
+            customer: fullDetailsObj,
             jwtToken: jwtToken,
           },
         };

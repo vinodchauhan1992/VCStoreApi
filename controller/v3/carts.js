@@ -28,6 +28,13 @@ module.exports.deleteFromCart = async (req, res) => {
   res.json(foundCartObj);
 };
 
+module.exports.deleteCart = async (req, res) => {
+  const foundCartObj = await CartsUtility.deleteCartUtil({
+    req: req,
+  });
+  res.json(foundCartObj);
+};
+
 module.exports.removeFromCart = async (req, res) => {
   const foundCartObj = await CartsUtility.removeFromCartUtil({
     req: req,
@@ -37,6 +44,13 @@ module.exports.removeFromCart = async (req, res) => {
 
 module.exports.updateCart = async (req, res) => {
   const foundCartObj = await CartsUtility.updateCartUtil({
+    req: req,
+  });
+  res.json(foundCartObj);
+};
+
+module.exports.createCart = async (req, res) => {
+  const foundCartObj = await CartsUtility.createCartUtil({
     req: req,
   });
   res.json(foundCartObj);

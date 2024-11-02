@@ -32,6 +32,22 @@ const cartsSchema = new schema({
     default: [],
     required: true,
   },
+  totalAmount: {
+    type: schema.Types.Number,
+    required: false,
+  },
+  discount: {
+    type: schema.Types.Number,
+    required: false,
+  },
+  couponDiscount: {
+    type: schema.Types.Number,
+    required: false,
+  },
+  payableAmount: {
+    type: schema.Types.Number,
+    required: false,
+  },
   dateAdded: {
     type: schema.Types.Date,
     required: true,

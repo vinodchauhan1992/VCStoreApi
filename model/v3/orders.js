@@ -1,0 +1,199 @@
+const mongoose = require("mongoose");
+const schema = mongoose.Schema;
+const CartsSchema = require("./carts");
+const CustomersSchema = require("./customers");
+const ProductsSchema = require("./products");
+
+// const cartData = {
+//   id: {
+//     type: schema.Types.String,
+//     required: true,
+//   },
+//   cartNumber: {
+//     type: schema.Types.Number,
+//     required: true,
+//   },
+//   code: {
+//     type: schema.Types.String,
+//     required: true,
+//   },
+//   customerDetails: {
+//     type: CustomersSchema.schema,
+//     required: true,
+//   },
+//   products: {
+//     type: [
+//       {
+//         productDetails: {
+//           type: ProductsSchema.schema,
+//         },
+//         count: {
+//           type: schema.Types.Number,
+//         },
+//       },
+//     ],
+//     default: [],
+//     required: true,
+//   },
+//   totalAmount: {
+//     type: schema.Types.Number,
+//     required: false,
+//   },
+//   discount: {
+//     type: schema.Types.Number,
+//     required: false,
+//   },
+//   couponDiscount: {
+//     type: schema.Types.Number,
+//     required: false,
+//   },
+//   payableAmount: {
+//     type: schema.Types.Number,
+//     required: false,
+//   },
+//   dateAdded: {
+//     type: schema.Types.Date,
+//     required: true,
+//   },
+//   dateModified: {
+//     type: schema.Types.Date,
+//     required: true,
+//   },
+// };
+
+const ordersSchema = new schema({
+  id: {
+    type: schema.Types.String,
+    required: true,
+  },
+  orderNumber: {
+    type: schema.Types.Number,
+    required: true,
+  },
+  code: {
+    type: schema.Types.String,
+    required: true,
+  },
+  customerID: {
+    type: schema.Types.String,
+    required: true,
+  },
+  cart: {
+    type: {},
+    required: true,
+  },
+  contactInfo: {
+    email: {
+      type: schema.Types.String,
+      required: true,
+    },
+    phone: {
+      type: schema.Types.Number,
+      required: true,
+    },
+  },
+  shippingInfo: {
+    name: {
+      type: schema.Types.String,
+      required: true,
+    },
+    address1: {
+      type: schema.Types.String,
+      required: true,
+    },
+    address2: {
+      type: schema.Types.String,
+      required: false,
+    },
+    country: {
+      type: schema.Types.String,
+      required: true,
+    },
+    state: {
+      type: schema.Types.String,
+      required: true,
+    },
+    city: {
+      type: schema.Types.String,
+      required: true,
+    },
+    pincode: {
+      type: schema.Types.Number,
+      required: true,
+    },
+  },
+  billingInfo: {
+    name: {
+      type: schema.Types.String,
+      required: true,
+    },
+    address1: {
+      type: schema.Types.String,
+      required: true,
+    },
+    address2: {
+      type: schema.Types.String,
+      required: false,
+    },
+    country: {
+      type: schema.Types.String,
+      required: true,
+    },
+    state: {
+      type: schema.Types.String,
+      required: true,
+    },
+    city: {
+      type: schema.Types.String,
+      required: true,
+    },
+    pincode: {
+      type: schema.Types.Number,
+      required: true,
+    },
+  },
+  paymentInfo: {
+    cardName: {
+      type: schema.Types.String,
+      required: true,
+    },
+    cardType: {
+      type: schema.Types.String,
+      required: true,
+    },
+    cardNumber: {
+      type: schema.Types.Number,
+      required: true,
+    },
+    cardExpiryMonth: {
+      type: schema.Types.Number,
+      required: true,
+    },
+    cardExpiryYear: {
+      type: schema.Types.Number,
+      required: true,
+    },
+    cardCVV: {
+      type: schema.Types.Number,
+      required: true,
+    },
+  },
+  deliveryStatusID: {
+    type: schema.Types.String,
+    required: true,
+  },
+  deliveryDate: {
+    type: schema.Types.Date,
+    required: false,
+  },
+  dateAdded: {
+    type: schema.Types.Date,
+    required: true,
+  },
+  dateModified: {
+    type: schema.Types.Date,
+    required: true,
+  },
+});
+
+module.exports = mongoose.model("orders_table_v3", ordersSchema);
