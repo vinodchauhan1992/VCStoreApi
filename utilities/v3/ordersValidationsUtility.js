@@ -6,6 +6,7 @@ const CommonUtility = require("../../utilities/v3/commonUtility");
 const CustomersUtility = require("../../utilities/v3/customersUtility");
 const CartsUtility = require("../../utilities/v3/cartsUtility");
 const DeliveryStatusesUtility = require("../../utilities/v3/deliveryStatusesUtility");
+const InvoicesUtility = require("../../utilities/v3/invoicesUtility");
 
 module.exports.getSingleProductDetailsUtil = async ({ productData }) => {
   const productByIdObject = await CommonUtility.getProductByIDForCommonUtil({
@@ -50,6 +51,25 @@ module.exports.getFullCustomerDetailsObj = async ({ customerID }) => {
   return { fullCustomerDetailsData: fullCustomerDetailsData };
 };
 
+module.exports.getFullInvoiceDetailsObj = async ({ invoiceID }) => {
+  const fullItemDetailsObj = await InvoicesUtility.getInvoiceByInvoiceIDUtil({
+    req: {
+      body: {
+        id: invoiceID,
+      },
+    },
+  });
+  let fullInvoiceDetailsData = { id: invoiceID };
+  if (
+    fullItemDetailsObj?.status !== "error" &&
+    fullItemDetailsObj?.data &&
+    Object.keys(fullItemDetailsObj.data).length > 0
+  ) {
+    fullInvoiceDetailsData = fullItemDetailsObj.data;
+  }
+  return { fullInvoiceDetailsData: fullInvoiceDetailsData };
+};
+
 module.exports.getFullDeliveryStatusDetailsObj = async ({
   deliveryStatusID,
 }) => {
@@ -80,14 +100,15 @@ module.exports.getSingleOrderWithFullDetails = async ({ orderData }) => {
     await this.getFullDeliveryStatusDetailsObj({
       deliveryStatusID: orderData.deliveryStatusID,
     });
-  // const productsWithFullDetails =
-  //   await this.getAllProductsArrForACustomerOrderUtil({
-  //     productsArr: orderData?.cart?.products ?? [],
-  //   });
-  // const cartCustomerByIdObject =
-  //   await CommonUtility.getCustomerByIDForCommonUtil({
-  //     customerID: orderData?.cart?.customerID,
-  //   });
+  const { fullInvoiceDetailsData } = await this.getFullInvoiceDetailsObj({
+    invoiceID: orderData.invoiceID,
+  });
+
+  let invoiceGenerated = false;
+  if (fullInvoiceDetailsData?.id && fullInvoiceDetailsData?.code) {
+    invoiceGenerated = true;
+  }
+
   const newData = {
     id: orderData.id,
     orderNumber: orderData.orderNumber,
@@ -99,7 +120,8 @@ module.exports.getSingleOrderWithFullDetails = async ({ orderData }) => {
     billingInfo: orderData.billingInfo,
     paymentInfo: orderData.paymentInfo,
     deliveryStatusDetails: fullDeliveryDetailsData,
-    invoiceID: orderData?.invoiceID ?? null,
+    invoiceDetails: fullInvoiceDetailsData,
+    invoiceGenerated: invoiceGenerated,
     deliveryDate: orderData?.deliveryDate ?? null,
     dateAdded: orderData?.dateAdded,
     dateModified: orderData?.dateModified,

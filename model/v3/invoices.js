@@ -52,7 +52,7 @@ const invoicesSchema = new schema({
       required: true,
     },
     phone: {
-      type: schema.Types.Number,
+      type: schema.Types.String,
       required: true,
     },
   },
@@ -68,7 +68,11 @@ const invoicesSchema = new schema({
     type: schema.Types.Number,
     required: true,
   },
-  tax: {
+  taxAmount: {
+    type: schema.Types.Number,
+    required: true,
+  },
+  taxPercent: {
     type: schema.Types.Number,
     required: true,
   },
