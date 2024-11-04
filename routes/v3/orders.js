@@ -9,5 +9,6 @@ router.post("/ordersByCustomerID", orders.getOrdersByCustomerID);
 router.post("/createNewOrder", orders.createNewOrder);
 router.post("/updateOrderDeliveryStatus", orders.updateOrderDeliveryStatus);
 router.post("/updateOrderDeliveryDate", orders.updateOrderDeliveryDate);
+router.post("/updateOrderInvoiceID", orders.updateOrderInvoiceID);
 
 module.exports = router;

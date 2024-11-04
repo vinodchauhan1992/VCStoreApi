@@ -38,3 +38,10 @@ module.exports.updateOrderDeliveryDate = async (req, res) => {
   });
   res.json(foundItemObj);
 };
+
+module.exports.updateOrderInvoiceID = async (req, res) => {
+  const foundItemObj = await OrdersUtility.updateOrderInvoiceIDUtil({
+    req,
+  });
+  res.json(foundItemObj);
+};

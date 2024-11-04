@@ -111,6 +111,7 @@ module.exports.getSingleOrderWithFullDetails = async ({ orderData }) => {
     billingInfo: orderData.billingInfo,
     paymentInfo: orderData.paymentInfo,
     deliveryStatusDetails: fullDeliveryDetailsData,
+    invoiceID: orderData?.invoiceID ?? null,
     deliveryDate: orderData?.deliveryDate ?? null,
     dateAdded: orderData?.dateAdded,
     dateModified: orderData?.dateModified,
@@ -535,6 +536,7 @@ module.exports.createNewOrderDataToBeAdded = async ({ req, cartData }) => {
       cardCVV: req.body.cardCVV,
     },
     deliveryStatusID: "d428d6ca-bc29-4828-beb4-ac320ef706e5",
+    invoiceID: null,
     deliveryDate: null,
     dateAdded: new Date(),
     dateModified: new Date(),
@@ -686,12 +688,6 @@ module.exports.validationForNewOrder = async ({ req }) => {
     return customerExistenceValidationObj;
   }
 
-  // const cartDataObjObj = await CartsUtility.getCartByCustomerIDUtil({
-  //   req: req,
-  // });
-  // if (cartDataObjObj?.status === "error") {
-  //   return cartDataObjObj;
-  // }
   const cartDataObj = await this.getCartDataObjByCustomerID({
     req: req,
   });

@@ -1,65 +1,6 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
-const CartsSchema = require("./carts");
-const CustomersSchema = require("./customers");
-const ProductsSchema = require("./products");
 
-// const cartData = {
-//   id: {
-//     type: schema.Types.String,
-//     required: true,
-//   },
-//   cartNumber: {
-//     type: schema.Types.Number,
-//     required: true,
-//   },
-//   code: {
-//     type: schema.Types.String,
-//     required: true,
-//   },
-//   customerDetails: {
-//     type: CustomersSchema.schema,
-//     required: true,
-//   },
-//   products: {
-//     type: [
-//       {
-//         productDetails: {
-//           type: ProductsSchema.schema,
-//         },
-//         count: {
-//           type: schema.Types.Number,
-//         },
-//       },
-//     ],
-//     default: [],
-//     required: true,
-//   },
-//   totalAmount: {
-//     type: schema.Types.Number,
-//     required: false,
-//   },
-//   discount: {
-//     type: schema.Types.Number,
-//     required: false,
-//   },
-//   couponDiscount: {
-//     type: schema.Types.Number,
-//     required: false,
-//   },
-//   payableAmount: {
-//     type: schema.Types.Number,
-//     required: false,
-//   },
-//   dateAdded: {
-//     type: schema.Types.Date,
-//     required: true,
-//   },
-//   dateModified: {
-//     type: schema.Types.Date,
-//     required: true,
-//   },
-// };
 
 const ordersSchema = new schema({
   id: {
@@ -179,6 +120,10 @@ const ordersSchema = new schema({
     },
   },
   deliveryStatusID: {
+    type: schema.Types.String,
+    required: true,
+  },
+  invoiceID: {
     type: schema.Types.String,
     required: true,
   },
