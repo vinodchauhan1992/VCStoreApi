@@ -125,7 +125,7 @@ const ordersSchema = new schema({
   },
   invoiceID: {
     type: schema.Types.String,
-    required: true,
+    required: false,
   },
   deliveryDate: {
     type: schema.Types.Date,

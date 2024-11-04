@@ -80,32 +80,20 @@ module.exports.getSingleOrderWithFullDetails = async ({ orderData }) => {
     await this.getFullDeliveryStatusDetailsObj({
       deliveryStatusID: orderData.deliveryStatusID,
     });
-  const productsWithFullDetails =
-    await this.getAllProductsArrForACustomerOrderUtil({
-      productsArr: orderData?.cart?.products ?? [],
-    });
-  const cartCustomerByIdObject =
-    await CommonUtility.getCustomerByIDForCommonUtil({
-      customerID: orderData?.cart?.customerID,
-    });
+  // const productsWithFullDetails =
+  //   await this.getAllProductsArrForACustomerOrderUtil({
+  //     productsArr: orderData?.cart?.products ?? [],
+  //   });
+  // const cartCustomerByIdObject =
+  //   await CommonUtility.getCustomerByIDForCommonUtil({
+  //     customerID: orderData?.cart?.customerID,
+  //   });
   const newData = {
     id: orderData.id,
     orderNumber: orderData.orderNumber,
     code: orderData.code,
     customerDetails: fullCustomerDetailsData,
-    cart: {
-      id: orderData.cart.id,
-      cartNumber: orderData.cart.cartNumber,
-      code: orderData.cart.code,
-      customerDetails: cartCustomerByIdObject.data,
-      products: productsWithFullDetails,
-      totalAmount: orderData.cart.totalAmount,
-      discount: orderData?.cart?.discount ?? 0,
-      couponDiscount: orderData?.cart?.couponDiscount ?? 0,
-      payableAmount: orderData.cart.payableAmount,
-      dateAdded: orderData.cart.dateAdded,
-      dateModified: orderData.cart.dateModified,
-    },
+    cart: orderData.cart,
     contactInfo: orderData.contactInfo,
     shippingInfo: orderData.shippingInfo,
     billingInfo: orderData.billingInfo,
@@ -627,15 +615,6 @@ module.exports.orderAmountValidation = async ({ cartData }) => {
   }
 };
 
-module.exports.getCartDataObjByCustomerID = async ({ req }) => {
-  return await CommonApisUtility.getDataByIdFromSchemaUtil({
-    schema: CartsSchema,
-    schemaName: "Cart",
-    dataID: req.body.customerID,
-    keyname: "customerID",
-  });
-};
-
 module.exports.validationForNewOrder = async ({ req }) => {
   if (!req?.body?.customerID || req.body.customerID === "") {
     return {
@@ -688,7 +667,7 @@ module.exports.validationForNewOrder = async ({ req }) => {
     return customerExistenceValidationObj;
   }
 
-  const cartDataObj = await this.getCartDataObjByCustomerID({
+  const cartDataObj = await CartsUtility.getCartByCustomerIDUtil({
     req: req,
   });
   if (cartDataObj?.status === "error") {
