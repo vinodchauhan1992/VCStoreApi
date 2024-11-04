@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
-
 const ordersSchema = new schema({
   id: {
     type: schema.Types.String,
