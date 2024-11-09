@@ -128,7 +128,7 @@ const ordersSchema = new schema({
   },
   invoiceGenerated: {
     type: schema.Types.Boolean,
-    required: false,
+    required: true,
   },
   deliveryDate: {
     type: schema.Types.Date,

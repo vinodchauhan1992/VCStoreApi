@@ -176,6 +176,121 @@ module.exports.deleteCartUtil = async ({ req }) => {
   });
 };
 
+module.exports.getCartTotalPrices = async ({ productsArr, couponDiscount }) => {
+  let totalSellingPrice = 0;
+  let totalDiscountPrice = 0;
+  let totalDiscountedPrice = 0;
+
+  if (productsArr && productsArr.length > 0) {
+    productsArr.map((prodData) => {
+      const sellingPrice =
+        prodData?.productDetails?.priceDetails?.sellingPrice ?? 0;
+      const discountPrice =
+        prodData?.productDetails?.priceDetails?.maxDiscountValue ?? 0;
+      const discountedPrice =
+        prodData?.productDetails?.priceDetails?.discountedPrice ?? 0;
+      const count = prodData?.count ?? 1;
+      totalSellingPrice = totalSellingPrice + sellingPrice * count;
+      totalDiscountPrice = totalDiscountPrice + discountPrice * count;
+      totalDiscountedPrice = totalDiscountedPrice + discountedPrice * count;
+      return true;
+    });
+  }
+  const totalPayableAmount =
+    totalSellingPrice -
+    totalDiscountPrice -
+    (couponDiscount ? couponDiscount : 0);
+  return {
+    totalSellingPrice,
+    totalDiscountPrice,
+    totalPayableAmount,
+    totalDiscountedPrice,
+  };
+};
+
+module.exports.createCartUtil = async ({ req }) => {
+  if (!req?.body?.id || req.body.id === "") {
+    return {
+      status: "error",
+      message: `Cart id is required.`,
+      data: {},
+    };
+  }
+  const cartID = req.body.id;
+  const foundCartDataByIDObj = await this.getCartByCartIDUtil({ req });
+  if (foundCartDataByIDObj?.status === "error") {
+    return foundCartDataByIDObj;
+  }
+  if (
+    !foundCartDataByIDObj?.data ||
+    Object.keys(foundCartDataByIDObj.data).length <= 0
+  ) {
+    return {
+      status: "error",
+      message: `There is no cart exists with cart id ${cartID}.`,
+      data: {},
+    };
+  }
+
+  const cartData = foundCartDataByIDObj.data;
+  const couponDiscount = req?.body?.couponDiscount
+    ? CommonUtility.amountRoundingFunc({
+        value: Number(req.body.couponDiscount),
+      })
+    : 0.0;
+  const { totalSellingPrice, totalPayableAmount, totalDiscountPrice } =
+    await this.getCartTotalPrices({
+      productsArr: cartData?.products ?? [],
+      couponDiscount: couponDiscount,
+    });
+
+  if (totalSellingPrice <= 0) {
+    return {
+      status: "error",
+      message: `Total amount cannot be 0.`,
+      data: {},
+    };
+  }
+  if (totalPayableAmount <= 0) {
+    return {
+      status: "error",
+      message: `Payable amount cannot be 0.`,
+      data: {},
+    };
+  }
+
+  const totalAmount = CommonUtility.amountRoundingFunc({
+    value: totalSellingPrice,
+  });
+  const discount = totalDiscountPrice
+    ? CommonUtility.amountRoundingFunc({ value: totalDiscountPrice })
+    : 0.0;
+  const payableAmount = CommonUtility.amountRoundingFunc({
+    value: totalPayableAmount,
+  });
+
+  const updatedCartSchema = {
+    id: cartID,
+    totalAmount: totalAmount,
+    discount: discount,
+    couponDiscount: couponDiscount,
+    payableAmount: payableAmount,
+    dateModified: new Date(),
+  };
+
+  const updatedCartDataSet = {
+    $set: updatedCartSchema,
+  };
+
+  return await CommonApisUtility.updateDataInSchemaUtil({
+    schema: CartsSchema,
+    newDataObject: updatedCartSchema,
+    updatedDataSet: updatedCartDataSet,
+    schemaName: "Cart",
+    dataID: cartID,
+  });
+};
+
 module.exports.deleteFromCartUtil = async ({ req }) => {
   if (!req?.body?.id || req.body.id === "") {
     return {
@@ -240,13 +355,23 @@ module.exports.deleteFromCartUtil = async ({ req }) => {
     $set: updatedCartSchema,
   };
 
-  return await CommonApisUtility.updateDataInSchemaUtil({
+  const updatedCartObj = await CommonApisUtility.updateDataInSchemaUtil({
     schema: CartsSchema,
     newDataObject: updatedCartSchema,
     updatedDataSet: updatedCartDataSet,
     schemaName: "Cart",
     dataID: cartID,
   });
+
+  await this.createCartUtil({
+    req: {
+      body: {
+        id: cartID,
+      },
+    },
+  });
+
+  return updatedCartObj;
 };
 
 module.exports.removeFromCartUtil = async ({ req }) => {
@@ -335,13 +460,23 @@ module.exports.removeFromCartUtil = async ({ req }) => {
     $set: updatedCartSchema,
   };
 
-  return await CommonApisUtility.updateDataInSchemaUtil({
+  const updatedCartObj = await CommonApisUtility.updateDataInSchemaUtil({
     schema: CartsSchema,
     newDataObject: updatedCartSchema,
     updatedDataSet: updatedCartDataSet,
     schemaName: "Cart",
     dataID: cartID,
   });
+
+  await this.createCartUtil({
+    req: {
+      body: {
+        id: cartID,
+      },
+    },
+  });
+
+  return updatedCartObj;
 };
 
 module.exports.getNewCartNumberUtil = async ({ req }) => {
@@ -478,6 +613,14 @@ module.exports.addNewCartUtil = async ({ req }) => {
     cartData: newlyAddedCartObj?.data,
   });
 
+  await this.createCartUtil({
+    req: {
+      body: {
+        id: cartID,
+      },
+    },
+  });
+
   return {
     ...newlyAddedCartObj,
     data: fullDetailsData,
@@ -600,13 +743,23 @@ module.exports.addItemToCartUtil = async ({ req }) => {
     $set: updatedCartSchema,
   };
 
-  return await CommonApisUtility.updateDataInSchemaUtil({
+  const updatedCartObj = await CommonApisUtility.updateDataInSchemaUtil({
     schema: CartsSchema,
     newDataObject: updatedCartSchema,
     updatedDataSet: updatedCartDataSet,
     schemaName: "Cart",
     dataID: cartID,
   });
+
+  await this.createCartUtil({
+    req: {
+      body: {
+        id: cartID,
+      },
+    },
+  });
+
+  return updatedCartObj;
 };
 
 module.exports.updateCartUtil = async ({ req }) => {
@@ -643,119 +796,4 @@ module.exports.updateCartUtil = async ({ req }) => {
   }
   // Cart Does not Exists. Add new cart
   return await this.addNewCartUtil({ req: req });
-};
-
-module.exports.getCartTotalPrices = async ({ productsArr, couponDiscount }) => {
-  let totalSellingPrice = 0;
-  let totalDiscountPrice = 0;
-  let totalDiscountedPrice = 0;
-
-  if (productsArr && productsArr.length > 0) {
-    productsArr.map((prodData) => {
-      const sellingPrice =
-        prodData?.productDetails?.priceDetails?.sellingPrice ?? 0;
-      const discountPrice =
-        prodData?.productDetails?.priceDetails?.maxDiscountValue ?? 0;
-      const discountedPrice =
-        prodData?.productDetails?.priceDetails?.discountedPrice ?? 0;
-      const count = prodData?.count ?? 1;
-      totalSellingPrice = totalSellingPrice + sellingPrice * count;
-      totalDiscountPrice = totalDiscountPrice + discountPrice * count;
-      totalDiscountedPrice = totalDiscountedPrice + discountedPrice * count;
-      return true;
-    });
-  }
-  const totalPayableAmount =
-    totalSellingPrice -
-    totalDiscountPrice -
-    (couponDiscount ? couponDiscount : 0);
-  return {
-    totalSellingPrice,
-    totalDiscountPrice,
-    totalPayableAmount,
-    totalDiscountedPrice,
-  };
-};
-
-module.exports.createCartUtil = async ({ req }) => {
-  if (!req?.body?.id || req.body.id === "") {
-    return {
-      status: "error",
-      message: `Cart id is required.`,
-      data: {},
-    };
-  }
-  const cartID = req.body.id;
-  const foundCartDataByIDObj = await this.getCartByCartIDUtil({ req });
-  if (foundCartDataByIDObj?.status === "error") {
-    return foundCartDataByIDObj;
-  }
-  if (
-    !foundCartDataByIDObj?.data ||
-    Object.keys(foundCartDataByIDObj.data).length <= 0
-  ) {
-    return {
-      status: "error",
-      message: `There is no cart exists with cart id ${cartID}.`,
-      data: {},
-    };
-  }
-
-  const cartData = foundCartDataByIDObj.data;
-  const couponDiscount = req?.body?.couponDiscount
-    ? CommonUtility.amountRoundingFunc({
-        value: Number(req.body.couponDiscount),
-      })
-    : 0.0;
-  const { totalSellingPrice, totalPayableAmount, totalDiscountPrice } =
-    await this.getCartTotalPrices({
-      productsArr: cartData?.products ?? [],
-      couponDiscount: couponDiscount,
-    });
-
-  if (totalSellingPrice <= 0) {
-    return {
-      status: "error",
-      message: `Total amount cannot be 0.`,
-      data: {},
-    };
-  }
-  if (totalPayableAmount <= 0) {
-    return {
-      status: "error",
-      message: `Payable amount cannot be 0.`,
-      data: {},
-    };
-  }
-
-  const totalAmount = CommonUtility.amountRoundingFunc({
-    value: totalSellingPrice,
-  });
-  const discount = totalDiscountPrice
-    ? CommonUtility.amountRoundingFunc({ value: totalDiscountPrice })
-    : 0.0;
-  const payableAmount = CommonUtility.amountRoundingFunc({
-    value: totalPayableAmount,
-  });
-
-  const updatedCartSchema = {
-    id: cartID,
-    totalAmount: totalAmount,
-    discount: discount,
-    couponDiscount: couponDiscount,
-    payableAmount: payableAmount,
-    dateModified: new Date(),
-  };
-
-  const updatedCartDataSet = {
-    $set: updatedCartSchema,
-  };
-
-  return await CommonApisUtility.updateDataInSchemaUtil({
-    schema: CartsSchema,
-    newDataObject: updatedCartSchema,
-    updatedDataSet: updatedCartDataSet,
-    schemaName: "Cart",
-    dataID: cartID,
-  });
 };

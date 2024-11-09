@@ -139,6 +139,13 @@ module.exports.validateAddNewProductUtil = async ({ req }) => {
       data: {},
     };
   }
+  if (!req?.body?.invoiceDescription || req.body.invoiceDescription === "") {
+    return {
+      status: "error",
+      message: "Invoice description is required.",
+      data: {},
+    };
+  }
   if (!req?.body?.colorID || req.body.colorID === "") {
     return {
       status: "error",

@@ -4,6 +4,7 @@ const CommonApisUtility = require("../../utilities/v3/commonApisUtility");
 const CommonUtility = require("../../utilities/v3/commonUtility");
 const OrdersValidationsUtility = require("../../utilities/v3/ordersValidationsUtility");
 const CartsUtility = require("../../utilities/v3/cartsUtility");
+const StocksUtility = require("../../utilities/v3/stocksUtility");
 
 module.exports.getAllOrdersUtil = async ({ req }) => {
   const foundOrdersObj = await CommonApisUtility.getAllDataFromSchemaUtil({
@@ -125,6 +126,41 @@ module.exports.getOrdersByCustomerIDUtil = async ({ req }) => {
   };
 };
 
+module.exports.getOrdersByDeliveryStatusUtil = async ({ req }) => {
+  if (!req?.body?.deliveryStatusID || req.body.deliveryStatusID === "") {
+    return {
+      status: "error",
+      message: `Delivery status is required.`,
+      data: {},
+    };
+  }
+
+  const deliveryStatusID = req.body.deliveryStatusID;
+  const foundOrdersObj = await CommonApisUtility.getDataArrayByIdFromSchemaUtil(
+    {
+      req: req,
+      schema: OrdersSchema,
+      schemaName: "Orders",
+      dataID: deliveryStatusID,
+      keyname: "deliveryStatusID",
+    }
+  );
+
+  if (foundOrdersObj?.status === "error") {
+    return foundOrdersObj;
+  }
+
+  const fullDetailsObj =
+    await OrdersValidationsUtility.getAllOrdersWithFullDetails({
+      allOrders: foundOrdersObj?.data ?? [],
+    });
+
+  return {
+    ...foundOrdersObj,
+    data: fullDetailsObj,
+  };
+};
+
 module.exports.createNewOrderUtil = async ({ req }) => {
   const validationObj = await OrdersValidationsUtility.validationForNewOrder({
     req: req,
@@ -157,6 +193,25 @@ module.exports.createNewOrderUtil = async ({ req }) => {
     req: {
       body: {
         id: cartID,
+      },
+    },
+  });
+
+  const productsArr = dataToAdd?.cart?.products ?? [];
+  const stockDataArr = [];
+  productsArr.map((productData) => {
+    if (productData?.count && productData.count > 0) {
+      stockDataArr.push({
+        stockID: productData?.productDetails?.stockDetails?.id,
+        soldQty: productData?.count,
+      });
+    }
+  });
+
+  await StocksUtility.updateStockAfterItemSoldUtil({
+    req: {
+      body: {
+        dataArr: stockDataArr,
       },
     },
   });
@@ -279,25 +334,29 @@ module.exports.updateOrderInvoiceIDUtil = async ({ req }) => {
       data: {},
     };
   }
-  if (!req?.body?.invoiceID || req.body.invoiceID === "") {
-    return {
-      status: "error",
-      message: `Invoice id is required.`,
-      data: {},
-    };
+  const updateType = req.body.updateType;
+  if (updateType === "generate") {
+    if (!req?.body?.invoiceID || req.body.invoiceID === "") {
+      return {
+        status: "error",
+        message: `Invoice id is required.`,
+        data: {},
+      };
+    }
   }
 
   const orderID = req.body.id;
   const invoiceID = req.body.invoiceID;
-
-  const foundOrderByOrderID = await this.getOrderByOrderIDUtil({ req: req });
-  if (foundOrderByOrderID?.status === "error") {
-    return foundOrderByOrderID;
+  if (updateType === "generate") {
+    const foundOrderByOrderID = await this.getOrderByOrderIDUtil({ req: req });
+    if (foundOrderByOrderID?.status === "error") {
+      return foundOrderByOrderID;
+    }
   }
 
   const newOrderSchema = {
     id: orderID,
-    invoiceID: invoiceID,
+    invoiceID: invoiceID ? invoiceID : null,
     dateModified: new Date(),
   };
 

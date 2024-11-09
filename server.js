@@ -14,6 +14,9 @@ const app = express();
 //port
 const port = process.env.PORT || 6400;
 
+// Schedulers
+require("./schedulers/v3/AttendanceScheduler");
+
 //routes v1
 const productsRouteV1 = require("./routes/v1/products");
 const homeRouteV1 = require("./routes/v1/home");

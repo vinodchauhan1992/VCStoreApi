@@ -547,6 +547,7 @@ module.exports.createNewOrderDataToBeAdded = async ({ req, cartData }) => {
     },
     deliveryStatusID: "d428d6ca-bc29-4828-beb4-ac320ef706e5",
     invoiceID: null,
+    invoiceGenerated: false,
     deliveryDate: null,
     dateAdded: new Date(),
     dateModified: new Date(),

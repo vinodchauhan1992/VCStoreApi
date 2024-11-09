@@ -36,6 +36,10 @@ const productsSchema = new schema({
       type: schema.Types.String,
       required: true,
     },
+    invoiceDescription: {
+      type: schema.Types.String,
+      required: true,
+    },
   },
   colorID: {
     type: schema.Types.String,

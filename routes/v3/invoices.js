@@ -8,5 +8,6 @@ router.post("/invoiceByInvoiceCode", invoices.getInvoiceByInvoiceCode);
 router.post("/invoiceByOrderID", invoices.getInvoiceByOrderID);
 router.post("/invoicesByCustomerID", invoices.getInvoicesByCustomerID);
 router.post("/generateNewInvoice", invoices.generateNewInvoice);
+router.post("/deleteInvoice", invoices.deleteInvoice);
 
 module.exports = router;

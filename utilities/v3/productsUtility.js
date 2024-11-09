@@ -197,6 +197,7 @@ module.exports.getSingleProductWithAllDetailsUtil = async ({ productData }) => {
       shippingReturnDetails:
         productData?.description?.shippingReturnDetails ?? "",
       highlights: productData?.description?.highlights ?? "",
+      invoiceDescription: productData?.description?.invoiceDescription ?? "",
     },
     colorDetails: productColorByIdObject.data,
     categoryDetails: categoryByIdObject.data,
@@ -504,6 +505,7 @@ module.exports.addNewProductUtil = async ({ req }) => {
       shortDescription: req.body.shortDescription,
       shippingReturnDetails: req.body.shippingReturnDetails,
       highlights: req.body.highlights,
+      invoiceDescription: req.body.invoiceDescription,
     },
     colorID: req.body.colorID,
     categoryID: req.body.categoryID,
@@ -782,13 +784,15 @@ module.exports.updateProductDescriptionDetailsUtil = async ({ req }) => {
   let productShortDescription = req.body.shortDescription;
   let productShippingReturnDetails = req.body.shippingReturnDetails;
   let productHighlights = req.body.highlights;
+  let invoiceDescription = req.body.invoiceDescription;
   const dateModified = new Date();
 
   if (
     (!productDetails || productDetails === "") &&
     (!productShortDescription || productShortDescription === "") &&
     (!productShippingReturnDetails || productShippingReturnDetails === "") &&
-    (!productHighlights || productHighlights === "")
+    (!productHighlights || productHighlights === "") &&
+    (!invoiceDescription || invoiceDescription === "")
   ) {
     return {
       status: "error",
@@ -822,6 +826,11 @@ module.exports.updateProductDescriptionDetailsUtil = async ({ req }) => {
     productHighlights = foundProductByIDObj?.data?.description?.highlights;
   }
 
+  if (!invoiceDescription || invoiceDescription === "") {
+    invoiceDescription =
+      foundProductByIDObj?.data?.description?.invoiceDescription;
+  }
+
   const newProduct = {
     id: productID,
     description: {
@@ -829,6 +838,7 @@ module.exports.updateProductDescriptionDetailsUtil = async ({ req }) => {
       shortDescription: productShortDescription,
       shippingReturnDetails: productShippingReturnDetails,
       highlights: productHighlights,
+      invoiceDescription: invoiceDescription,
     },
     dateModified: dateModified,
   };

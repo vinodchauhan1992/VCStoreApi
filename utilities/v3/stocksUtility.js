@@ -343,3 +343,123 @@ module.exports.updateProductStockUtil = async ({ req }) => {
     stockID: stockID,
   });
 };
+
+module.exports.updateSingleStockUtil = async ({ dataToUpdate }) => {
+  const stockID = dataToUpdate?.stockID;
+
+  const foundStockObjById = await this.getProductStockByStockIdUtil({
+    req: {
+      body: {
+        id: stockID,
+      },
+    },
+  });
+  if (foundStockObjById?.status === "error") {
+    return foundStockObjById;
+  }
+
+  const foundStockData = foundStockObjById?.data ?? null;
+  if (foundStockData) {
+    const newSoldQty = dataToUpdate?.soldQty ? Number(dataToUpdate.soldQty) : 0;
+    const prevQuantitySold = foundStockData?.quantitySold
+      ? Number(foundStockData.quantitySold)
+      : 0;
+    const prevQuantityAvailable = foundStockData?.quantityAvailable
+      ? Number(foundStockData.quantityAvailable)
+      : 0;
+    let updatedQuantitySold = prevQuantitySold + Number(newSoldQty);
+    const updatedQuantityAvailable = prevQuantityAvailable - Number(newSoldQty);
+    if (newSoldQty <= 0) {
+      return {
+        status: "error",
+        message: `Product is not sold.`,
+        data: {},
+      };
+    }
+
+    const newUpdatedStock = {
+      id: stockID,
+      quantityAvailable: updatedQuantityAvailable,
+      quantitySold: updatedQuantitySold,
+      dateModified: new Date(),
+    };
+
+    const updatedStockSet = {
+      $set: newUpdatedStock,
+    };
+
+    return await CommonApisUtility.updateDataInSchemaUtil({
+      schema: StocksSchema,
+      newDataObject: newUpdatedStock,
+      updatedDataSet: updatedStockSet,
+      schemaName: "Stock",
+      dataID: stockID,
+    });
+  }
+  return {
+    status: "error",
+    message: `Nothing to update in stock.`,
+    data: {},
+  };
+};
+
+module.exports.updateStocksArrUtil = async ({ allDataArr }) => {
+  return Promise.all(
+    allDataArr?.map(async (dataToUpdate) => {
+      const updatedStocksDetailsData = await this.updateSingleStockUtil({
+        dataToUpdate: dataToUpdate,
+      });
+      return updatedStocksDetailsData;
+    })
+  );
+};
+
+module.exports.updateStockAfterItemSoldUtil = async ({ req }) => {
+  if (!req?.body?.dataArr) {
+    return {
+      status: "error",
+      message: `Data array is required.`,
+      data: {},
+    };
+  }
+  if (!Array.isArray(req.body.dataArr)) {
+    return {
+      status: "error",
+      message: `Data array must be an array.`,
+      data: {},
+    };
+  }
+  if (req.body.dataArr.length <= 0) {
+    return {
+      status: "error",
+      message: `Data array is empty.`,
+      data: {},
+    };
+  }
+
+  const dataArray = req.body.dataArr;
+  let isAnyObjEmpty = false;
+  dataArray?.map((data) => {
+    if (Object.keys(data).length <= 0) {
+      isAnyObjEmpty = true;
+    }
+  });
+
+  if (isAnyObjEmpty) {
+    return {
+      status: "error",
+      message: `Data array is not valid.`,
+      data: {},
+    };
+  }
+
+  const updatedStockDetailsObj = await this.updateStocksArrUtil({
+    allDataArr: dataArray,
+  });
+
+  return {
+    ...updatedStockDetailsObj,
+    message: `All stocks updated successfully.`,
+    data: [],
+  };
+};

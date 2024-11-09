@@ -20,6 +20,13 @@ module.exports.getOrdersByCustomerID = async (req, res) => {
   res.json(foundItemObj);
 };
 
+module.exports.getOrdersByDeliveryStatus = async (req, res) => {
+  const foundItemObj = await OrdersUtility.getOrdersByDeliveryStatusUtil({
+    req,
+  });
+  res.json(foundItemObj);
+};
+
 module.exports.createNewOrder = async (req, res) => {
   const foundItemObj = await OrdersUtility.createNewOrderUtil({ req });
   res.json(foundItemObj);

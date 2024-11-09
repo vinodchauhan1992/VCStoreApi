@@ -6,6 +6,7 @@ router.post("/allOrders", orders.getAllOrders);
 router.post("/orderByOrderID", orders.getOrderByOrderID);
 router.post("/orderByOrderCode", orders.getOrderByOrderCode);
 router.post("/ordersByCustomerID", orders.getOrdersByCustomerID);
+router.post("/ordersByDeliveryStatus", orders.getOrdersByDeliveryStatus);
 router.post("/createNewOrder", orders.createNewOrder);
 router.post("/updateOrderDeliveryStatus", orders.updateOrderDeliveryStatus);
 router.post("/updateOrderDeliveryDate", orders.updateOrderDeliveryDate);

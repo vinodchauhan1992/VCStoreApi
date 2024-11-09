@@ -33,3 +33,8 @@ module.exports.generateNewInvoice = async (req, res) => {
   const foundItemObj = await InvoicesUtility.generateNewInvoiceUtil({ req });
   res.json(foundItemObj);
 };
+
+module.exports.deleteInvoice = async (req, res) => {
+  const foundItemObj = await InvoicesUtility.deleteInvoiceUtil({ req });
+  res.json(foundItemObj);
+};

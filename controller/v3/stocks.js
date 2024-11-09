@@ -40,3 +40,12 @@ module.exports.updateProductStock = async (req, res) => {
   });
   res.json(foundProductStockObj);
 };
+
+module.exports.updateStockAfterItemSold = async (req, res) => {
+  const foundProductStockObj = await StocksUtility.updateStockAfterItemSoldUtil(
+    {
+      req: req,
+    }
+  );
+  res.json(foundProductStockObj);
+};

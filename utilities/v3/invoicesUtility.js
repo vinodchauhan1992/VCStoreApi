@@ -344,6 +344,7 @@ module.exports.generateNewInvoiceUtil = async ({ req }) => {
       body: {
         id: orderID,
         invoiceID: invoiceID,
+        updateType: "generate",
       },
     },
   });
@@ -352,4 +353,41 @@ module.exports.generateNewInvoiceUtil = async ({ req }) => {
     ...newlyGeneratedInvoiceObj,
     data: fullDetailsDataObj,
   };
+};
+
+module.exports.deleteInvoiceUtil = async ({ req }) => {
+  if (!req?.body?.id || req.body.id === "") {
+    return {
+      status: "error",
+      message: `Invoice id is required.`,
+      data: {},
+    };
+  }
+
+  const invoiceID = req.body.id;
+  const foundInvoiceByInvoiceIDObj = await this.getInvoiceByInvoiceIDUtil({
+    req: req,
+  });
+  if (foundInvoiceByInvoiceIDObj?.status === "error") {
+    return foundInvoiceByInvoiceIDObj;
+  }
+
+  const orderID = foundInvoiceByInvoiceIDObj?.data?.orderDetails?.id;
+  const deleteInvObj = await CommonApisUtility.deleteDataByIdFromSchemaUtil({
+    schema: InvoicesSchema,
+    schemaName: "Invoice",
+    dataID: invoiceID,
+  });
+
+  await OrdersUtility.updateOrderInvoiceIDUtil({
+    req: {
+      body: {
+        id: orderID,
+        invoiceID: null,
+        updateType: "delete",
+      },
+    },
+  });
+
+  return deleteInvObj;
 };
