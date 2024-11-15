@@ -1,5 +1,5 @@
 {
-  "name": "api",
+  "name": "rest-apis-with-socket",
   "version": "1.0.0",
   "description": "VC Store Api is an online REST API that provides you e-commerce JSON data",
   "main": "server.js",
