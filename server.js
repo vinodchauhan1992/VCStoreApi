@@ -79,6 +79,7 @@ const cartsV3 = require("./routes/v3/carts");
 const deliveryStatusesV3 = require("./routes/v3/deliveryStatuses");
 const ordersV3 = require("./routes/v3/orders");
 const invoicesV3 = require("./routes/v3/invoices");
+const faqsV3 = require("./routes/v3/faqs");
 
 //middleware
 app.use(cors());
@@ -155,6 +156,7 @@ app.use("/v3/carts", cartsV3);
 app.use("/v3/deliveryStatuses", deliveryStatusesV3);
 app.use("/v3/orders", ordersV3);
 app.use("/v3/invoices", invoicesV3);
+app.use("/v3/faqs", faqsV3);
 
 //mongoose
 mongoose.set("useFindAndModify", false);

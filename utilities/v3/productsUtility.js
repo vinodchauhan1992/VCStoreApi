@@ -14,6 +14,7 @@ const {
   deleteUploadedFileInFirebaseStorage,
   updateUploadedFileInFirebaseStorage,
 } = require("./fileManagerUtility");
+const FaqsUtility = require("./faqsUtility");
 
 const imageBasePath = `images/products`;
 
@@ -163,6 +164,29 @@ module.exports.getWishlistsByProductIDUtil = async ({ productID }) => {
   };
 };
 
+module.exports.getFaqsByProductIDUtil = async ({ productID }) => {
+  const foundObj = await FaqsUtility.getFaqsByProductIDUtil({
+    req: {
+      body: {
+        productID: productID,
+      },
+    },
+  });
+
+  if (
+    foundObj?.status === "success" &&
+    foundObj?.data &&
+    foundObj.data.length > 0
+  ) {
+    return foundObj;
+  }
+
+  return {
+    ...foundObj,
+    data: [],
+  };
+};
+
 module.exports.getSingleProductWithAllDetailsUtil = async ({ productData }) => {
   const categoryByIdObject = await this.getProductCategoryByIDUtil({
     categoryID: productData?.categoryID,
@@ -186,6 +210,10 @@ module.exports.getSingleProductWithAllDetailsUtil = async ({ productData }) => {
   const wishlistsByProductIdObject = await this.getWishlistsByProductIDUtil({
     productID: productData?.id,
   });
+  const faqsByProductIdObject = await this.getFaqsByProductIDUtil({
+    productID: productData?.id,
+  });
+
   return {
     id: productData?.id ?? "",
     productNumber: productData?.productNumber ?? 1,
@@ -203,7 +231,7 @@ module.exports.getSingleProductWithAllDetailsUtil = async ({ productData }) => {
     categoryDetails: categoryByIdObject.data,
     brandDetails: brandByIdObject.data,
     ratingsReviewsDetails: ratingsReviewsByProductIdObject.data,
-    questionsAnswersDetails: [],
+    questionsAnswersDetails: faqsByProductIdObject.data,
     wishlistsDetails: wishlistsByProductIdObject.data,
     stockDetails: stockByProductIdObject.data,
     averageRating: {
