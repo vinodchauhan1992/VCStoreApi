@@ -5,6 +5,8 @@ const CommonUtility = require("../../utilities/v3/commonUtility");
 const OrdersValidationsUtility = require("../../utilities/v3/ordersValidationsUtility");
 const CartsUtility = require("../../utilities/v3/cartsUtility");
 const StocksUtility = require("../../utilities/v3/stocksUtility");
+const CompanyAccountsUtility = require("../../utilities/v3/companyAccountsUtility");
+const ConstantsUtility = require("../../utilities/v3/constantsUtility");
 
 module.exports.getAllOrdersUtil = async ({ req }) => {
   const foundOrdersObj = await CommonApisUtility.getAllDataFromSchemaUtil({
@@ -216,6 +218,33 @@ module.exports.createNewOrderUtil = async ({ req }) => {
     },
   });
 
+  const foundAccObj =
+    await CompanyAccountsUtility.getCompanyAccountByAccountNumberUtil({
+      req: {
+        body: {
+          accountNumber: ConstantsUtility.utils.DEFAULT_ACCOUNT_NUMBER,
+        },
+      },
+    });
+
+  if (foundAccObj?.status === "success") {
+    await CompanyAccountsUtility.addAccountBalanceViaOrderUtil({
+      req: {
+        body: {
+          id: foundAccObj.data.id,
+          accountBalance: dataToAdd?.cart?.payableAmount ?? 0,
+          fromAccountName: dataToAdd?.paymentInfo?.cardName,
+          fromBankName: dataToAdd?.paymentInfo?.bankName,
+          fromAccountNumber: dataToAdd?.paymentInfo?.cardNumber,
+          cardType: dataToAdd?.paymentInfo?.cardType,
+          expiryMonth: dataToAdd?.paymentInfo?.cardExpiryMonth,
+          expiryYear: dataToAdd?.paymentInfo?.cardExpiryYear,
+          cvv: dataToAdd?.paymentInfo?.cardCVV,
+        },
+      },
+    });
+  }
+
   return {
     ...newlyCreatedOrder,
     message: `Your order is placed successfully.`,
@@ -370,5 +399,42 @@ module.exports.updateOrderInvoiceIDUtil = async ({ req }) => {
     updatedDataSet: updatedOrderSet,
     schemaName: "Order",
     dataID: orderID,
+  });
+};
+
+module.exports.deleteOrderByIDUtil = async ({ req }) => {
+  if (!req?.body?.id || req.body.id === "") {
+    return {
+      status: "error",
+      message: `Order id is required.`,
+      data: {},
+    };
+  }
+
+  const orderID = req.body.id;
+
+  const foundOrderObj = await this.getOrderByOrderIDUtil({
+    req: {
+      body: {
+        id: orderID,
+      },
+    },
+  });
+
+  if (foundOrderObj?.status === "error") {
+    return foundOrderObj;
+  }
+
+  return await CommonApisUtility.deleteDataByIdFromSchemaUtil({
+    schema: OrdersSchema,
+    schemaName: "Order",
+    dataID: orderID,
+  });
+};
+
+module.exports.deleteAllOrdersUtil = async ({ req }) => {
+  return await CommonApisUtility.deleteAllDataFromSchemaUtil({
+    schema: OrdersSchema,
+    schemaName: "Order",
   });
 };

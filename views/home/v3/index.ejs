@@ -4,10 +4,7 @@
 <section class="row">
   <div class="col-md-6 intro">
     <h1>VC Store Api</h1>
-    <p>
-      VC Store rest Api for your e-commerce or shopping website
-      prototype
-    </p>
+    <p>VC Store rest Api for your e-commerce or shopping website prototype</p>
     <div class="btns">
       <a
         class="btn btn-large btn-primary"
@@ -92,13 +89,15 @@
   let loading = document.createElement("span");
   loading.className = "loading";
 
-  document.getElementById("fetch_btn").addEventListener("click", function () {
-    wrapper.appendChild(loading);
-    fetch("https://fakestoreapi.com/products/1")
-      .then((res) => res.json())
-      .then((json) => {
-        wrapper.textContent = JSON.stringify(json, undefined, 2);
-      });
-  });
+  document
+    ?.getElementById?.("fetch_btn")
+    .addEventListener("click", function () {
+      wrapper.appendChild(loading);
+      fetch("https://fakestoreapi.com/products/1")
+        .then((res) => res.json())
+        .then((json) => {
+          wrapper.textContent = JSON.stringify(json, undefined, 2);
+        });
+    });
 </script>
 <%- include ("../../shared/footer.ejs") %>

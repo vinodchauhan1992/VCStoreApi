@@ -97,6 +97,10 @@ const ordersSchema = new schema({
       type: schema.Types.String,
       required: true,
     },
+    bankName: {
+      type: schema.Types.String,
+      required: true,
+    },
     cardType: {
       type: schema.Types.String,
       required: true,

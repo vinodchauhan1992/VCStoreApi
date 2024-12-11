@@ -52,3 +52,17 @@ module.exports.updateOrderInvoiceID = async (req, res) => {
   });
   res.json(foundItemObj);
 };
+
+module.exports.deleteOrderByID = async (req, res) => {
+  const foundItemObj = await OrdersUtility.deleteOrderByIDUtil({
+    req,
+  });
+  res.json(foundItemObj);
+};
+
+module.exports.deleteAllOrders = async (req, res) => {
+  const foundItemObj = await OrdersUtility.deleteAllOrdersUtil({
+    req,
+  });
+  res.json(foundItemObj);
+};

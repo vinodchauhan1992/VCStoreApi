@@ -11,5 +11,7 @@ router.post("/createNewOrder", orders.createNewOrder);
 router.post("/updateOrderDeliveryStatus", orders.updateOrderDeliveryStatus);
 router.post("/updateOrderDeliveryDate", orders.updateOrderDeliveryDate);
 router.post("/updateOrderInvoiceID", orders.updateOrderInvoiceID);
+router.post("/deleteOrderByID", orders.deleteOrderByID);
+router.post("/deleteAllOrders", orders.deleteAllOrders);
 
 module.exports = router;

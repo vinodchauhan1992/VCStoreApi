@@ -367,6 +367,13 @@ module.exports.cardInfoValidation = async ({ req }) => {
       data: {},
     };
   }
+  if (!req?.body?.bankName || req.body.bankName === "") {
+    return {
+      status: "error",
+      message: `Bank name is required.`,
+      data: {},
+    };
+  }
   if (!CommonUtility.isValidOnlyCharacters({ text: req.body.cardName })) {
     return {
       status: "error",
@@ -539,6 +546,7 @@ module.exports.createNewOrderDataToBeAdded = async ({ req, cartData }) => {
     },
     paymentInfo: {
       cardName: req.body.cardName,
+      bankName: req.body.bankName,
       cardType: req.body.cardType,
       cardNumber: req.body.cardNumber,
       cardExpiryMonth: req.body.cardExpiryMonth,

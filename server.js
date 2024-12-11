@@ -19,7 +19,7 @@ require("./schedulers/v3/AttendanceScheduler");
 
 //routes v1
 const productsRouteV1 = require("./routes/v1/products");
-const homeRouteV1 = require("./routes/v1/home");
+// const homeRouteV1 = require("./routes/v1/home");
 const cartRouteV1 = require("./routes/v1/cart");
 const userRouteV1 = require("./routes/v1/user");
 const authRouteV1 = require("./routes/v1/auth");
@@ -32,7 +32,7 @@ const fileFoldersRouteV1 = require("./routes/v1/fileFolders");
 //routes v2
 const categoriesRouteV2 = require("./routes/v2/categories");
 const productsRouteV2 = require("./routes/v2/products");
-const homeRouteV2 = require("./routes/v2/home");
+// const homeRouteV2 = require("./routes/v2/home");
 const cartRouteV2 = require("./routes/v2/cart");
 const userRouteV2 = require("./routes/v2/user");
 const authRouteV2 = require("./routes/v2/auth");
@@ -80,6 +80,8 @@ const deliveryStatusesV3 = require("./routes/v3/deliveryStatuses");
 const ordersV3 = require("./routes/v3/orders");
 const invoicesV3 = require("./routes/v3/invoices");
 const faqsV3 = require("./routes/v3/faqs");
+const companyAccountsV3 = require("./routes/v3/companyAccounts");
+const accountsHistoryV3 = require("./routes/v3/accountsHistory");
 
 //middleware
 app.use(cors());
@@ -95,7 +97,7 @@ app.set("views", "views");
 app.disable("view cache");
 
 // use v1
-app.use("/", homeRouteV1);
+// app.use("/", homeRouteV1);
 app.use("/v1/products", productsRouteV1);
 app.use("/v1/carts", cartRouteV1);
 app.use("/v1/users", userRouteV1);
@@ -107,7 +109,7 @@ app.use("/v1/fileUploader", fileUploaderRouteV1);
 app.use("/v1/fileFolders", fileFoldersRouteV1);
 
 // use v2
-app.use("/", homeRouteV2);
+// app.use("/", homeRouteV2);
 app.use("/v2/categories", categoriesRouteV2);
 app.use("/v2/products", productsRouteV2);
 app.use("/v2/carts", cartRouteV2);
@@ -157,6 +159,8 @@ app.use("/v3/deliveryStatuses", deliveryStatusesV3);
 app.use("/v3/orders", ordersV3);
 app.use("/v3/invoices", invoicesV3);
 app.use("/v3/faqs", faqsV3);
+app.use("/v3/companyAccounts", companyAccountsV3);
+app.use("/v3/accountsHistory", accountsHistoryV3);
 
 //mongoose
 mongoose.set("useFindAndModify", false);

@@ -28,6 +28,7 @@ module.exports.getAllClientBannersUtil = async ({ req }) => {
     req: req,
     schema: ClientBannersSchema,
     schemaName: "Client Banners",
+    arrSortByKey: "clientBannerNumber",
   });
 };
 
@@ -235,13 +236,6 @@ module.exports.updateClientBannerUtil = async ({ req }) => {
       data: {},
     };
   }
-  if (!req?.file) {
-    return {
-      status: "error",
-      message: "Client banner image is required.",
-      data: {},
-    };
-  }
 
   const file = req.file;
   const clientBannerID = req.body.id;
@@ -266,16 +260,33 @@ module.exports.updateClientBannerUtil = async ({ req }) => {
       data: {},
     };
   }
+  if (
+    !foundDataByIdObj?.data?.imageData?.imageUrl ||
+    foundDataByIdObj.data.imageData.imageUrl === ""
+  ) {
+    if (!req?.file) {
+      return {
+        status: "error",
+        message: "Client banner image is required.",
+        data: {},
+      };
+    }
+  }
 
-  const updatedPhotoObj = await this.updateClientBannerImageInFSUtil({
-    clientBannerID: clientBannerID,
-    clientBannerCode: foundDataByIdObj.data.clientBannerCode,
-    imageData: foundDataByIdObj.data.imageData,
-    file: file,
-  });
+  let updatedPhotoObj = {
+    data: foundDataByIdObj.data.imageData,
+  };
+  if (req.file) {
+    updatedPhotoObj = await this.updateClientBannerImageInFSUtil({
+      clientBannerID: clientBannerID,
+      clientBannerCode: foundDataByIdObj.data.clientBannerCode,
+      imageData: foundDataByIdObj.data.imageData,
+      file: file,
+    });
 
-  if (updatedPhotoObj?.status === "error") {
-    return updatedPhotoObj;
+    if (updatedPhotoObj?.status === "error") {
+      return updatedPhotoObj;
+    }
   }
 
   if (!title || title === "") {

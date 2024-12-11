@@ -28,6 +28,7 @@ module.exports.getAllEmployeesUtil = async ({ req }) => {
     req: req,
     schema: EmployeesSchema,
     schemaName: "Employees",
+    arrSortByKey: "employeeNumber",
   });
   if (allEmployeesObj?.status === "error") {
     return allEmployeesObj;

@@ -655,3 +655,25 @@ module.exports.getDataArrayByDualKeysFromSchemaUtil = async ({
       };
     });
 };
+
+module.exports.deleteAllDataFromSchemaUtil = async ({ schema, schemaName }) => {
+  return await schema
+    .deleteMany({})
+    .select(["-_id"])
+    .then(() => {
+      return {
+        status: "success",
+        message: `${schemaName} is deleted successfully.`,
+        data: {},
+      };
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: `There is an error occurred in deleteAllDataFromSchemaUtil function while deleting the ${schemaName?.toLowerCase()}. ${
+          err.message
+        }`,
+        data: {},
+      };
+    });
+};

@@ -15,4 +15,10 @@ module.exports.utils = {
     PHONE: "(759) 234-8244",
   },
   PRODUCTS_TAX_PERCENT: 18,
+  DEFAULT_ACCOUNT_NUMBER: "6000000000000016",
+  BANK_ACCOUNT_FOR_CASH_DEPOSIT: {
+    accountName: "Cash deposit account",
+    bankName: "Cash deposit bank",
+    accountNumber: "9000000000000001",
+  },
 };
