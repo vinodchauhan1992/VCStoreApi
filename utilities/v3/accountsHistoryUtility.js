@@ -226,6 +226,7 @@ module.exports.addAccountHistoryForCardsUtil = async ({ req }) => {
     expiryMonth,
     expiryYear,
     cvv,
+    description,
   } = req.body;
 
   const dateAdded = new Date();
@@ -257,6 +258,7 @@ module.exports.addAccountHistoryForCardsUtil = async ({ req }) => {
       expiryYear: "",
       cvv: "",
     },
+    description: description,
     dateAdded: dateAdded,
   });
 
@@ -298,6 +300,7 @@ module.exports.addAccountHistoryForCashUtil = async ({ req }) => {
     toAccountName,
     toBankName,
     toAccountNumber,
+    description,
   } = req.body;
 
   const { accountName, bankName, accountNumber } =
@@ -331,6 +334,7 @@ module.exports.addAccountHistoryForCashUtil = async ({ req }) => {
       expiryYear: "",
       cvv: "",
     },
+    description: description,
     dateAdded: dateAdded,
   });
 
@@ -396,6 +400,7 @@ module.exports.addAccountHistoryForAccountTransferUtil = async ({ req }) => {
     fromAccountName,
     fromBankName,
     fromAccountNumber,
+    description,
   } = req.body;
 
   const dateAdded = new Date();
@@ -427,6 +432,7 @@ module.exports.addAccountHistoryForAccountTransferUtil = async ({ req }) => {
       expiryYear: "",
       cvv: "",
     },
+    description: description,
     dateAdded: dateAdded,
   });
 
@@ -451,6 +457,14 @@ module.exports.addNewAccountHistoryUtil = async ({ req }) => {
       data: {},
     };
   }
+  if (!req?.body?.description || req.body.description === "") {
+    return {
+      status: "error",
+      message: `Transaction description is required.`,
+      data: {},
+    };
+  }
+  const description = req.body.description;
   const transactionMedium = Number(req.body.transactionMedium);
   if (transactionMedium < 1 && transactionMedium > 4) {
     return {
@@ -539,6 +553,7 @@ module.exports.addNewAccountHistoryUtil = async ({ req }) => {
     transactionType: transactionType === 1 ? "Credit" : "Debit",
     transactionStatus: transactionStatus === 1 ? "Success" : "Failed",
     transactionAmount: transactionAmount,
+    description: description,
   };
 
   switch (transactionMedium) {

@@ -78,6 +78,10 @@ const accountsHistorySchema = new schema({
       required: false,
     },
   },
+  description: {
+    type: schema.Types.String,
+    required: true,
+  },
   dateAdded: {
     type: schema.Types.Date,
     required: true,

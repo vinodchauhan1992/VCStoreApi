@@ -556,3 +556,24 @@ module.exports.getProductByIDForCommonUtil = async ({ productID }) => {
     data: { id: productID },
   };
 };
+
+module.exports.amountFormatter = () => {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "decimal",
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+  });
+  return formatter;
+};
+
+module.exports.formatDisplayAmount = ({ amount }) => {
+  const newAmount = this.amountRoundingFunc({ value: amount });
+  return `${ConstantsUtility.utils.rupeeSymbol} ${this.amountFormatter().format(
+    newAmount
+  )}`;
+};
+
+module.exports.getRandomHexColorCode = () => {
+  let n = (Math.random() * 0xfffff * 1000000).toString(16);
+  return "#" + n.slice(0, 6);
+};

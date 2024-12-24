@@ -386,6 +386,7 @@ module.exports.addAccountBalanceViaCashUtil = async ({ req }) => {
         toAccountName: foundAccountByAccIDObj.data.accountName,
         toBankName: foundAccountByAccIDObj.data.bankName,
         toAccountNumber: foundAccountByAccIDObj.data.accountNumber,
+        description: "Cash deposited by company in account directly.",
       },
     },
   });
@@ -458,7 +459,6 @@ module.exports.addAccountBalanceViaOrderUtil = async ({ req }) => {
       dataID: accountID,
     }
   );
-
   await AccountsHistoryUtility.addNewAccountHistoryUtil({
     req: {
       body: {
@@ -479,6 +479,7 @@ module.exports.addAccountBalanceViaOrderUtil = async ({ req }) => {
         expiryMonth: req?.body?.expiryMonth,
         expiryYear: req?.body?.expiryYear,
         cvv: req?.body?.cvv,
+        description: req.body.transactionDescription,
       },
     },
   });
@@ -618,6 +619,7 @@ module.exports.transferBalanceToAnotherAccountUtil = async ({ req }) => {
         fromAccountName: transferFromAccountDataObj.data.accountName,
         fromBankName: transferFromAccountDataObj.data.bankName,
         fromAccountNumber: transferFromAccountDataObj.data.accountNumber,
+        description: `Account balance is transferred from company account "${transferFromAccountDataObj.data.accountNumber}" having account name "${transferFromAccountDataObj.data.accountName}" and bank name "${transferFromAccountDataObj.data.bankName}" to company account "${transferToAccountDataObj.data.accountNumber}" having account name "${transferToAccountDataObj.data.accountName}" and bank name "${transferToAccountDataObj.data.bankName}".`,
       },
     },
   });
@@ -660,6 +662,7 @@ module.exports.transferBalanceToAnotherAccountUtil = async ({ req }) => {
         fromAccountName: transferFromAccountDataObj.data.accountName,
         fromBankName: transferFromAccountDataObj.data.bankName,
         fromAccountNumber: transferFromAccountDataObj.data.accountNumber,
+        description: `Account balance is transferred from company account "${transferFromAccountDataObj.data.accountNumber}" having account name "${transferFromAccountDataObj.data.accountName}" and bank name "${transferFromAccountDataObj.data.bankName}" to company account "${transferToAccountDataObj.data.accountNumber}" having account name "${transferToAccountDataObj.data.accountName}" and bank name "${transferToAccountDataObj.data.bankName}".`,
       },
     },
   });

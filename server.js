@@ -82,6 +82,8 @@ const invoicesV3 = require("./routes/v3/invoices");
 const faqsV3 = require("./routes/v3/faqs");
 const companyAccountsV3 = require("./routes/v3/companyAccounts");
 const accountsHistoryV3 = require("./routes/v3/accountsHistory");
+const adminDashboardV3 = require("./routes/v3/adminDashboard");
+const clientLandingPageV3 = require("./routes/v3/clientLandingPage");
 
 //middleware
 app.use(cors());
@@ -161,6 +163,8 @@ app.use("/v3/invoices", invoicesV3);
 app.use("/v3/faqs", faqsV3);
 app.use("/v3/companyAccounts", companyAccountsV3);
 app.use("/v3/accountsHistory", accountsHistoryV3);
+app.use("/v3/adminDashboard", adminDashboardV3);
+app.use("/v3/clientLandingPage", clientLandingPageV3);
 
 //mongoose
 mongoose.set("useFindAndModify", false);

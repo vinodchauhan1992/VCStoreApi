@@ -226,7 +226,6 @@ module.exports.createNewOrderUtil = async ({ req }) => {
         },
       },
     });
-
   if (foundAccObj?.status === "success") {
     await CompanyAccountsUtility.addAccountBalanceViaOrderUtil({
       req: {
@@ -240,6 +239,7 @@ module.exports.createNewOrderUtil = async ({ req }) => {
           expiryMonth: dataToAdd?.paymentInfo?.cardExpiryMonth,
           expiryYear: dataToAdd?.paymentInfo?.cardExpiryYear,
           cvv: dataToAdd?.paymentInfo?.cardCVV,
+          transactionDescription: `Transaction for order:-\n1. Order code "${newlyCreatedFullOrderDetailsObj?.code}"\n2. Ordered by "${newlyCreatedFullOrderDetailsObj?.customerDetails?.name?.firstname} ${newlyCreatedFullOrderDetailsObj?.customerDetails?.name?.lastname}"\n3. Customer code "${newlyCreatedFullOrderDetailsObj?.customerDetails?.customerCode}"`,
         },
       },
     });

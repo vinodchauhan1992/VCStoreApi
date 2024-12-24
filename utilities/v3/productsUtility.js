@@ -15,6 +15,7 @@ const {
   updateUploadedFileInFirebaseStorage,
 } = require("./fileManagerUtility");
 const FaqsUtility = require("./faqsUtility");
+const CustomersUtility = require("./customersUtility");
 
 const imageBasePath = `images/products`;
 
@@ -142,6 +143,44 @@ module.exports.getAverageRatingFromRatingsReviewsArrUtil = async ({
   return { maxRating: maxRating, averageRating: averageRating };
 };
 
+module.exports.getSingleWishlistWithAllDetailsUtil = async ({
+  wishlistData,
+}) => {
+  const customerByIdObject = await CustomersUtility.getCustomerByIDUtil({
+    req: {
+      body: {
+        id: wishlistData?.customerID,
+      },
+    },
+  });
+
+  return {
+    id: wishlistData.id,
+    wishlistNumber: wishlistData.wishlistNumber,
+    code: wishlistData.code,
+    customerDetails: customerByIdObject?.data ?? {
+      id: wishlistData?.customerID,
+    },
+    productID: wishlistData.productID,
+    dateAdded: wishlistData.dateAdded,
+    dateModified: wishlistData.dateModified,
+  };
+};
+
+module.exports.getAllWishlistsArrWithAllDetailsUtil = async ({
+  allWishlistsArr,
+}) => {
+  return Promise.all(
+    allWishlistsArr?.map(async (wishlistData) => {
+      const wishlistDetailsData =
+        await this.getSingleWishlistWithAllDetailsUtil({
+          wishlistData: wishlistData,
+        });
+      return wishlistDetailsData;
+    })
+  );
+};
+
 module.exports.getWishlistsByProductIDUtil = async ({ productID }) => {
   const foundObj = await CommonApisUtility.getDataArrayByIdFromSchemaUtil({
     schema: WishlistsSchema,
@@ -155,7 +194,13 @@ module.exports.getWishlistsByProductIDUtil = async ({ productID }) => {
     foundObj?.data &&
     foundObj.data.length > 0
   ) {
-    return foundObj;
+    const fullDetailsArr = await this.getAllWishlistsArrWithAllDetailsUtil({
+      allWishlistsArr: foundObj?.data ?? [],
+    });
+    return {
+      ...foundObj,
+      data: fullDetailsArr,
+    };
   }
 
   return {

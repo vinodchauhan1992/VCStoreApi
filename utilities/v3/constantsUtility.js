@@ -21,4 +21,5 @@ module.exports.utils = {
     bankName: "Cash deposit bank",
     accountNumber: "9000000000000001",
   },
+  rupeeSymbol: "₹",
 };

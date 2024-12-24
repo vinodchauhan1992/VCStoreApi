@@ -1,5 +1,5 @@
 const supertest = require('supertest')
-const app = require('../app')
+const app = require('../controller')
 
 describe('testing cart API',()=>{
     it('get all carts',async()=>{

@@ -3,6 +3,7 @@ const CommonUtility = require("./commonUtility");
 const CommonApisUtility = require("./commonApisUtility");
 const CustomersUtility = require("./customersUtility");
 const ProductsUtility = require("./productsUtility");
+const StocksUtility = require("./stocksUtility");
 
 module.exports.getSingleProductDetailsUtil = async ({ productData }) => {
   const productByIdObject = await CommonUtility.getProductByIDForCommonUtil({
@@ -585,6 +586,25 @@ module.exports.addNewCartUtil = async ({ req }) => {
     };
   }
 
+  const foundStockExistenceByProductIDObj =
+    await StocksUtility.getProductStockByProductIdUtil({
+      req: req,
+    });
+  if (foundStockExistenceByProductIDObj?.status === "error") {
+    return foundStockExistenceByProductIDObj;
+  }
+  const availableQuantityOfProduct = foundStockExistenceByProductIDObj?.data
+    ?.quantityAvailable
+    ? Number(foundStockExistenceByProductIDObj.data.quantityAvailable)
+    : 0;
+  if (productCount > availableQuantityOfProduct) {
+    return {
+      status: "error",
+      message: `Product can't be added to cart as available stock quatity for this product is ${availableQuantityOfProduct}.`,
+      data: {},
+    };
+  }
+
   const newCartSchema = new CartsSchema({
     id: cartID,
     cartNumber: newCartNumber,
@@ -708,6 +728,25 @@ module.exports.addItemToCartUtil = async ({ req }) => {
     });
   if (foundCartExistenceByCustIDObj?.status === "error") {
     return foundCartExistenceByCustIDObj;
+  }
+
+  const foundStockExistenceByProductIDObj =
+    await StocksUtility.getProductStockByProductIdUtil({
+      req: req,
+    });
+  if (foundStockExistenceByProductIDObj?.status === "error") {
+    return foundStockExistenceByProductIDObj;
+  }
+  const availableQuantityOfProduct = foundStockExistenceByProductIDObj?.data
+    ?.quantityAvailable
+    ? Number(foundStockExistenceByProductIDObj.data.quantityAvailable)
+    : 0;
+  if (productCount > availableQuantityOfProduct) {
+    return {
+      status: "error",
+      message: `Product can't be added to cart as available stock quatity for this product is ${availableQuantityOfProduct}.`,
+      data: {},
+    };
   }
 
   let productsArr = foundCartExistenceByCustIDObj?.data?.products ?? [];

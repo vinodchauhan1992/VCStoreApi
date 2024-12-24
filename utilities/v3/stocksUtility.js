@@ -313,6 +313,13 @@ module.exports.updateProductStockUtil = async ({ req }) => {
       data: {},
     };
   }
+  if (Number(req.body.quantityAvailable) < 0) {
+    return {
+      status: "error",
+      message: `Available quantity must be greater than or equal to 0.`,
+      data: {},
+    };
+  }
 
   const stockID = req.body.id;
 
@@ -324,7 +331,10 @@ module.exports.updateProductStockUtil = async ({ req }) => {
     return foundStockByStockIDObj;
   }
 
-  const quantityAvailable = Number(req.body.quantityAvailable);
+  const quantityAvailable =
+    (foundStockByStockIDObj?.data?.quantityAvailable
+      ? Number(foundStockByStockIDObj.data.quantityAvailable)
+      : 0) + Number(req.body.quantityAvailable);
   const dateModified = new Date();
 
   const newStock = {
@@ -361,12 +371,21 @@ module.exports.updateSingleStockUtil = async ({ dataToUpdate }) => {
   const foundStockData = foundStockObjById?.data ?? null;
   if (foundStockData) {
     const newSoldQty = dataToUpdate?.soldQty ? Number(dataToUpdate.soldQty) : 0;
-    const prevQuantitySold = foundStockData?.quantitySold
-      ? Number(foundStockData.quantitySold)
-      : 0;
     const prevQuantityAvailable = foundStockData?.quantityAvailable
       ? Number(foundStockData.quantityAvailable)
       : 0;
+    if (newSoldQty > prevQuantityAvailable) {
+      return {
+        status: "error",
+        message: `Please choose less quantity for this product as available quantity of this product is ${prevQuantityAvailable}`,
+        data: {},
+      };
+    }
+
+    const prevQuantitySold = foundStockData?.quantitySold
+      ? Number(foundStockData.quantitySold)
+      : 0;
+
     let updatedQuantitySold = prevQuantitySold + Number(newSoldQty);
     const updatedQuantityAvailable = prevQuantityAvailable - Number(newSoldQty);
     if (newSoldQty <= 0) {
