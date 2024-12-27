@@ -1,4 +1,7 @@
 const ClientRouteUtility = require("./clientRouteUtility");
+const ClientMiscUtility = require("./clientMiscUtility");
+const ConstantsUtility = require("./constantsUtility");
+const AppIdsUtility = require("./appIdsUtility");
 
 module.exports.getLandingPageTopHeaderMenuData = () => {
   const data = {
@@ -314,20 +317,33 @@ module.exports.getLandingPageHighlightSectionData = () => {
   return data;
 };
 
-module.exports.getLandingPageData = () => {
+module.exports.getLandingPageData = async () => {
+  const appType = ConstantsUtility.utils.APP_TYPE_CLIENT;
+  const foundAppIdObj = await AppIdsUtility.getAppIdByAppTitleUtil({
+    req: {
+      body: {
+        title: appType,
+      },
+    },
+  });
+  const foundFooterObj = await ClientMiscUtility.getFooterSectionDataUtil({
+    req: { headers: { app_id: foundAppIdObj?.data?.id } },
+  });
   const data = {
     topHeader: this.getLandingPageTopHeaderMenuData(),
     heroHeader: this.getLandingPageHeroHeaderData(),
     bodyContent: this.getLandingPageBodyContentData(),
     highlightSection: this.getLandingPageHighlightSectionData(),
+    footerSection: foundFooterObj?.data ?? null,
   };
   return data;
 };
 
 module.exports.getClientLandingPageDataUtil = async () => {
+  const landingPageData = await this.getLandingPageData();
   return {
     status: "success",
     message: `Client landing page data fetched successfully.`,
-    data: this.getLandingPageData(),
+    data: landingPageData,
   };
 };
