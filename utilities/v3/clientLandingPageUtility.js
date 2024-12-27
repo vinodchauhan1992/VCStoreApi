@@ -1,4 +1,4 @@
-const ClientRouteUtitlity = require("./clientRouteUtitlity");
+const ClientRouteUtility = require("./clientRouteUtility");
 
 module.exports.getLandingPageTopHeaderMenuData = () => {
   const data = {
@@ -19,13 +19,13 @@ module.exports.getLandingPageTopHeaderMenuData = () => {
     buttonsData: [
       {
         label: "Login",
-        route: ClientRouteUtitlity.utils.LOGIN_SCREEN_ROUTE,
+        route: ClientRouteUtility.utils.LOGIN_SCREEN_ROUTE,
         className:
           "border-none ml-5 font-light line-height-2 bg-bluegray-800 text-white",
       },
       {
         label: "Register",
-        route: ClientRouteUtitlity.utils.REGISTER_SCREEN_ROUTE,
+        route: ClientRouteUtility.utils.REGISTER_SCREEN_ROUTE,
         className:
           "border-none ml-3 font-light line-height-2 bg-orange-600 text-white",
       },
@@ -55,13 +55,13 @@ module.exports.getLandingPageHeroHeaderData = () => {
     btnsData: [
       {
         label: "Shop Now",
-        route: ClientRouteUtitlity.utils.LOGIN_SCREEN_ROUTE,
+        route: ClientRouteUtility.utils.LOGIN_SCREEN_ROUTE,
         className:
           "text-xl border-none mt-3 bg-green-500 font-normal line-height-3 px-3 text-white",
       },
       {
         label: "Register",
-        route: ClientRouteUtitlity.utils.REGISTER_SCREEN_ROUTE,
+        route: ClientRouteUtility.utils.REGISTER_SCREEN_ROUTE,
         className:
           "text-xl border-none mt-3 ml-2 bg-orange-500 font-normal line-height-3 px-3 text-white",
       },

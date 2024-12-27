@@ -22,4 +22,14 @@ module.exports.utils = {
     accountNumber: "9000000000000001",
   },
   rupeeSymbol: "₹",
+  ENUMS: {
+    TOPBAR_MENU: "topbar_menu",
+    TOPBAR_AVATAR_MENU: "topbar_avatar_menu",
+    HOME_CATEGORY_SIDE_MENU: "home_category_side_menu",
+    HOME_CATEGORY_SCREEN_ITEM: "home_category_screen_item",
+    HOME_BRAND_SCREEN_ITEM: "home_brand_screen_item",
+    FOOTER_LOGGEDIN_QUICK_LINK_SECTION: "footer_loggedin_quick_link_section",
+    FOOTER_LANDING_QUICK_LINK_SECTION: "footer_landing_quick_link_section",
+    FOOTER_LOGGEDIN_ACCOUNT_SECTION: "footer_loggedin_account_section",
+  },
 };

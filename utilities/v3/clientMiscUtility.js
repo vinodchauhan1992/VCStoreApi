@@ -2,7 +2,8 @@ const CommonUtility = require("./commonUtility");
 const CommonApisUtility = require("./commonApisUtility");
 const CustomersLoginUtility = require("./customersLoginUtility");
 const AppIdsUtility = require("./appIdsUtility");
-const ClientRouteUtitlity = require("./clientRouteUtitlity");
+const ClientRouteUtility = require("./clientRouteUtility");
+const ConstantsUtility = require("./constantsUtility");
 
 module.exports.getStaticImagesUtil = async () => {
   const staticImages = {
@@ -25,59 +26,68 @@ module.exports.getStaticImagesUtil = async () => {
   };
 };
 
-module.exports.getFooterSectionAccountSectionArrUtil = () => {
+module.exports.getFooterSectionAccountSectionArrUtil = ({ key }) => {
   const accountSectionArr = [
     {
       id: "fs_as_1",
       label: "My Account",
-      url: ClientRouteUtitlity.utils.MY_PROFILE_SCREEN_ROUTE,
+      url: ClientRouteUtility.utils.MY_PROFILE_SCREEN_ROUTE,
+      key: key,
     },
     {
       id: "fs_as_2",
       label: "Login/Register",
-      url: ClientRouteUtitlity.utils.LANDING_SCREEN_ROUTE,
+      url: ClientRouteUtility.utils.LANDING_SCREEN_ROUTE,
+      key: key,
     },
     {
       id: "fs_as_3",
       label: "Cart",
-      url: ClientRouteUtitlity.utils.CART_SCREEN_ROUTE,
+      url: ClientRouteUtility.utils.CART_SCREEN_ROUTE,
+      key: key,
     },
     {
       id: "fs_as_4",
       label: "Wishlist",
-      url: ClientRouteUtitlity.utils.WISHLIST_SCREEN_ROUTE,
+      url: ClientRouteUtility.utils.WISHLIST_SCREEN_ROUTE,
+      key: key,
     },
   ];
 
   return accountSectionArr;
 };
 
-module.exports.getFooterSectionQuickLinkSectionArrUtil = () => {
+module.exports.getFooterSectionQuickLinkSectionArrUtil = ({ key }) => {
   const accountSectionArr = [
     {
       id: "fs_qls_1",
       label: "Privacy Policy",
-      url: ClientRouteUtitlity.utils.PRIVACY_POLICY_SCREEN_ROUTE,
+      url: ClientRouteUtility.utils.PRIVACY_POLICY_SCREEN_ROUTE,
+      key: key,
     },
     {
       id: "fs_qls_2",
       label: "Terms of Use",
-      url: ClientRouteUtitlity.utils.TERMS_OF_USE_SCREEN_ROUTE,
+      url: ClientRouteUtility.utils.TERMS_OF_USE_SCREEN_ROUTE,
+      key: key,
     },
     {
       id: "fs_qls_3",
       label: "FAQ",
-      url: ClientRouteUtitlity.utils.FAQ_SCREEN_ROUTE,
+      url: ClientRouteUtility.utils.FAQ_SCREEN_ROUTE,
+      key: key,
     },
     {
       id: "fs_qls_4",
       label: "About Us",
-      url: ClientRouteUtitlity.utils.ABOUT_US_SCREEN_ROUTE,
+      url: ClientRouteUtility.utils.ABOUT_US_SCREEN_ROUTE,
+      key: key,
     },
     {
       id: "fs_qls_5",
       label: "Contact Us",
-      url: ClientRouteUtitlity.utils.CONTACT_US_SCREEN_ROUTE,
+      url: ClientRouteUtility.utils.CONTACT_US_SCREEN_ROUTE,
+      key: key,
     },
   ];
 
@@ -108,7 +118,9 @@ module.exports.getFooterSectionDataForLandingPageUtil = async () => {
     listsData: [
       {
         header: "Quick Links",
-        dataArr: this.getFooterSectionQuickLinkSectionArrUtil(),
+        dataArr: this.getFooterSectionQuickLinkSectionArrUtil({
+          key: ConstantsUtility.utils.ENUMS.FOOTER_LANDING_QUICK_LINK_SECTION,
+        }),
       },
     ],
     footerSectionLogoData: footerSectionLogoData,
@@ -122,11 +134,15 @@ module.exports.getFooterSectionDataForLoggedInHomePageUtil = async () => {
     listsData: [
       {
         header: "Account",
-        dataArr: this.getFooterSectionAccountSectionArrUtil(),
+        dataArr: this.getFooterSectionAccountSectionArrUtil({
+          key: ConstantsUtility.utils.ENUMS.FOOTER_LOGGEDIN_ACCOUNT_SECTION,
+        }),
       },
       {
         header: "Quick Links",
-        dataArr: this.getFooterSectionQuickLinkSectionArrUtil(),
+        dataArr: this.getFooterSectionQuickLinkSectionArrUtil({
+          key: ConstantsUtility.utils.ENUMS.FOOTER_LOGGEDIN_QUICK_LINK_SECTION,
+        }),
       },
     ],
     footerSectionLogoData: footerSectionLogoData,
