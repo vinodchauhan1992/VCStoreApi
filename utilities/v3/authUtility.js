@@ -6,6 +6,7 @@ const ConstantsUtility = require("./constantsUtility");
 const EmployeesLoginUtility = require("./employeesLoginUtility");
 const AppIdsUtility = require("./appIdsUtility");
 const CustomersValidationsUtility = require("./customersValidationsUtility");
+const CustomersLoginUtility = require("./customersLoginUtility");
 
 module.exports.employeeLogoutUtil = async ({ req }) => {
   const jwttoken = req?.headers?.jwttoken ?? null;
@@ -17,6 +18,20 @@ module.exports.employeeLogoutUtil = async ({ req }) => {
     };
   }
   return await EmployeesLoginUtility.updateEmployeeLoginLogoutEntryUtil({
+    jwtToken: jwttoken,
+  });
+};
+
+module.exports.customerLogoutUtil = async ({ req }) => {
+  const jwttoken = req?.headers?.jwttoken ?? null;
+  if (!jwttoken || jwttoken === "") {
+    return {
+      status: "error",
+      message: `Jwt token is required to logout`,
+      data: {},
+    };
+  }
+  return await CustomersLoginUtility.updateCustomerLoginLogoutEntryUtil({
     jwtToken: jwttoken,
   });
 };
@@ -36,7 +51,7 @@ module.exports.employeeLoginUtil = async ({ req }) => {
       data: {},
     };
   }
-  if (!req?.headers?.app_id || req.body.app_id === "") {
+  if (!req?.headers?.app_id || req.headers.app_id === "") {
     return {
       status: "error",
       message: "You are not authorised to login. Please pass app_id in header",
@@ -162,7 +177,7 @@ module.exports.customerLoginUtil = async ({ req }) => {
       data: {},
     };
   }
-  if (!req?.headers?.app_id || req.body.app_id === "") {
+  if (!req?.headers?.app_id || req.headers.app_id === "") {
     return {
       status: "error",
       message: "You are not authorised to login. Please pass app_id in header",
@@ -177,7 +192,7 @@ module.exports.customerLoginUtil = async ({ req }) => {
   if (foundAppIdObj?.status === "error") {
     return {
       status: "error",
-      message: `You are not authorised to login to client panel. Your passed app_id is not found in app_ids table.`,
+      message: `You are not authorised to login to vc store. Your passed app_id is not found in app_ids table.`,
       data: {},
     };
   }
@@ -188,13 +203,29 @@ module.exports.customerLoginUtil = async ({ req }) => {
   ) {
     return {
       status: "error",
-      message: `You are not authorised to login to client panel. Your passed app_id is incorrect.`,
+      message: `You are not authorised to login to vc store. Your passed app_id is incorrect.`,
       data: {},
     };
   }
 
   const username = req.body.username;
   const password = req.body.password;
+
+  const foundLoginObj =
+    await CustomersLoginUtility.checkIfCustomerIsAlreadyLoggedInByCustUsernameUtil(
+      {
+        req,
+      }
+    );
+  if (foundLoginObj?.status === "error") {
+    await this.customerLogoutUtil({
+      req: {
+        headers: {
+          jwttoken: foundLoginObj?.data?.jwtToken,
+        },
+      },
+    });
+  }
 
   return await CustomersSchema.findOne({
     username: username,
@@ -206,10 +237,31 @@ module.exports.customerLoginUtil = async ({ req }) => {
           await CustomersValidationsUtility.getSingleCustomerWithAllDetails({
             customerData: CommonUtility.sortObject(customerData),
           });
+
+        if (!fullDetailsObj?.isActive) {
+          return {
+            status: "error",
+            message: `You cannot login with this username "${employeeCode}" as you are inactive in our database". Please contact administration on our support.`,
+            data: {},
+          };
+        }
+
         const jwtToken = CommonUtility.generateJwtToken({
           uniqueID: fullDetailsObj?.id ?? "",
           uniqueCode: fullDetailsObj?.username ?? "",
         });
+
+        const customerLoginObj =
+          await CustomersLoginUtility.addNewCustomerLoginEntryUtil({
+            customerLoginData: fullDetailsObj,
+            jwtToken: jwtToken,
+            appID: appID,
+          });
+
+        if (customerLoginObj?.status === "error") {
+          return customerLoginObj;
+        }
+
         return {
           status: "success",
           message: "You are successfully logged in.",

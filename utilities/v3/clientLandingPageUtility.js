@@ -1,3 +1,5 @@
+const ClientRouteUtitlity = require("./clientRouteUtitlity");
+
 module.exports.getLandingPageTopHeaderMenuData = () => {
   const data = {
     menuDataArr: [
@@ -14,12 +16,20 @@ module.exports.getLandingPageTopHeaderMenuData = () => {
         route: "#highlights",
       },
     ],
-    buttonData: {
-      label: "Login",
-      route: "/auth/login",
-      className:
-        "border-none ml-5 font-light line-height-2 bg-bluegray-800 text-white",
-    },
+    buttonsData: [
+      {
+        label: "Login",
+        route: ClientRouteUtitlity.utils.LOGIN_SCREEN_ROUTE,
+        className:
+          "border-none ml-5 font-light line-height-2 bg-bluegray-800 text-white",
+      },
+      {
+        label: "Register",
+        route: ClientRouteUtitlity.utils.REGISTER_SCREEN_ROUTE,
+        className:
+          "border-none ml-3 font-light line-height-2 bg-orange-600 text-white",
+      },
+    ],
     logoData: {
       logoName: "company-logo",
       companyName: "VC Store",
@@ -42,12 +52,20 @@ module.exports.getLandingPageHeroHeaderData = () => {
       description:
         "You can find a wide range of electronics items in VC Store. VC Store is available online as well as offline.",
     },
-    btnData: {
-      label: "Shop Now",
-      route: "/auth/login",
-      className:
-        "text-xl border-none mt-3 bg-green-500 font-normal line-height-3 px-3 text-white",
-    },
+    btnsData: [
+      {
+        label: "Shop Now",
+        route: ClientRouteUtitlity.utils.LOGIN_SCREEN_ROUTE,
+        className:
+          "text-xl border-none mt-3 bg-green-500 font-normal line-height-3 px-3 text-white",
+      },
+      {
+        label: "Register",
+        route: ClientRouteUtitlity.utils.REGISTER_SCREEN_ROUTE,
+        className:
+          "text-xl border-none mt-3 ml-2 bg-orange-500 font-normal line-height-3 px-3 text-white",
+      },
+    ],
     heroImageData: {
       imageName: "landing-hero",
       imageClass: "w-9 md:w-auto",
@@ -296,143 +314,12 @@ module.exports.getLandingPageHighlightSectionData = () => {
   return data;
 };
 
-module.exports.getLandingPageFooterSectionSubmenuDataArr = () => {
-  const item1SubmenuArr = [
-    {
-      label: "About Us",
-      route: "",
-      wrapperClass: "line-height-3 text-xl block cursor-pointer mb-2 text-700",
-      isNew: false,
-      newImageName: "new-badge",
-      newImageClass: "ml-2",
-    },
-    {
-      label: "News",
-      route: "",
-      wrapperClass: "line-height-3 text-xl block cursor-pointer mb-2 text-700",
-      isNew: false,
-      newImageName: "new-badge",
-      newImageClass: "ml-2",
-    },
-    {
-      label: "Investor Relations",
-      route: "",
-      wrapperClass: "line-height-3 text-xl block cursor-pointer mb-2 text-700",
-      isNew: false,
-      newImageName: "new-badge",
-      newImageClass: "ml-2",
-    },
-    {
-      label: "Careers",
-      route: "",
-      wrapperClass: "line-height-3 text-xl block cursor-pointer mb-2 text-700",
-      isNew: false,
-      newImageName: "new-badge",
-      newImageClass: "ml-2",
-    },
-  ];
-
-  const item2SubmenuArr = [
-    {
-      label: "FAQ",
-      route: "",
-      wrapperClass: "line-height-3 text-xl block cursor-pointer mb-2 text-700",
-      isNew: false,
-      newImageName: "new-badge",
-      newImageClass: "ml-2",
-    },
-    {
-      label: "Blog",
-      route: "",
-      wrapperClass: "line-height-3 text-xl block cursor-pointer mb-2 text-700",
-      isNew: true,
-      newImageName: "new-badge",
-      newImageClass: "ml-2",
-    },
-  ];
-
-  const item3SubmenuArr = [
-    {
-      label: "Brand Policy",
-      route: "",
-      wrapperClass: "line-height-3 text-xl block cursor-pointer mb-2 text-700",
-      isNew: true,
-      newImageName: "new-badge",
-      newImageClass: "ml-2",
-    },
-    {
-      label: "Privacy Policy",
-      route: "",
-      wrapperClass: "line-height-3 text-xl block cursor-pointer mb-2 text-700",
-      isNew: false,
-      newImageName: "new-badge",
-      newImageClass: "ml-2",
-    },
-    {
-      label: "Terms of Service",
-      route: "",
-      wrapperClass: "line-height-3 text-xl block cursor-pointer mb-2 text-700",
-      isNew: false,
-      newImageName: "new-badge",
-      newImageClass: "ml-2",
-    },
-  ];
-  return { item1SubmenuArr, item2SubmenuArr, item3SubmenuArr };
-};
-
-module.exports.getLandingPageFooterSectionMenuDataArr = () => {
-  const { item1SubmenuArr, item2SubmenuArr, item3SubmenuArr } =
-    this.getLandingPageFooterSectionSubmenuDataArr();
-  const menuArr = [
-    {
-      heading: "Company",
-      wrapperClass: "col-12 md:col-3",
-      headingClass: "font-medium text-2xl line-height-3 mb-3 text-900",
-      footerSubmenuArr: item1SubmenuArr,
-    },
-    {
-      heading: "Community",
-      wrapperClass: "col-12 md:col-3 mt-4 md:mt-0",
-      headingClass: "font-medium text-2xl line-height-3 mb-3 text-900",
-      footerSubmenuArr: item2SubmenuArr,
-    },
-    {
-      heading: "Legal",
-      wrapperClass: "col-12 md:col-3 mt-4 md:mt-0",
-      headingClass: "font-medium text-2xl line-height-3 mb-3 text-900",
-      footerSubmenuArr: item3SubmenuArr,
-    },
-  ];
-  return menuArr;
-};
-
-module.exports.getLandingPageFooterSectionData = () => {
-  const data = {
-    logoData: {
-      logoName: "company-logo",
-      companyName: "VC Store",
-      logoRoute: "/",
-      logoWrapperClass: "col-12 md:col-2",
-      companyNameWrapperClass: "font-medium text-3xl text-900",
-      logoLinkClass:
-        "flex flex-wrap align-items-center justify-content-center md:justify-content-start md:mb-0 mb-3 cursor-pointer",
-      logoClass: "mr-2",
-      logoWidth: "50",
-      logoHeight: "50",
-      logoWrapperStyle: { marginTop: "-1.5rem" },
-    },
-    footerMenuArr: this.getLandingPageFooterSectionMenuDataArr(),
-  };
-  return data;
-};
-
 module.exports.getLandingPageData = () => {
   const data = {
     topHeader: this.getLandingPageTopHeaderMenuData(),
     heroHeader: this.getLandingPageHeroHeaderData(),
     bodyContent: this.getLandingPageBodyContentData(),
     highlightSection: this.getLandingPageHighlightSectionData(),
-    footerSection: this.getLandingPageFooterSectionData(),
   };
   return data;
 };

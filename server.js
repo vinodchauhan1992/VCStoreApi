@@ -84,6 +84,8 @@ const companyAccountsV3 = require("./routes/v3/companyAccounts");
 const accountsHistoryV3 = require("./routes/v3/accountsHistory");
 const adminDashboardV3 = require("./routes/v3/adminDashboard");
 const clientLandingPageV3 = require("./routes/v3/clientLandingPage");
+const customersLoginsV3 = require("./routes/v3/customersLogin");
+const clientMiscV3 = require("./routes/v3/clientMisc");
 
 //middleware
 app.use(cors());
@@ -165,6 +167,8 @@ app.use("/v3/companyAccounts", companyAccountsV3);
 app.use("/v3/accountsHistory", accountsHistoryV3);
 app.use("/v3/adminDashboard", adminDashboardV3);
 app.use("/v3/clientLandingPage", clientLandingPageV3);
+app.use("/v3/customersLogins", customersLoginsV3);
+app.use("/v3/clientMisc", clientMiscV3);
 
 //mongoose
 mongoose.set("useFindAndModify", false);
