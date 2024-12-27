@@ -334,7 +334,7 @@ module.exports.getLandingPageData = async () => {
     heroHeader: this.getLandingPageHeroHeaderData(),
     bodyContent: this.getLandingPageBodyContentData(),
     highlightSection: this.getLandingPageHighlightSectionData(),
-    footerSection: foundFooterObj?.data ?? null,
+    footerSection: { data: foundFooterObj?.data ?? null },
   };
   return data;
 };

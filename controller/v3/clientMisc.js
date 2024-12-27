@@ -9,3 +9,8 @@ module.exports.getStaticImages = async (req, res) => {
   const foundFaqObj = await ClientMiscUtility.getStaticImagesUtil({ req });
   res.json(foundFaqObj);
 };
+
+module.exports.getClientMiscData = async (req, res) => {
+  const foundFaqObj = await ClientMiscUtility.getClientMiscDataUtil({ req });
+  res.json(foundFaqObj);
+};

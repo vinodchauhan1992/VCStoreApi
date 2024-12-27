@@ -12,8 +12,9 @@ module.exports.utils = {
     STATE: "Haryana",
     CITY: "Gurugram",
     PINCODE: "122051",
-    PHONE: "(759) 234-8244",
+    PHONE: "+(759) 234-8244",
   },
+  COMPANY_EMAIL: "support@vcstore.com",
   PRODUCTS_TAX_PERCENT: 18,
   DEFAULT_ACCOUNT_NUMBER: "6000000000000016",
   BANK_ACCOUNT_FOR_CASH_DEPOSIT: {
