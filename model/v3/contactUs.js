@@ -15,6 +15,10 @@ const contactUsSchema = new schema({
     type: schema.Types.String,
     required: true,
   },
+  phone: {
+    type: schema.Types.String,
+    required: true,
+  },
   subject: {
     type: schema.Types.String,
     required: true,

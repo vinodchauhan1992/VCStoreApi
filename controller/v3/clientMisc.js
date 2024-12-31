@@ -14,3 +14,8 @@ module.exports.getClientMiscData = async (req, res) => {
   const foundFaqObj = await ClientMiscUtility.getClientMiscDataUtil({ req });
   res.json(foundFaqObj);
 };
+
+module.exports.getAboutUsData = async (req, res) => {
+  const foundFaqObj = await ClientMiscUtility.getAboutUsDataUtil({ req });
+  res.json(foundFaqObj);
+};

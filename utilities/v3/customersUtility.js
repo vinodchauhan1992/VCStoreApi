@@ -7,6 +7,7 @@ const {
   deleteUploadedFileInFirebaseStorage,
   updateUploadedFileInFirebaseStorage,
 } = require("./fileManagerUtility");
+const CustomersLoginUtility = require("./customersLoginUtility");
 
 const imageBasePath = `images/customers`;
 
@@ -843,7 +844,7 @@ module.exports.updateCustomerMonthlyIncomeUtil = async ({ req }) => {
     return foundCustomerByIdObj;
   }
 
-  const newCustomerDob = {
+  const newCustomerIncome = {
     id: customerID,
     incomeDetails: {
       monthlyIncome: monthlyIncome,
@@ -852,13 +853,94 @@ module.exports.updateCustomerMonthlyIncomeUtil = async ({ req }) => {
     dateModified: new Date(),
   };
 
-  const updatedCustomerDobSet = {
-    $set: newCustomerDob,
+  const updatedCustomerIncomeSet = {
+    $set: newCustomerIncome,
   };
 
   return await this.updateDataInCustomerTableUtil({
-    newDataObject: newCustomerDob,
-    updatedDataSet: updatedCustomerDobSet,
+    newDataObject: newCustomerIncome,
+    updatedDataSet: updatedCustomerIncomeSet,
     customerID: customerID,
   });
+};
+
+module.exports.changeCustomerPasswordUtil = async ({ req }) => {
+  const changePasswordValidity = await CommonUtility.changePasswordValidityUtil(
+    { req }
+  );
+  if (changePasswordValidity.status === "error") {
+    return changePasswordValidity;
+  }
+  const currentPassword = changePasswordValidity.data.currentPassword;
+  const newPassword = changePasswordValidity.data.newPassword;
+  const jwttoken = changePasswordValidity.data.jwttoken;
+  const foundCustLoginObj =
+    await CustomersLoginUtility.getCustomerLoginByJwtTokenUtil({
+      req: {
+        body: {
+          jwtToken: jwttoken,
+        },
+      },
+    });
+
+  if (foundCustLoginObj?.status === "error") {
+    return {
+      status: "error",
+      message: `Password doesn't change. You are not logged in to change the password. ${foundCustLoginObj?.message}`,
+      data: {},
+    };
+  }
+  if (foundCustLoginObj?.data?.isLogout) {
+    return {
+      status: "error",
+      message: `Password doesn't change. You are not logged in to change the password. ${foundCustLoginObj?.message}`,
+      data: {},
+    };
+  }
+  const customerID = foundCustLoginObj?.data?.customerData?.id ?? null;
+
+  const foundObj = await CommonApisUtility.getDataByDualKeysFromSchemaUtil({
+    schema: CustomersSchema,
+    schemaName: "Customer",
+    key1Value: customerID,
+    key2Value: currentPassword,
+    key1Name: "id",
+    key2Name: "password",
+  });
+
+  if (foundObj?.status === "error") {
+    return {
+      status: "error",
+      message: `Password doesn't changes. Current password is wrong.`,
+      data: {},
+    };
+  }
+
+  const newCustomerPassword = {
+    id: customerID,
+    password: newPassword,
+    dateModified: new Date(),
+  };
+
+  const updatedCustomerPasswordSet = {
+    $set: newCustomerPassword,
+  };
+
+  const updatedDataObj = await this.updateDataInCustomerTableUtil({
+    newDataObject: newCustomerPassword,
+    updatedDataSet: updatedCustomerPasswordSet,
+    customerID: customerID,
+  });
+  if (updatedDataObj?.status === "error") {
+    return {
+      status: "error",
+      message: `Your password doesn't changed. ${updatedDataObj?.message}`,
+      data: {},
+    };
+  }
+  return {
+    status: "error",
+    message: `Your password is changed successfully.`,
+    data: {},
+  };
 };

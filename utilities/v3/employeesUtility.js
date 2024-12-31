@@ -7,6 +7,7 @@ const {
   deleteUploadedFileInFirebaseStorage,
   updateUploadedFileInFirebaseStorage,
 } = require("./fileManagerUtility");
+const EmployeesLoginUtility = require("./employeesLoginUtility");
 
 const imageBasePath = `images/employees`;
 
@@ -20,6 +21,7 @@ module.exports.uploadEmployeeImageToFS = async ({
     parentDocumentID: employeeID,
     parentDocumentName: employeeCode,
     imageBasePath: imageBasePath,
+    allowedSizeInMb: 5,
   });
 };
 
@@ -276,6 +278,7 @@ module.exports.updateUploadedEmployeeImageToFS = async ({
     fileFolderPath,
     parentDocumentID: employeeID,
     parentDocumentName: employeeCode,
+    allowedSizeInMb: 5,
   });
 };
 
@@ -960,4 +963,87 @@ module.exports.employeeLayOffUtil = async ({ req }) => {
     updatedDataSet: updatedEmployeeLayOffSet,
     employeeID: employeeID,
   });
+};
+
+module.exports.changeEmployeePasswordUtil = async ({ req }) => {
+  const changePasswordValidity = await CommonUtility.changePasswordValidityUtil(
+    { req }
+  );
+  if (changePasswordValidity.status === "error") {
+    return changePasswordValidity;
+  }
+
+  const currentPassword = changePasswordValidity.data.currentPassword;
+  const newPassword = changePasswordValidity.data.newPassword;
+  const jwttoken = changePasswordValidity.data.jwttoken;
+
+  const foundEmpLoginObj =
+    await EmployeesLoginUtility.getEmployeeLoginByJwtTokenUtil({
+      req: {
+        body: {
+          jwtToken: jwttoken,
+        },
+      },
+    });
+
+  if (foundEmpLoginObj?.status === "error") {
+    return {
+      status: "error",
+      message: `Password doesn't change. You are not logged in to change the password. ${foundEmpLoginObj?.message}`,
+      data: {},
+    };
+  }
+  if (foundEmpLoginObj?.data?.isLogout) {
+    return {
+      status: "error",
+      message: `Password doesn't change. You are not logged in to change the password. ${foundEmpLoginObj?.message}`,
+      data: {},
+    };
+  }
+  const employeeID = foundEmpLoginObj?.data?.employeeData?.id ?? null;
+
+  const foundObj = await CommonApisUtility.getDataByDualKeysFromSchemaUtil({
+    schema: EmployeesSchema,
+    schemaName: "Employee",
+    key1Value: employeeID,
+    key2Value: currentPassword,
+    key1Name: "id",
+    key2Name: "password",
+  });
+
+  if (foundObj?.status === "error") {
+    return {
+      status: "error",
+      message: `Password doesn't change. Current password is wrong.`,
+      data: {},
+    };
+  }
+
+  const newEmployeePassword = {
+    id: employeeID,
+    password: newPassword,
+    dateModified: new Date(),
+  };
+
+  const updatedEmployeePasswordSet = {
+    $set: newEmployeePassword,
+  };
+
+  const updatedDataObj = await this.updateDataInEmployeeTableUtil({
+    newDataObject: newEmployeePassword,
+    updatedDataSet: updatedEmployeePasswordSet,
+    employeeID: employeeID,
+  });
+  if (updatedDataObj?.status === "error") {
+    return {
+      status: "error",
+      message: `Your password doesn't changed. ${updatedDataObj?.message}`,
+      data: {},
+    };
+  }
+  return {
+    status: "error",
+    message: `Your password is changed successfully.`,
+    data: {},
+  };
 };

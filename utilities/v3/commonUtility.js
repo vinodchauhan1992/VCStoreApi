@@ -577,3 +577,44 @@ module.exports.getRandomHexColorCode = () => {
   let n = (Math.random() * 0xfffff * 1000000).toString(16);
   return "#" + n.slice(0, 6);
 };
+
+module.exports.changePasswordValidityUtil = async ({ req }) => {
+  const jwttoken = req.headers.jwttoken;
+  const appID = req.headers.app_id;
+  if (!req?.body?.currentPassword || req.body.currentPassword === "") {
+    return {
+      status: "error",
+      message: "Current password is required.",
+      data: {},
+    };
+  }
+  if (!req?.body?.newPassword || req.body.newPassword === "") {
+    return {
+      status: "error",
+      message: "New password is required.",
+      data: {},
+    };
+  }
+  const currentPassword = req.body.currentPassword;
+  const newPassword = req.body.newPassword;
+  const { isValid, message } = this.isValidPassword({
+    password: newPassword,
+  });
+  if (!isValid) {
+    return {
+      status: "error",
+      message: `${message} password is invalid. Password must contains at least one uppercase letter, at least one lowercase letter, at least one digit, at least one special character(!, @, #, $, %, ^, &, *, (, ),\, -, +, .) and should be 8 or more characters long.`,
+      data: {},
+    };
+  }
+  return {
+    status: "success",
+    message: "Validation is successfull.",
+    data: {
+      jwttoken: jwttoken,
+      appID: appID,
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    },
+  };
+};

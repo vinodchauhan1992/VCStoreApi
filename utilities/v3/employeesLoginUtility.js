@@ -175,6 +175,7 @@ module.exports.getEmployeeLoginByJwtTokenUtil = async ({ req }) => {
       data: {},
     };
   }
+
   const jwtToken = req.body.jwtToken;
   const employeeLoginObject =
     await CommonApisUtility.getDataByJwtTokenFromSchemaUtil({

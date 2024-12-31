@@ -7,6 +7,9 @@ const EmployeesLoginUtility = require("./employeesLoginUtility");
 const AppIdsUtility = require("./appIdsUtility");
 const CustomersValidationsUtility = require("./customersValidationsUtility");
 const CustomersLoginUtility = require("./customersLoginUtility");
+const CommonApisUtility = require("./commonApisUtility");
+const CustomersUtility = require("./customersUtility");
+const EmployeesUtility = require("./employeesUtility");
 
 module.exports.employeeLogoutUtil = async ({ req }) => {
   const jwttoken = req?.headers?.jwttoken ?? null;
@@ -285,4 +288,52 @@ module.exports.customerLoginUtil = async ({ req }) => {
         data: {},
       };
     });
+};
+
+module.exports.changePasswordUtil = async ({ req }) => {
+  const jwttoken = req?.headers?.jwttoken ?? null;
+  if (!jwttoken || jwttoken === "") {
+    return {
+      status: "error",
+      message: `Jwt token is required to change the password.`,
+      data: {},
+    };
+  }
+  if (!req?.headers?.app_id || req.headers.app_id === "") {
+    return {
+      status: "error",
+      message: "You are not authorised. Please pass app_id in header",
+      data: {},
+    };
+  }
+  const appID = req.headers.app_id;
+  const foundAppIdObj = await AppIdsUtility.getAppIdByAppIdUtil({
+    req: {
+      body: {
+        id: appID,
+      },
+    },
+  });
+
+  if (foundAppIdObj?.status === "error") {
+    return {
+      status: "error",
+      message: `You are not authorised. Your passed app_id is not found in app_ids table.`,
+      data: {},
+    };
+  }
+
+  if (foundAppIdObj?.data?.title === ConstantsUtility.utils.APP_TYPE_ADMIN) {
+    const foundObj = await EmployeesUtility.changeEmployeePasswordUtil({ req });
+    return foundObj;
+  }
+  if (foundAppIdObj?.data?.title === ConstantsUtility.utils.APP_TYPE_CLIENT) {
+    const foundObj = await CustomersUtility.changeCustomerPasswordUtil({ req });
+    return foundObj;
+  }
+  return {
+    status: "error",
+    message: `You are not authorised. There is an unknown error occurred.`,
+    data: {},
+  };
 };

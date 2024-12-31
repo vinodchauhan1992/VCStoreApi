@@ -5,20 +5,15 @@ const AppIdsUtility = require("./appIdsUtility");
 const ClientRouteUtility = require("./clientRouteUtility");
 const ConstantsUtility = require("./constantsUtility");
 const ClientLandingPageUtility = require("./clientLandingPageUtility");
+const StaticImagesUtility = require("./staticImagesUtility");
+const EmployeesUtility = require("./employeesUtility");
+const BrandsUtility = require("./brandsUtility");
+const ProductsUtility = require("./productsUtility");
+const CustomersUtility = require("./customersUtility");
+const OrdersUtility = require("./ordersUtility");
 
 module.exports.getStaticImagesUtil = async () => {
-  const staticImages = {
-    companyLogo: {
-      logoDark: {
-        ext: "svg",
-        url: "https://firebasestorage.googleapis.com/v0/b/vcstore-10e65.appspot.com/o/images%2FmiscImages%2Fcompany-logo-dark.svg?alt=media&token=3778938d-3f12-4494-8d8b-5e9c7df5efd8",
-      },
-      logoWhite: {
-        ext: "svg",
-        url: "https://firebasestorage.googleapis.com/v0/b/vcstore-10e65.appspot.com/o/images%2FmiscImages%2Fcompany-logo-white.svg?alt=media&token=6dd09ae7-ddd7-4a35-b10e-4d432c95a369",
-      },
-    },
-  };
+  const staticImages = StaticImagesUtility.getStaticImagesUrls();
 
   return {
     status: "success",
@@ -289,6 +284,153 @@ module.exports.getClientMiscDataUtil = async ({ req }) => {
         data: footerObj?.data ?? null,
       },
       contactUsData: contactUsData,
+    },
+  };
+};
+
+module.exports.getAboutUsStoryDataUtil = async ({ req }) => {
+  return {
+    title: "Our Story",
+    description: [
+      `Launced in 2022, Exclusive is North Asia's premier online shopping makterplace with an active presense in Bangladesh. Supported by wide range of tailored marketing, data and service solutions, Exclusive has 10,500 sallers and 300 brands and serves 3 millioons customers across the region.`,
+      `Exclusive has more than 1 Million products to offer, growing at a very fast. Exclusive offers a diverse assotment in categories ranging from consumer.`,
+    ],
+  };
+};
+
+module.exports.getAboutUsBrandsDataUtil = async ({ req }) => {
+  const foundObj = await BrandsUtility.getAllBrandsUtil({ req });
+  return foundObj?.data ?? [];
+};
+
+module.exports.getAboutUsCustomersDataUtil = async ({ req }) => {
+  const foundObj = await CustomersUtility.getAllCustomersUtil({ req });
+  return foundObj?.data ?? [];
+};
+
+module.exports.getAboutUsProductsSaleDataUtil = async ({ req }) => {
+  const foundObj = await OrdersUtility.getAllOrdersUtil({ req });
+  const dataArr = foundObj?.data ?? [];
+
+  let yearlySalesAmount = 0;
+  dataArr?.map((dataItem) => {
+    const amount = dataItem?.cart?.totalAmount
+      ? Number(dataItem.cart.totalAmount)
+      : 0;
+
+    yearlySalesAmount = yearlySalesAmount + amount;
+  });
+  const monthlySalesAmount = yearlySalesAmount > 0 ? yearlySalesAmount / 12 : 0;
+
+  return {
+    yearlySalesAmount:
+      yearlySalesAmount >= 1000 ? yearlySalesAmount / 1000 : yearlySalesAmount,
+    monthlySalesAmount:
+      monthlySalesAmount >= 1000
+        ? monthlySalesAmount / 1000
+        : monthlySalesAmount,
+  };
+};
+
+module.exports.getAboutUsCardOptionsUtil = async ({ req }) => {
+  const staticImagesObj = await this.getStaticImagesUtil();
+  const aboutUsImagesData = staticImagesObj.data.aboutUsScreenImages;
+  const aboutUsBrandsDataArr = await this.getAboutUsBrandsDataUtil({ req });
+  const aboutUsCustomersDataArr = await this.getAboutUsCustomersDataUtil({
+    req,
+  });
+  const { yearlySalesAmount, monthlySalesAmount } =
+    await this.getAboutUsProductsSaleDataUtil({
+      req,
+    });
+  return [
+    {
+      icon: aboutUsImagesData.icons.shopIcon,
+      title: `${aboutUsBrandsDataArr.length}`,
+      subtitle: "Brands active in our site",
+    },
+    {
+      icon: aboutUsImagesData.icons.saleIcon,
+      title: `${CommonUtility.amountRoundingFunc({
+        value: monthlySalesAmount,
+      })}k`,
+      subtitle: "Monthly Product Sale",
+    },
+    {
+      icon: aboutUsImagesData.icons.shoppingBagIcon,
+      title: `${aboutUsCustomersDataArr.length}`,
+      subtitle: "Customer active in our site",
+    },
+    {
+      icon: aboutUsImagesData.icons.moneyBagIcon,
+      title: `${CommonUtility.amountRoundingFunc({
+        value: yearlySalesAmount,
+      })}k`,
+      subtitle: "Anual gross sale",
+    },
+  ];
+};
+
+module.exports.getAboutUsServiceOptionsUtil = async ({ req }) => {
+  const staticImagesObj = await this.getStaticImagesUtil();
+  const aboutUsImagesData = staticImagesObj.data.aboutUsScreenImages;
+  return [
+    {
+      icon: aboutUsImagesData.icons.deliveryIcon,
+      title: "FREE AND FAST DELIVERY",
+      subtitle: `Free delivery for all orders over ${ConstantsUtility.utils.rupeeSymbol}2000`,
+    },
+    {
+      icon: aboutUsImagesData.icons.customerServiceIcon,
+      title: "24/7 CUSTOMER SERVICE",
+      subtitle: "Friendly 24/7 customer support",
+    },
+    {
+      icon: aboutUsImagesData.icons.secureIcon,
+      title: "MONEY BACK GUARANTEE",
+      subtitle: "We return money within 30 days",
+    },
+  ];
+};
+
+module.exports.getAllEmployeesDataArrUtil = async ({ req }) => {
+  const empDataObj = await EmployeesUtility.getAllEmployeesUtil({ req });
+  const employeesArr = empDataObj?.data ?? [];
+
+  const newEmpArr = [];
+  employeesArr.map((empData) => {
+    newEmpArr.push({
+      id: empData.id,
+      employeeCode: empData.employeeCode,
+      fullName: `${empData.name.firstname} ${empData.name.lastname}`,
+      email: empData.email,
+      department: empData.departmentDetails.title,
+      gender: empData.genderDetails.title,
+      employeeRole: empData.employeeRoleDetails.title,
+      status: empData.statusDetails.title,
+      imageData: empData.imageData,
+    });
+  });
+
+  return newEmpArr;
+};
+
+module.exports.getAboutUsDataUtil = async ({ req }) => {
+  const storyData = await this.getAboutUsStoryDataUtil({ req });
+  const staticImagesObj = await this.getStaticImagesUtil();
+  const cardOptions = await this.getAboutUsCardOptionsUtil({ req });
+  const serviceOptions = await this.getAboutUsServiceOptionsUtil({ req });
+  const employeesArr = await this.getAllEmployeesDataArrUtil({ req });
+  return {
+    status: "success",
+    message: `About us data fetched successfully.`,
+    data: {
+      id: "about_us_page_data_1",
+      storyData: storyData,
+      sideImageData: staticImagesObj.data.aboutUsScreenImages.sideImage,
+      cardOptions: cardOptions,
+      serviceOptions: serviceOptions,
+      employeesData: employeesArr,
     },
   };
 };
