@@ -238,7 +238,6 @@ module.exports.addNewCustomerUtil = async ({ req }) => {
   }
 
   const newCustomerNumber = await this.getNewCustomerNumberUtil({ req });
-
   const customerID = CommonUtility.getUniqueID();
   const paddedNewCustomerNumber = String(newCustomerNumber).padStart(5, "0");
   const customerCode = `Cust${paddedNewCustomerNumber}`;

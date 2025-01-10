@@ -244,7 +244,7 @@ module.exports.customerLoginUtil = async ({ req }) => {
         if (!fullDetailsObj?.isActive) {
           return {
             status: "error",
-            message: `You cannot login with this username "${employeeCode}" as you are inactive in our database". Please contact administration on our support.`,
+            message: `You cannot login with this username "${employeeCode}" as you are inactive in our database. Please contact administration on our support.`,
             data: {},
           };
         }

@@ -26,11 +26,11 @@ module.exports.autoSubmitAttendanceScheduler = async () => {
   );
 };
 
-cron.schedule("0 8 */1 * *", async () => {
-  const newlyAddedAttendance = await this.autoSubmitAttendanceScheduler();
-  console.log(
-    "CRON job for auto attendance on date",
-    newlyAddedAttendance,
-    new Date()
-  );
-});
+// cron.schedule("0 8 */1 * *", async () => {
+//   const newlyAddedAttendance = await this.autoSubmitAttendanceScheduler();
+//   console.log(
+//     "CRON job for auto attendance on date",
+//     newlyAddedAttendance,
+//     new Date()
+//   );
+// });
