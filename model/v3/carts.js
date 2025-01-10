@@ -40,6 +40,16 @@ const cartsSchema = new schema({
     type: schema.Types.Number,
     required: false,
   },
+  couponInfo: {
+    couponID: {
+      type: schema.Types.String,
+      required: false,
+    },
+    couponCode: {
+      type: schema.Types.String,
+      required: false,
+    },
+  },
   couponDiscount: {
     type: schema.Types.Number,
     required: false,

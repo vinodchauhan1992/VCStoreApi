@@ -28,6 +28,13 @@ module.exports.getProductsByCategoryID = async (req, res) => {
   res.json(foundProductObj);
 };
 
+module.exports.getProductsByBrandID = async (req, res) => {
+  const foundProductObj = await ProductsUtility.getProductsByBrandIDUtil({
+    req: req,
+  });
+  res.json(foundProductObj);
+};
+
 module.exports.addNewProduct = async (req, res) => {
   const foundProductObj = await ProductsUtility.addNewProductUtil({
     req: req,

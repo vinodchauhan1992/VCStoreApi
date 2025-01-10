@@ -11,6 +11,7 @@ router.post("/allProducts", products.getAllProducts);
 router.post("/productByProductID", products.getProductByProductID);
 router.post("/productsByProductTitle", products.getProductsByProductTitle);
 router.post("/productsByCategoryID", products.getProductsByCategoryID);
+router.post("/productsByBrandID", products.getProductsByBrandID);
 router.post("/addNewProduct", upload, products.addNewProduct);
 router.post("/deleteProduct", products.deleteProduct);
 router.post("/updateProductPhoto", upload, products.updateProductPhoto);

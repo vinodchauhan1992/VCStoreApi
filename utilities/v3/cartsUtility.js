@@ -46,6 +46,7 @@ module.exports.getSingleCartWithAllDetailsUtil = async ({ cartData }) => {
     products: productsWithFullDetails ?? [],
     totalAmount: cartData?.totalAmount ?? 0.0,
     discount: cartData?.discount ?? 0.0,
+    couponInfo: cartData?.couponInfo ?? null,
     couponDiscount: cartData?.couponDiscount ?? 0.0,
     payableAmount: cartData?.payableAmount ?? 0.0,
     dateAdded: cartData?.dateAdded ?? new Date(),
@@ -165,7 +166,6 @@ module.exports.deleteCartUtil = async ({ req }) => {
   const foundCartByCartIDObj = await this.getCartByCartIDUtil({
     req: req,
   });
-
   if (foundCartByCartIDObj?.status === "error") {
     return foundCartByCartIDObj;
   }
@@ -234,11 +234,26 @@ module.exports.createCartUtil = async ({ req }) => {
   }
 
   const cartData = foundCartDataByIDObj.data;
-  const couponDiscount = req?.body?.couponDiscount
-    ? CommonUtility.amountRoundingFunc({
-        value: Number(req.body.couponDiscount),
-      })
-    : 0.0;
+  /** TO DO :- FIX ME STARTS(APPLY COUPON CODE LOGIC) */
+  let couponCode = req?.body?.couponCode ?? null;
+  let couponID = null;
+  let couponDiscount = 0.0;
+  if (couponCode && couponCode !== "") {
+    if (couponCode === "remove_coupon") {
+      couponID = null;
+      couponCode = null;
+      couponDiscount = 0.0;
+    } else {
+      couponID = "static_coupon_id";
+      couponDiscount = 520.01;
+      // req?.body?.couponDiscount
+      //   ? CommonUtility.amountRoundingFunc({
+      //       value: Number(req.body.couponDiscount),
+      //     })
+      //   : 0.0;
+    }
+  }
+  /** TO DO :- FIX ME ENDS(APPLY COUPON CODE LOGIC)s */
   const { totalSellingPrice, totalPayableAmount, totalDiscountPrice } =
     await this.getCartTotalPrices({
       productsArr: cartData?.products ?? [],
@@ -274,6 +289,10 @@ module.exports.createCartUtil = async ({ req }) => {
     id: cartID,
     totalAmount: totalAmount,
     discount: discount,
+    couponInfo: {
+      couponID: couponID,
+      couponCode: couponCode,
+    },
     couponDiscount: couponDiscount,
     payableAmount: payableAmount,
     dateModified: new Date(),
@@ -618,6 +637,10 @@ module.exports.addNewCartUtil = async ({ req }) => {
     ],
     totalAmount: 0.0,
     discount: 0.0,
+    couponInfo: {
+      couponID: null,
+      couponCode: null,
+    },
     couponDiscount: 0.0,
     payableAmount: 0.0,
     dateAdded: dateAdded,

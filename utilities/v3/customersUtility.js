@@ -939,7 +939,7 @@ module.exports.changeCustomerPasswordUtil = async ({ req }) => {
     };
   }
   return {
-    status: "error",
+    status: "success",
     message: `Your password is changed successfully.`,
     data: {},
   };

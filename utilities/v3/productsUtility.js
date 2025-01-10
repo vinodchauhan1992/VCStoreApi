@@ -449,6 +449,46 @@ module.exports.getProductsByCategoryIDUtil = async ({ req }) => {
   };
 };
 
+module.exports.getProductsByBrandIDUtil = async ({ req }) => {
+  if (!req?.body?.brandID || req.body.brandID === "") {
+    return {
+      status: "error",
+      message: `Brand id is required.`,
+      data: {},
+    };
+  }
+
+  const brandID = req.body.brandID;
+  const foundProductsObj =
+    await CommonApisUtility.getDataArrayByIdFromSchemaUtil({
+      schema: ProductsSchema,
+      schemaName: "Products",
+      dataID: brandID,
+      keyname: "brandID",
+    });
+
+  if (
+    foundProductsObj?.status === "error" &&
+    foundProductsObj?.data?.length <= 0
+  ) {
+    return {
+      ...foundProductsObj,
+      message: `Products not found with brand id ${brandID}.`,
+    };
+  }
+
+  const fullDetailsProductsArr = await this.getAllProductsArrWithAllDetailsUtil(
+    {
+      allProductsArr: foundProductsObj?.data,
+    }
+  );
+
+  return {
+    ...foundProductsObj,
+    data: fullDetailsProductsArr,
+  };
+};
+
 module.exports.uploadProductImageToFS = async ({ file, productID, sku }) => {
   return await uploadFileToFirebaseStorage({
     file,

@@ -442,10 +442,10 @@ module.exports.getDashboardStructuralCardsDataUtil = async ({
       {
         title: "Revenue",
         subtitle: `${formatDisplayAmount({
-          amount: dashboardCardsData.revenueData.currentYearRevenue.amount,
+          amount: dashboardCardsData?.revenueData?.currentYearRevenue?.amount,
         })}`,
         descriptiveInfo: `${formatDisplayAmount({
-          amount: dashboardCardsData.revenueData.currentMonthRevenue.amount,
+          amount: dashboardCardsData?.revenueData?.currentMonthRevenue?.amount,
         })}`,
         description: "this month",
         iconName: "pi-bitcoin",

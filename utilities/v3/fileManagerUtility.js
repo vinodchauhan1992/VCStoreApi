@@ -12,7 +12,7 @@ module.exports.uploadFileToFirebaseStorage = async ({
   parentDocumentID,
   parentDocumentName,
   imageBasePath,
-  allowedSizeInMb = 2,
+  allowedSizeInMb = 5,
 }) => {
   if (!file) {
     return {
@@ -108,7 +108,7 @@ module.exports.updateUploadedFileInFirebaseStorage = async ({
   fileFolderPath,
   parentDocumentID,
   parentDocumentName,
-  allowedSizeInMb = 2,
+  allowedSizeInMb = 5,
 }) => {
   if (!file) {
     return {
